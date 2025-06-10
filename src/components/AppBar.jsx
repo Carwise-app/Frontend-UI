@@ -25,7 +25,7 @@ export default function AppBar({onOpenClick, isLoggedIn, user, onLogout, setIsLo
     navigate('/')
   );
   const handleGoToAracSat = () => (
-    navigate('/fiyat-ogren/marka')
+    navigate('/fiyat-ogren')
   ) //İlan ver sayfası yapılınca navigate değiştirelecek.
 
   return (
@@ -60,14 +60,14 @@ export default function AppBar({onOpenClick, isLoggedIn, user, onLogout, setIsLo
               Araç Sat
               <span className="absolute left-0 bottom-0 h-[2px] w-0 bg-[#dc143c] transition-all duration-300 group-hover:w-full"></span>
             </span>
-            <span className="relative group" onClick={handleGoToFiyatOgren}>
+            <span className="relative group" onClick={isLoggedIn ? (handleGoToFiyatOgren) : () => onOpenClick("login")}>
               Fiyat Öğren
               <span className="absolute left-0 bottom-0 h-[2px] w-0 bg-[#dc143c] transition-all duration-300 group-hover:w-full"></span>
             </span>
             {isLoggedIn ? (
               <LoginAccount onLogout={onLogout} fullName="Batuhan Gözüpek"/>
             ): (
-              <button className='bg-[#dc143c] px-4 py-2 rounded-xl text-white cursor-pointer' onClick={() => onOpenClick("login")}>
+              <button className='bg-[#dc143c] px-4 py-2 rounded-xl text-white cursor-pointer' onClick={() => onOpenClick("login","login-bton")}>
                 Giriş Yap
               </button>           
             )}

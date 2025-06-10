@@ -1,12 +1,20 @@
-import React from 'react'
-import { Outlet } from 'react-router-dom'
+import React, { useEffect } from 'react'
+import { Outlet, useNavigate } from 'react-router-dom'
 
 
 
-export default function LearnPrice() {
+export default function LearnPrice({isLoggedIn}) {
+  const navigate = useNavigate()
+
+  useEffect(()=> {
+    if(!isLoggedIn){
+      navigate("/")
+    }
+  },[isLoggedIn]) 
+
   return (
     <>
-      <Outlet/>
+    {isLoggedIn && <Outlet/>}
     </>
   )
 }
