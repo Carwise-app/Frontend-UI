@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom'
 import AppBar from './components/AppBar'
 import MainPageBanner from './components/Banner'
 import BlinkingScrollHint from './components/Scroll'
@@ -10,16 +10,16 @@ import LearnPrice from './pages/LearnPrice'
 import SearchCar from './pages/SearchCar'
 import LearnMainPage from './components/LearnMainPage'
 import LearnLoginPage from './components/LearnLoginPage'
-import AuthDialog from './components/AuthDialog';
+import AuthDialog from './components/AuthDialog'
 
 // ÇALIŞMADAKİ YORUM SATIRLARI YAPILACAK İŞLERİ TEMSİL ETMEKTEDİR. YAPILMASI GEREKENLER YAPILMADAN YORUM SATIRINI SİLMEYİN !!!
 // YAPILDIKTAN SONRA İSE SİLMEYİ UNUTMAYIN.
 
 export default function App() {
-  const [authOpen, setAuthOpen] = useState(false)  
+  const [authOpen, setAuthOpen] = useState(false);
   const [authView, setAuthView ] = useState("login");
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState(null); // opsiyonel
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  //const [user, setUser] = useState(null); // opsiyonel
 
   const handleOpenClick = (mode) => {
     setAuthView(mode)
@@ -27,21 +27,20 @@ export default function App() {
   } 
 
   const handleLoginSuccess = (userData) => {
-    // Burada login olmuş gibi işaretliyoruz
     setIsLoggedIn(true);
-    setUser(userData); // opsiyonel → { name, email, picture }
+    setUser(userData);
     setAuthOpen(false);
   };
 
   const handleLogout = () => {
     setIsLoggedIn(false);
-    setUser(null);
+    //setUser(null);
   };
 
 
   return (
     <>
-    <AppBar onOpenClick={handleOpenClick} setIsLoggedIn={setIsLoggedIn} isLoggedIn={isLoggedIn} user={user} onLogout={handleLogout}/>
+    <AppBar onOpenClick={handleOpenClick} isLoggedIn={isLoggedIn} onLogout={handleLogout}/>
     <Routes>
       <Route path='/' element={<HomePage/>}/>
       <Route path='/arac-satin-al'>
@@ -63,11 +62,7 @@ export default function App() {
     </Routes>
     <AuthDialog open={authOpen} onClose={() => setAuthOpen(false)} view={authView} setView={setAuthView} onLoginSuccess={handleLoginSuccess}/>
     <Footer/>
-
-    
-    
     </>
-   
   )
 }
 

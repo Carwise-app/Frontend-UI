@@ -54,7 +54,7 @@ export default function LoginFormDialog({onSwitch,onForgotPassword}) {
       <TextField label="Email" type="email" fullWidth value={email} onChange={(e) => setEmail(e.target.value)} error={Boolean(errors.email)} helperText={errors.email}/>
       <PasswordControlLabel title="Şifre" value={password} onChange={(e) => setPassword(e.target.value)} error={Boolean(errors.password)} helperText={errors.password}/>
       <Box className="flex justify-between mx-1">
-        <Box className="flex items-center">
+        <Box className="flex items-center mx-1">
           <FormControlLabel
             control={
               <Checkbox

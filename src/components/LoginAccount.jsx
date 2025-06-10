@@ -9,8 +9,8 @@ import AssignmentIcon from '@mui/icons-material/Assignment';
 import ExpandMoreIcon  from '@mui/icons-material/ExpandMore';
 import { useState } from 'react';
 
-export default function LoginAccount({fullName, isLoggedIn, setIsLoggedIn}) {
-  const [anchorEl, setAnchorEl] = React.useState(null);
+export default function LoginAccount({fullName, onLogout}) {
+  const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -28,20 +28,17 @@ export default function LoginAccount({fullName, isLoggedIn, setIsLoggedIn}) {
   return `${firstName} ${lastNameInitial}`;
 }
 
-const handleClickLogOut = () => {
-    // True ise false yap, false ise true yap
-    setIsLoggedIn((prev) => !prev);
-  };
   return (
     <Box>
       <button
+        id="basic-button"
         className='bg-[#dc143c] px-2 py-1 rounded-md cursor-pointer max-w-40 min-w-35 text-white'
         aria-controls={open ? 'basic-menu' : undefined}
         aria-haspopup="true"
         aria-expanded={open ? 'true' : undefined}
         onClick={handleClick}
       >
-        <span>{formatName(fullName)}<ExpandMoreIcon/></span>
+        <span className='flex gap-x-2 items-center'>{formatName(fullName)}<ExpandMoreIcon/></span>
       </button>
       <Menu
         id="basic-menu"
@@ -62,7 +59,7 @@ const handleClickLogOut = () => {
         <Box className="flex flex-col gap-y-2 px-3 cursor-pointer"> 
             <span className='hover:text-[#dc143c]'><AssignmentIcon sx={{marginRight:0.5, fontSize:18}}/>Kokpit</span>
             <span className='hover:text-[#dc143c]'><SettingsIcon sx={{marginRight:0.5, fontSize:18}}/>Ayarlar</span>
-            <span className='hover:text-[#dc143c]' onClick={handleClickLogOut}><LogoutIcon sx={{marginRight:0.5, fontSize:18}}/>Çıkış Yap</span>
+            <span className='hover:text-[#dc143c]' onClick={onLogout}><LogoutIcon sx={{marginRight:0.5, fontSize:18}}/>Çıkış Yap</span>
         </Box>
       </Menu>
     </Box>

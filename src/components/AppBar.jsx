@@ -4,7 +4,7 @@ import LoginAccount from './LoginAccount';
 import { useNavigate } from 'react-router-dom';
 
 
-export default function AppBar({onOpenClick, isLoggedIn, user, onLogout}) {
+export default function AppBar({onOpenClick, isLoggedIn, user, onLogout, setIsLoggedIn}) {
   const navigate = useNavigate();
   const [searchValue, setSearchValue] = useState('');
 
@@ -14,7 +14,6 @@ export default function AppBar({onOpenClick, isLoggedIn, user, onLogout}) {
     setSearchValue('');
   }
 };
-
 
   const handleGoToAracAl = () => (
     navigate('/arac-satin-al')
@@ -66,7 +65,7 @@ export default function AppBar({onOpenClick, isLoggedIn, user, onLogout}) {
               <span className="absolute left-0 bottom-0 h-[2px] w-0 bg-[#dc143c] transition-all duration-300 group-hover:w-full"></span>
             </span>
             {isLoggedIn ? (
-              <LoginAccount isLoggedIn={isLoggedIn} fullName="Batuhan Gözüpek"/>
+              <LoginAccount onLogout={onLogout} fullName="Batuhan Gözüpek"/>
             ): (
               <button className='bg-[#dc143c] px-4 py-2 rounded-xl text-white cursor-pointer' onClick={() => onOpenClick("login")}>
                 Giriş Yap
