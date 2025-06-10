@@ -17,7 +17,7 @@ export default function AuthDialog({ open, onClose, view, setView, onLoginSucces
         register: <RegisterFormDialog 
                       onSwitch={() => setView("login")} 
                   />,
-         password: <ForgotPasswprdFormDialog
+         password: <ForgotPasswordFormDialog
                        onSwitch={() => setView("login")} 
                        onSuccess={() => setView("success")}
                    />,
