@@ -3,7 +3,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import React from 'react'
 import LoginFormDialog from './LoginFormDialog';
 import RegisterFormDialog from './RegisterFormDialog';
-import ForgotPasswprdFormDialog from './ForgotPasswprdFormDialog';
+import ForgotPasswprdFormDialog from './ForgotPasswordFormDialog';
 import SuccessDialog from './SuccessDialog';
 
 export default function AuthDialog({ open, onClose, view, setView, onLoginSuccess }) {
