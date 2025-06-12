@@ -14,6 +14,7 @@ import AuthDialog from './components/AuthDialog'
 import { AnimatePresence } from 'framer-motion';
 import SnackbarAlert from './components/SnackbarAlert'
 import api from './api/axios' // api importu
+import Kokpit from './pages/Kokpit';
 
 // ÇALIŞMADAKİ YORUM SATIRLARI YAPILACAK İŞLERİ TEMSİL ETMEKTEDİR. YAPILMASI GEREKENLER YAPILMADAN YORUM SATIRINI SİLMEYİN !!!
 // YAPILDIKTAN SONRA İSE SİLMEYİ UNUTMAYIN.
