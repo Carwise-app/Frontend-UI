@@ -2,7 +2,6 @@ import { TextField, Box, Checkbox, FormControlLabel } from "@mui/material";
 import React, { useState } from 'react';
 import PasswordControlLabel from "./PasswordControlLabel";
 import api from "../api/axios";
-import { GoogleLogin } from '@react-oauth/google';
 
 export default function LoginFormDialog({ onSwitch, onForgotPassword }) {
   const [email, setEmail] = useState('');
@@ -42,20 +41,6 @@ export default function LoginFormDialog({ onSwitch, onForgotPassword }) {
       else if (errMsg.includes("invalid credentials")) newErrors.password = "Şifre yanlış girildi, lütfen kontrol ediniz.";
       else newErrors.form = "Giriş başarısız. Lütfen bilgilerinizi kontrol edin.";
       setErrors({ email: newErrors.email || '', password: newErrors.password || '', form: newErrors.form || '' });
-    }
-  };
-
-  const handleGoogleLoginSuccess = async (credentialResponse) => {
-    const idToken = credentialResponse.credential;
-    try {
-      const response = await api.get('/auth/google/id-token', {
-        params: { token: idToken }
-      });
-      localStorage.setItem('token', response.data.token);
-      window.location.reload();
-    } catch (err) {
-      console.error("Google login doğrulama hatası:", err);
-      setErrors({ ...errors, form: "Google ile giriş başarısız oldu." });
     }
   };
 
@@ -99,13 +84,19 @@ export default function LoginFormDialog({ onSwitch, onForgotPassword }) {
         <span className="text-lg font-medium text-white">Giriş Yap</span>
       </button>
 
-      <div className="flex justify-center mt-3">
-        <GoogleLogin
-          onSuccess={handleGoogleLoginSuccess}
-          onError={() => setErrors({ ...errors, form: "Google ile giriş başarısız oldu." })}
-          useOneTap
+      {/* Google Login Button */}
+      <button
+        onClick={() => window.location.href = "https://carwisegw.yusuftalhaklc.com/auth/google"}
+        type="button"
+        className="cursor-pointer border border-gray-300 py-2 w-[60%] flex items-center justify-center mx-auto rounded-md mt-2 hover:bg-gray-100"
+      >
+        <img
+          src="https://developers.google.com/identity/images/g-logo.png"
+          alt="google"
+          className="w-5 h-5 mr-2"
         />
-      </div>
+        <span className="text-sm font-medium text-gray-700">Google ile Giriş Yap</span>
+      </button>
 
       <p className="text-sm text-center mt-2">
         Hesabınız yok mu?{" "}

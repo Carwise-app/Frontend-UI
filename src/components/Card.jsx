@@ -1,55 +1,81 @@
-import React from "react"
-import { Box, Button, Card, CardActions, CardContent, CardMedia, Stack, Typography } from "@mui/material";
-import DenemePhoto from "../assets/DenemeArabaCard2.webp"
+import React from "react";
+import {
+  Box,
+  Card,
+  CardActions,
+  CardContent,
+  Stack,
+  Typography,
+} from "@mui/material";
 
-export default function ShowcaseCard(){
-    return(
-        <Card sx={{ maxWidth: 320, borderRadius:3}}>   
-            <Box
-                className="w-full h-48 overflow-hidden"
-                sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                backgroundColor: "#c4c4c4",
-                }}>
-            <img
-                src={DenemePhoto} 
-                alt="Ford"
-                className="w-full h-full object-cover select-none pointer-events-none"
-                draggable={false}
-            />
-            </Box>
-            <CardContent>
-                <Typography gutterBottom variant="h5" component="div">
-                    <Stack>
-                        <span>Hyundai Bayon</span> 
-                        <span className="text-sm text-gray-400">1.4 MPI Style </span>
-                    </Stack>
-                </Typography>
-                <Box className="flex flex-wrap gap-3">
-                    <button className="bg-gray-200 px-3 py-1 rounded-2xl text-xs font-semibold">
-                        2022
-                    </button>
-                    <button className="bg-gray-200 px-3 py-1 rounded-2xl text-xs font-semibold">
-                        277.427 KM
-                    </button>
-                    <button className="bg-gray-200 px-3 py-1 rounded-2xl text-xs font-semibold">
-                        199 hp
-                    </button>
-                    <button className="bg-gray-200 px-3 py-1 rounded-2xl text-xs font-semibold">
-                        Benzin&LPG
-                    </button>
-                    <button className="bg-gray-200 px-3 py-1 rounded-2xl text-xs font-semibold">
-                        Otomatik
-                    </button>
-                </Box> 
-            </CardContent>
-            <CardActions className="flex justify-end">
-                <Typography>
-                    <span className="text-3xl font-semibold">975.000 ₺</span>
-                </Typography>
-            </CardActions>
-        </Card>
-    )
+
+export default function ShowcaseCard({ listing }) {
+  const imageUrl = listing.image?.path
+    ? `https://carwisegw.yusuftalhaklc.com${listing.image.path}`
+    : FallbackImage;
+
+  return (
+    <Card sx={{ maxWidth: 320, borderRadius: 3 }}>
+      {/* Sabit yükseklik ve kırpma (cover) */}
+      <Box
+        sx={{
+          height: 180,
+          width: "100%",
+          overflow: "hidden",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: "#f0f0f0",
+        }}
+      >
+        <img
+          src={imageUrl}
+          alt={listing.title}
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            borderTopLeftRadius: 12,
+            borderTopRightRadius: 12,
+          }}
+        />
+      </Box>
+
+      <CardContent>
+        <Typography gutterBottom variant="h6" component="div">
+          <Stack>
+            <span>
+              {listing.brand?.name} {listing.model?.name} {listing.version}
+            </span>
+          </Stack>
+        </Typography>
+
+        <Box className="flex flex-wrap gap-2 mt-2">
+          <span className="bg-gray-200 px-3 py-1 rounded-2xl text-xs font-semibold">
+            {listing.mileage?.toLocaleString() || "KM"}
+          </span>
+          <span className="bg-gray-200 px-3 py-1 rounded-2xl text-xs font-semibold">
+            {listing.horsepower ? `${listing.horsepower} hp` : "hp"}
+          </span>
+          <span className="bg-gray-200 px-3 py-1 rounded-2xl text-xs font-semibold">
+            {listing.fuel_type?.name || "-"}
+          </span>
+          <span className="bg-gray-200 px-3 py-1 rounded-2xl text-xs font-semibold">
+            {listing.transmission?.name || "-"}
+          </span>
+          <span className="bg-gray-200 px-3 py-1 rounded-2xl text-xs font-semibold">
+            {listing.year}
+          </span>
+        </Box>
+      </CardContent>
+
+      <CardActions className="flex justify-end px-4 pb-3">
+        <Typography>
+          <span className="text-2xl font-semibold text-black">
+            {listing.price?.toLocaleString()} ₺
+          </span>
+        </Typography>
+      </CardActions>
+    </Card>
+  );
 }

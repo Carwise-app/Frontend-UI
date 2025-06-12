@@ -8,7 +8,6 @@ import {
 import React, { useState } from 'react';
 import PasswordControlLabel from "./PasswordControlLabel";
 import api from "../api/axios";
-import { GoogleLogin } from '@react-oauth/google';
 
 export default function RegisterFormDialog({ onSwitch }) {
   const [firstName, setFirstName] = useState('');
@@ -20,10 +19,7 @@ export default function RegisterFormDialog({ onSwitch }) {
   const [acceptedKvkk, setAcceptedKvkk] = useState(false);
   const [errors, setErrors] = useState({});
 
-  const validateEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
+  const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -52,8 +48,7 @@ export default function RegisterFormDialog({ onSwitch }) {
         country_code: "+90"
       });
 
-      onSwitch(); // Girişe yönlendir
-
+      onSwitch(); // Kayıt sonrası giriş ekranına yönlendir
     } catch (error) {
       const errMsg = (error.response?.data?.error?.[0] || "").toLowerCase();
       let newErrors = {};
@@ -69,20 +64,6 @@ export default function RegisterFormDialog({ onSwitch }) {
       }
 
       setErrors(newErrors);
-    }
-  };
-
-  const handleGoogleRegisterSuccess = async (credentialResponse) => {
-    const idToken = credentialResponse.credential;
-    try {
-      const response = await api.get('/auth/google/id-token', {
-        params: { token: idToken }
-      });
-      localStorage.setItem('token', response.data.token);
-      window.location.reload();
-    } catch (err) {
-      console.error("Google kayıt başarısız:", err);
-      setErrors((prev) => ({ ...prev, form: "Google ile kayıt başarısız oldu." }));
     }
   };
 
@@ -106,6 +87,7 @@ export default function RegisterFormDialog({ onSwitch }) {
           helperText={errors.lastName}
         />
       </Box>
+
       <TextField
         label="Email"
         type="email"
@@ -115,6 +97,7 @@ export default function RegisterFormDialog({ onSwitch }) {
         error={Boolean(errors.email)}
         helperText={errors.email}
       />
+
       <TextField
         label="Telefon Numarası"
         type="tel"
@@ -124,6 +107,7 @@ export default function RegisterFormDialog({ onSwitch }) {
         error={Boolean(errors.phoneNumber)}
         helperText={errors.phoneNumber}
       />
+
       <PasswordControlLabel
         title="Şifre"
         value={password}
@@ -131,6 +115,7 @@ export default function RegisterFormDialog({ onSwitch }) {
         error={Boolean(errors.password)}
         helperText={errors.password}
       />
+
       <PasswordControlLabel
         title="Yeniden Şifre"
         value={confirmPassword}
@@ -138,6 +123,7 @@ export default function RegisterFormDialog({ onSwitch }) {
         error={Boolean(errors.confirmPassword)}
         helperText={errors.confirmPassword}
       />
+
       <Box className="flex items-center mx-1.5">
         <FormControlLabel
           control={
@@ -158,6 +144,7 @@ export default function RegisterFormDialog({ onSwitch }) {
           }
         />
       </Box>
+
       {errors.kvkk && (
         <span className="text-xs text-red-600 -mt-2 ml-2">{errors.kvkk}</span>
       )}
@@ -172,13 +159,21 @@ export default function RegisterFormDialog({ onSwitch }) {
         <span className="text-lg font-medium text-white">Kayıt Ol</span>
       </button>
 
-      <GoogleLogin
-        onSuccess={handleGoogleRegisterSuccess}
-        onError={() => setErrors((prev) => ({ ...prev, form: "Google ile kayıt başarısız oldu." }))}
-        width="100%"
-      />
+      {/* Google ile Kayıt Butonu */}
+      <button
+        onClick={() => window.location.href = "https://carwisegw.yusuftalhaklc.com/auth/google"}
+        type="button"
+        className="cursor-pointer border border-gray-300 py-2 w-[65%] flex items-center justify-center mx-auto rounded-md mt-2 hover:bg-gray-100"
+      >
+        <img
+          src="https://developers.google.com/identity/images/g-logo.png"
+          alt="google"
+          className="w-5 h-5 mr-2"
+        />
+        <span className="text-sm font-medium text-gray-700">Google ile Kayıt Ol</span>
+      </button>
 
-      <p className="text-sm text-center">
+      <p className="text-sm text-center mt-2">
         Zaten bir hesabınız var mı?{" "}
         <span className="text-[#dc143c] cursor-pointer" onClick={onSwitch}>
           Giriş Yap
