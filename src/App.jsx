@@ -23,6 +23,7 @@ import ProfileAndSettings from './components/ProfileAndSettings'
 
 // ÇALIŞMADAKİ YORUM SATIRLARI YAPILACAK İŞLERİ TEMSİL ETMEKTEDİR. YAPILMASI GEREKENLER YAPILMADAN YORUM SATIRINI SİLMEYİN !!!
 // YAPILDIKTAN SONRA İSE SİLMEYİ UNUTMAYIN.
+//GPT'den OLAN YORUM SATIRLARINI KALDIR BE ADAM ERENSARIALP'E MESAJ :d
 
 export default function App() {
   const [authOpen, setAuthOpen] = useState(false);
