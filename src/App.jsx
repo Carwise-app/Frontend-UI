@@ -94,7 +94,11 @@ export default function App() {
             <Route path="renk" element={<LearnMainPage />} />
             <Route path="yakit-tipi" element={<LearnMainPage />} />
             <Route path="vites-tipi" element={<LearnMainPage />} />
-          </Route>
+        </Route>
+        <Route path='/kokpit' element={<Kokpit/>}>
+            <Route path='ilan' />
+        </Route>
+        <Route path='ilan' />
         </Routes>
       </AnimatePresence>
       <SnackbarAlert
