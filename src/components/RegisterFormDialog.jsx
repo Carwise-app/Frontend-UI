@@ -8,6 +8,7 @@ import {
 import React, { useState } from 'react';
 import PasswordControlLabel from "./PasswordControlLabel";
 import api from "../api/axios";
+import { GoogleLogin } from '@react-oauth/google';
 
 export default function RegisterFormDialog({ onSwitch }) {
   const [firstName, setFirstName] = useState('');
@@ -68,6 +69,20 @@ export default function RegisterFormDialog({ onSwitch }) {
       }
 
       setErrors(newErrors);
+    }
+  };
+
+  const handleGoogleRegisterSuccess = async (credentialResponse) => {
+    const idToken = credentialResponse.credential;
+    try {
+      const response = await api.get('/auth/google/id-token', {
+        params: { token: idToken }
+      });
+      localStorage.setItem('token', response.data.token);
+      window.location.reload();
+    } catch (err) {
+      console.error("Google kayıt başarısız:", err);
+      setErrors((prev) => ({ ...prev, form: "Google ile kayıt başarısız oldu." }));
     }
   };
 
@@ -149,12 +164,20 @@ export default function RegisterFormDialog({ onSwitch }) {
       {errors.form && (
         <span className="text-xs text-red-600 -mt-2 ml-2">{errors.form}</span>
       )}
+
       <button
         type="submit"
         className="cursor-pointer bg-[#dc143c] py-2 w-[45%] flex justify-center mx-auto rounded-md"
       >
         <span className="text-lg font-medium text-white">Kayıt Ol</span>
       </button>
+
+      <GoogleLogin
+        onSuccess={handleGoogleRegisterSuccess}
+        onError={() => setErrors((prev) => ({ ...prev, form: "Google ile kayıt başarısız oldu." }))}
+        width="100%"
+      />
+
       <p className="text-sm text-center">
         Zaten bir hesabınız var mı?{" "}
         <span className="text-[#dc143c] cursor-pointer" onClick={onSwitch}>

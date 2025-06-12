@@ -7,6 +7,7 @@ const api = axios.create({
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
 
+  // Token istemeyen public endpoint listesi
   const publicEndpoints = [
     '/auth/login',
     '/auth/register',
@@ -14,6 +15,7 @@ api.interceptors.request.use((config) => {
     '/auth/reset-password'
   ];
 
+  // Eğer istek public endpoint'e gidiyorsa token eklenmesin
   const isPublic = publicEndpoints.some((endpoint) =>
     config.url.includes(endpoint)
   );
