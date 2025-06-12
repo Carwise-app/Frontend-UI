@@ -82,7 +82,7 @@ export default function App() {
     </AnimatePresence>
     <SnackbarAlert open={snackbarOpen} message={snackbarMessage} severity={snackbarSeverity} onClose={()=> setSnackbarOpen(false)}/>
     <AuthDialog open={authOpen} onClose={() => setAuthOpen(false)} view={authView} setView={setAuthView} onLoginSuccess={handleLoginSuccess}/>
-    {/* <Footer/> */}
+    <Footer/>
     </>
   )
 }
