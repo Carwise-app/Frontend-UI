@@ -13,6 +13,7 @@ import LearnLoginPage from './components/LearnLoginPage'
 import AuthDialog from './components/AuthDialog'
 import { AnimatePresence } from 'framer-motion';
 import SnackbarAlert from './components/SnackbarAlert'
+import Kokpit from './pages/Kokpit'
 
 // ÇALIŞMADAKİ YORUM SATIRLARI YAPILACAK İŞLERİ TEMSİL ETMEKTEDİR. YAPILMASI GEREKENLER YAPILMADAN YORUM SATIRINI SİLMEYİN !!!
 // YAPILDIKTAN SONRA İSE SİLMEYİ UNUTMAYIN.
@@ -37,9 +38,7 @@ export default function App() {
     setAuthOpen(true)
     {if(id !== "login-bton"){
       showSnackbar('Bu işlemi yapmak için giriş yapınız.','error')
-    } 
-    } 
-    
+    }} 
   } 
 
   const handleLoginSuccess = (userData) => {
@@ -76,11 +75,14 @@ export default function App() {
             <Route path="yakit-tipi" element={<LearnMainPage />} />
             <Route path="vites-tipi" element={<LearnMainPage />} />
         </Route>
+        <Route path='/kokpit' element={<Kokpit/>}>
+            <Route path='ilan' />
+        </Route>
       </Routes>
     </AnimatePresence>
     <SnackbarAlert open={snackbarOpen} message={snackbarMessage} severity={snackbarSeverity} onClose={()=> setSnackbarOpen(false)}/>
     <AuthDialog open={authOpen} onClose={() => setAuthOpen(false)} view={authView} setView={setAuthView} onLoginSuccess={handleLoginSuccess}/>
-    <Footer/>
+    {/* <Footer/> */}
     </>
   )
 }

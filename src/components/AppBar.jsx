@@ -1,7 +1,7 @@
 import { Avatar, Box, IconButton, Menu, MenuItem, Stack } from '@mui/material';
 import React, { useState } from 'react';
 import LoginAccount from './LoginAccount';
-import { useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 
 
 export default function AppBar({onOpenClick, isLoggedIn, user, onLogout, setIsLoggedIn}) {
@@ -15,14 +15,9 @@ export default function AppBar({onOpenClick, isLoggedIn, user, onLogout, setIsLo
   }
 };
 
-  const handleGoToAracAl = () => (
-    navigate('/arac-satin-al')
-  );
+  
   const handleGoToFiyatOgren = () => (
     navigate('/fiyat-ogren')
-  );
-  const handleGoToHome = () => (
-    navigate('/')
   );
   const handleGoToAracSat = () => (
     navigate('/fiyat-ogren')
@@ -32,7 +27,9 @@ export default function AppBar({onOpenClick, isLoggedIn, user, onLogout, setIsLo
     <>
     <Box className='bg-[#FDFDFD] w-full h-18 shadow-md flex items-center justify-around'>
       <Box className='flex gap-28'>
-        <p className='text-[32px] text-black  font-serif font-black cursor-pointer tracking-wide' onClick={handleGoToHome}>CARWISE</p>
+        <NavLink to="/">
+          <p className='text-[32px] text-black  font-serif font-black cursor-pointer tracking-wide'>CARWISE</p>
+        </NavLink>
         <Box className='flex w-90  rounded bg-gray-200'>
           <input 
             type="search" 
@@ -52,12 +49,14 @@ export default function AppBar({onOpenClick, isLoggedIn, user, onLogout, setIsLo
         </Box>
       </Box>
       <Box className='flex gap-8 items-center text-lg cursor-pointer '>
-            <span className="relative group " onClick={handleGoToAracAl}>
-              Araç Al
-              <span className="absolute left-0 bottom-0 h-[2px] w-0 bg-[#dc143c] transition-all duration-300 group-hover:w-full"></span>
-            </span>
+            <NavLink to="/arac-satin-al">
+              <span className="relative group ">
+                Araç Al
+                <span className="absolute left-0 bottom-0 h-[2px] w-0 bg-[#dc143c] transition-all duration-300 group-hover:w-full"></span>
+              </span>
+            </NavLink>
             <span className="relative group " onClick={isLoggedIn ? (handleGoToAracSat) : () => onOpenClick("login")}>
-              Araç Sat
+              İlan Ver
               <span className="absolute left-0 bottom-0 h-[2px] w-0 bg-[#dc143c] transition-all duration-300 group-hover:w-full"></span>
             </span>
             <span className="relative group" onClick={isLoggedIn ? (handleGoToFiyatOgren) : () => onOpenClick("login")}>

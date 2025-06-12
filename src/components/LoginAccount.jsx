@@ -8,10 +8,12 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import ExpandMoreIcon  from '@mui/icons-material/ExpandMore';
 import { useState } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
 
 export default function LoginAccount({fullName, onLogout}) {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
+  const navigate = useNavigate();
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -27,6 +29,10 @@ export default function LoginAccount({fullName, onLogout}) {
   const lastNameInitial = parts.length > 1 ? parts[parts.length - 1][0] + "." : "";
   return `${firstName} ${lastNameInitial}`;
 }
+
+const handleGoToKokpit = () =>(
+  navigate("/kokpit")
+);
 
   return (
     <Box>
@@ -57,7 +63,9 @@ export default function LoginAccount({fullName, onLogout}) {
         }}
       >
         <Box className="flex flex-col gap-y-2 px-3 cursor-pointer"> 
+          <NavLink to="/kokpit" onClick={handleClose}>
             <span className='hover:text-[#dc143c]'><AssignmentIcon sx={{marginRight:0.5, fontSize:18}}/>Kokpit</span>
+          </NavLink>
             <span className='hover:text-[#dc143c]'><SettingsIcon sx={{marginRight:0.5, fontSize:18}}/>Ayarlar</span>
             <span className='hover:text-[#dc143c]' onClick={onLogout}><LogoutIcon sx={{marginRight:0.5, fontSize:18}}/>Çıkış Yap</span>
         </Box>

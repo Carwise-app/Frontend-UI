@@ -23,7 +23,7 @@ export default function SearchCar() {
     { name: "Honda", id: 13 },
     { name: "Honda Civic", id: 14 },
     { name: "Fiat Fiorino 1.3 Multijet", id: 15 },
-  ];
+  ]; //Dinamik çekildiğinde düzelecek burasıs statik denemek için.
 
 
   const location = useLocation();
