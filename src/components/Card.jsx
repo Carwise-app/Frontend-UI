@@ -32,6 +32,8 @@ export default function ShowcaseCard({ listing }) {
           src={imageUrl}
           alt={listing.title}
           style={{
+            minWidth:"320px",
+            maxWidth:"320px",
             width: "100%",
             height: "100%",
             objectFit: "cover",

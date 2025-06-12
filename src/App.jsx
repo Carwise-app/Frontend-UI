@@ -15,6 +15,11 @@ import { AnimatePresence } from 'framer-motion';
 import SnackbarAlert from './components/SnackbarAlert'
 import api from './api/axios' // api importu
 import Kokpit from './pages/Kokpit';
+import QuickTransactions from './components/QuickTransactions'
+import MyAds from './components/MyAds'
+import FavMyAds from './components/FavMyAds'
+import MyMessages from './components/MyMessages'
+import ProfileAndSettings from './components/ProfileAndSettings'
 
 // ÇALIŞMADAKİ YORUM SATIRLARI YAPILACAK İŞLERİ TEMSİL ETMEKTEDİR. YAPILMASI GEREKENLER YAPILMADAN YORUM SATIRINI SİLMEYİN !!!
 // YAPILDIKTAN SONRA İSE SİLMEYİ UNUTMAYIN.
@@ -95,11 +100,14 @@ export default function App() {
             <Route path="renk" element={<LearnMainPage />} />
             <Route path="yakit-tipi" element={<LearnMainPage />} />
             <Route path="vites-tipi" element={<LearnMainPage />} />
-        </Route>
-        <Route path='/kokpit' element={<Kokpit/>}>
-            <Route path='ilan' />
-        </Route>
-        <Route path='ilan' />
+          </Route>
+          <Route path='/kokpit' element={<Kokpit/>}>
+              <Route index element={<QuickTransactions/>}/>
+              <Route path='ilan' element={<MyAds/>}/>
+              <Route path='fav-ilan' element={<FavMyAds/>}/>
+              <Route path='mesajlarim' element={<MyMessages/>}/>
+              <Route path='profil-ve-ayarlar' element={<ProfileAndSettings/>}/>
+          </Route>
         </Routes>
       </AnimatePresence>
       <SnackbarAlert
