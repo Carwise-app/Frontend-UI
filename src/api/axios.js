@@ -6,9 +6,24 @@ const api = axios.create({
 
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
-  if (token) {
+
+  // Token istemeyen public endpoint listesi
+  const publicEndpoints = [
+    '/auth/login',
+    '/auth/register',
+    '/auth/forgot-password',
+    '/auth/reset-password'
+  ];
+
+  // Eğer istek public endpoint'e gidiyorsa token eklenmesin
+  const isPublic = publicEndpoints.some((endpoint) =>
+    config.url.includes(endpoint)
+  );
+
+  if (token && !isPublic) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+
   return config;
 });
 
