@@ -9,11 +9,11 @@ export default function MyAds() {
   return (
     <>
     <ControlPanelHeader icon={<FormatListBulletedIcon sx={{fontSize:115,color:'black',opacity:0.1,marginRight:1}}/>} title="İlanlarım" description="Oluşturduğunuz ilanlara kolayca bakabilirsiniz." />
-    <Box className="flex mt-5 text-lg bg-neutral-50 shadow-md rounded-2xl justify-between">
+    <Box className="flex justify-between mt-5 text-lg shadow-md bg-neutral-50 rounded-2xl">
       <NavLink  to="/kokpit/ilanlarim" end className={({isActive}) =>`cursor-pointer font-medium py-3 px-39 hover:text-[#dc143c] rounded-2xl ${isActive ? `bg-[rgb(220,20,60,0.2)] text-[#dc143c]`:``}`}>Yayındakiler</NavLink>
       <NavLink to="/kokpit/ilanlarim/yayinda-olmayanlar" className={({isActive}) =>`cursor-pointer font-medium py-3 px-39 hover:text-[#dc143c] rounded-2xl ${isActive ? `bg-[rgb(220,20,60,0.2)] text-[#dc143c]`:``}`}>Yayında Olmayanlar</NavLink>
     </Box>
-    <Box className="mt-4">
+    <Box className="mt-5">
       <Outlet/>
     </Box>
     </>
