@@ -25,6 +25,7 @@ import YayindaOlmayanlar from './components/YayindaOlmayanlar'
 
 // ÇALIŞMADAKİ YORUM SATIRLARI YAPILACAK İŞLERİ TEMSİL ETMEKTEDİR. YAPILMASI GEREKENLER YAPILMADAN YORUM SATIRINI SİLMEYİN !!!
 // YAPILDIKTAN SONRA İSE SİLMEYİ UNUTMAYIN.
+//GPT'den OLAN YORUM SATIRLARINI KALDIR BE ADAM ERENSARIALP'E MESAJ :d
 
 export default function App() {
   const [authOpen, setAuthOpen] = useState(false);
@@ -39,6 +40,7 @@ export default function App() {
   const hideFooterRoutes = ['/kokpit', '/fiyat-ogren'];
   const shouldHideFooter = hideFooterRoutes.some(path => location.pathname.startsWith(path));
 
+  // Giriş sonrası snackbar gösterme fonksiyonu
   const showSnackbar = (message, severity) => {
     setSnackbarMessage(message);
     setSnackbarSeverity(severity);
