@@ -8,15 +8,13 @@ import {
   Typography,
 } from "@mui/material";
 
-
 export default function ShowcaseCard({ listing }) {
   const imageUrl = listing.image?.path
     ? `https://carwisegw.yusuftalhaklc.com${listing.image.path}`
-    : FallbackImage;
+    : "";
 
   return (
     <Card sx={{ maxWidth: 320, borderRadius: 3 }}>
-      {/* Sabit yükseklik ve kırpma (cover) */}
       <Box
         sx={{
           height: 180,
@@ -32,8 +30,8 @@ export default function ShowcaseCard({ listing }) {
           src={imageUrl}
           alt={listing.title}
           style={{
-            minWidth:"320px",
-            maxWidth:"320px",
+            minWidth: "320px",
+            maxWidth: "320px",
             width: "100%",
             height: "100%",
             objectFit: "cover",
@@ -45,30 +43,14 @@ export default function ShowcaseCard({ listing }) {
 
       <CardContent>
         <Typography gutterBottom variant="h6" component="div">
-          <Stack>
-            <span>
-              {listing.brand?.name} {listing.model?.name} {listing.version}
-            </span>
-          </Stack>
+          {/* Marka + Seri */}
+          {listing.brand?.name} {listing.series?.name}
         </Typography>
 
-        <Box className="flex flex-wrap gap-2 mt-2">
-          <span className="bg-gray-200 px-3 py-1 rounded-2xl text-xs font-semibold">
-            {listing.mileage?.toLocaleString() || "KM"}
-          </span>
-          <span className="bg-gray-200 px-3 py-1 rounded-2xl text-xs font-semibold">
-            {listing.horsepower ? `${listing.horsepower} hp` : "hp"}
-          </span>
-          <span className="bg-gray-200 px-3 py-1 rounded-2xl text-xs font-semibold">
-            {listing.fuel_type?.name || "-"}
-          </span>
-          <span className="bg-gray-200 px-3 py-1 rounded-2xl text-xs font-semibold">
-            {listing.transmission?.name || "-"}
-          </span>
-          <span className="bg-gray-200 px-3 py-1 rounded-2xl text-xs font-semibold">
-            {listing.year}
-          </span>
-        </Box>
+        {/* Model adı küçük gri metin */}
+        <Typography variant="body2" color="text.secondary">
+          {listing.model?.name}
+        </Typography>
       </CardContent>
 
       <CardActions className="flex justify-end px-4 pb-3">
