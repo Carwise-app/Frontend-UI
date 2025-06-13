@@ -11,7 +11,7 @@ export default function ShowcaseArea() {
     api
       .get("/listing/")
       .then((res) => {
-        setListings(res.data.listings || []); // API response formatına göre ayarla
+        setListings(res.data.listings || []);
       })
       .catch((err) => {
         console.error("Vitrin verileri alınamadı:", err);

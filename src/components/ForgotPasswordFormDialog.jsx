@@ -17,7 +17,7 @@ export default function ForgotPasswordFormDialog({ onSwitch, onSuccess }) {
     try {
       await api.post("/auth/reset-password", { email });
       setError('');
-      onSuccess(); // Başarılıysa bir üst componente bilgi ver
+      onSuccess();
     } catch (err) {
       const message = err.response?.data?.error?.[0]?.toLowerCase() || "";
       
