@@ -7,10 +7,10 @@ export default function SearchCarList({title}) {
   return (
         <Box className="bg-white shadow-sm rounded-sm w-full h-50 flex cursor-pointer hover:shadow-[#ffb8c6] overflow-hidden">
             <Box className="bg-gray-50 w-[30%] object-contain rounded-l-xl flex items-center justify-center">
-                <img className='pointer-events-none object-contain' src={CardPhoto} alt="car photo" />
+                <img className='object-contain pointer-events-none' src={CardPhoto} alt="car photo" />
             </Box>
             <Box className="w-[67%] mx-auto my-2 ">
-                <Box className="flex text-xs justify-between text-gray-500">
+                <Box className="flex justify-between text-xs text-gray-500">
                     <span>İlan Numarası: 1210606005</span>
                     <Stack className='flex items-center'>
                         <span>Küçükçekmece/İstanbul</span>
@@ -41,7 +41,7 @@ export default function SearchCarList({title}) {
 
 {/* <Card className='flex w-full h-40'>
                 <CardMedia 
-                    className='object-contain border-r-1 border-gray-200'
+                    className='object-contain border-gray-200 border-r-1'
                     component="img"
                     sx={{width:250, height:"100%"}}
                     image={CardPhoto}
@@ -49,7 +49,7 @@ export default function SearchCarList({title}) {
                 />
                 <CardContent className='p-0'>
                     <Box className="flex justify-between w-full">
-                        <span className='font-semibold text-xl'>Ford Focus 1.0 EcoBoost Active Stil</span>
+                        <span className='text-xl font-semibold'>Ford Focus 1.0 EcoBoost Active Stil</span>
                         <span>31 Mayıs 2025</span>
                     </Box>
                 </CardContent>
