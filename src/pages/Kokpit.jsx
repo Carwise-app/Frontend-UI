@@ -17,7 +17,7 @@ export default function Kokpit() {
     <Box className="flex min-h-[calc(100vh-90px)] w-[80%] mx-auto gap-x-3">
         <Box className="w-[25%] flex flex-col bg-neutral-800">
           <Box className="relative px-6 py-12 bg-cover bg-center" sx={{ backgroundImage: `url(${PanelPhoto})` }}>
-            <Box className="absolute inset-0 bg-black/30 z-0" />
+            <Box className="absolute inset-0 bg-black/25 z-0" />
             <Box className="relative z-10 flex flex-col">
               <span className='text-xl text-white font-bold'>Merhaba, BATUHAN</span>
               <span className='text-xs text-gray-300 tracking-wider'>ID: 14612581</span>
@@ -25,19 +25,19 @@ export default function Kokpit() {
           </Box>  
           <Box className="flex-grow px-6 py-6 bg-neutral-700">
             <Box className="flex flex-col gap-y-8 font-medium">
-              <NavLink to="/kokpit" end className={({isActive}) => `flex items-center gap-x-1 text-white hover:text-[#dc143c] cursor-pointer ${isActive ? `text-[#dc143c]` : `text-white`}`}>
+              <NavLink to="/kokpit" end className={({isActive}) => `flex items-center gap-x-1 hover:text-[#dc143c] cursor-pointer ${isActive ? `text-[#dc143c]` : `text-white`}`}>
                   <GridViewIcon />Hızlı İşlemler
               </NavLink>
-              <NavLink to="/kokpit/ilan" className={({isActive}) => `flex items-center gap-x-1 text-white hover:text-[#dc143c] cursor-pointer ${isActive ? `text-[#dc143c]` : `text-white`}`}>
+              <NavLink to="/kokpit/ilanlarim" className={({isActive}) => `flex items-center gap-x-1 hover:text-[#dc143c] cursor-pointer ${isActive ? `text-[#dc143c]` : `text-white`}`}>
                 <FormatListBulletedIcon />İlanlarım
               </NavLink>
-              <NavLink to="/kokpit/fav-ilan" className={({isActive}) => `flex items-center gap-x-1 text-white hover:text-[#dc143c] cursor-pointer ${isActive ? `text-[#dc143c]` : `text-white`}`}>
+              <NavLink to="/kokpit/fav-ilan" className={({isActive}) => `flex items-center gap-x-1 hover:text-[#dc143c] cursor-pointer ${isActive ? `text-[#dc143c]` : `text-white`}`}>
                 <StarBorderIcon />Favori İlanlar
               </NavLink>
-              <NavLink to="/kokpit/mesajlarim" className={({isActive}) => `flex items-center gap-x-1 text-white hover:text-[#dc143c] cursor-pointer ${isActive ? `text-[#dc143c]` : `text-white`}`}>
+              <NavLink to="/kokpit/mesajlarim" className={({isActive}) => `flex items-center gap-x-1 hover:text-[#dc143c] cursor-pointer ${isActive ? `text-[#dc143c]` : `text-white`}`}>
                 <MailOutlineIcon />Mesajlarım
               </NavLink>
-              <NavLink to="/kokpit/profil-ve-ayarlar" className={({isActive}) => `flex items-center gap-x-1 text-white hover:text-[#dc143c] cursor-pointer ${isActive ? `text-[#dc143c]` : `text-white`}`}>
+              <NavLink to="/kokpit/profil-ve-ayarlar" className={({isActive}) => `flex items-center gap-x-1 hover:text-[#dc143c] cursor-pointer ${isActive ? `text-[#dc143c]` : `text-white`}`}>
                 <SettingsIcon />Profil & Ayarlar
               </NavLink>
             </Box>

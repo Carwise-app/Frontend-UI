@@ -20,6 +20,8 @@ import MyAds from './components/MyAds'
 import FavMyAds from './components/FavMyAds'
 import MyMessages from './components/MyMessages'
 import ProfileAndSettings from './components/ProfileAndSettings'
+import YayindaOlanlar from './components/YayindaOlanlar'
+import YayindaOlmayanlar from './components/YayindaOlmayanlar'
 
 // ÇALIŞMADAKİ YORUM SATIRLARI YAPILACAK İŞLERİ TEMSİL ETMEKTEDİR. YAPILMASI GEREKENLER YAPILMADAN YORUM SATIRINI SİLMEYİN !!!
 // YAPILDIKTAN SONRA İSE SİLMEYİ UNUTMAYIN.
@@ -33,6 +35,10 @@ export default function App() {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('');
+  const location = useLocation()
+
+  const hideFooterRoutes = ['/kokpit', '/fiyat-ogren'];
+  const shouldHideFooter = hideFooterRoutes.some(path => location.pathname.startsWith(path));
 
   // Giriş sonrası snackbar gösterme fonksiyonu
   const showSnackbar = (message, severity) => {
@@ -104,7 +110,10 @@ export default function App() {
           </Route>
           <Route path='/kokpit' element={<Kokpit/>}>
               <Route index element={<QuickTransactions/>}/>
-              <Route path='ilan' element={<MyAds/>}/>
+              <Route path='ilanlarim' element={<MyAds/>}>
+                <Route index element={<YayindaOlanlar/>}/>
+                <Route path='yayinda-olmayanlar' element={<YayindaOlmayanlar/>}/>
+              </Route>
               <Route path='fav-ilan' element={<FavMyAds/>}/>
               <Route path='mesajlarim' element={<MyMessages/>}/>
               <Route path='profil-ve-ayarlar' element={<ProfileAndSettings/>}/>
@@ -124,7 +133,7 @@ export default function App() {
         setView={setAuthView}
         onLoginSuccess={handleLoginSuccess}
       />
-      <Footer />
+      {!shouldHideFooter && <Footer />}
     </>
   );
 }
