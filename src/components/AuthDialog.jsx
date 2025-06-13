@@ -5,25 +5,28 @@ import LoginFormDialog from './LoginFormDialog';
 import RegisterFormDialog from './RegisterFormDialog';
 import ForgotPasswordFormDialog from './ForgotPasswordFormDialog';
 import SuccessDialog from './SuccessDialog';
+import ChangePhoneNumberDialog from './ChangePhoneNumberDialog';
 
 export default function AuthDialog({ open, onClose, view, setView, onLoginSuccess }) {
-    const isLogin = view ==="login";
 
-    const componentMap = {
+    const componentMap = (onClose) => ({
         login: <LoginFormDialog 
                     onSwitch={() => setView("register")} 
-                    onForgotPassword={() => setView("password")} 
+                    onForgotPassword={() => setView("password")}
+                    onClose={onClose} 
                 />,
         register: <RegisterFormDialog 
-                      onSwitch={() => setView("login")} 
+                      onSwitch={() => setView("login")}
+                      onClose={onClose} 
                   />,
-         password: <ForgotPasswordFormDialog
-                       onSwitch={() => setView("login")} 
+        password: <ForgotPasswordFormDialog
+                       onSwitch={() => setView("login")}
                        onSuccess={() => setView("success")}
+                       onClose={onClose}
                    />,
-         success: <SuccessDialog 
-                  />
-    };
+        success: <SuccessDialog onClose={onClose} />,
+        changePhoneNumber: <ChangePhoneNumberDialog onClose={onClose} />
+    });
 
     const getTitle = () => {
         switch (view) {
@@ -31,20 +34,21 @@ export default function AuthDialog({ open, onClose, view, setView, onLoginSucces
             case 'register': return 'Kayıt Ol';
             case 'password': return 'Şifremi Unuttum';
             case 'success': return '';
+            case 'changePhoneNumber' : return 'Telefon Numarası Güncelle'
             default: return '';
         }
     };
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="xs">
-        <DialogTitle className="flex justify-between items-center">
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth={view === "changePhoneNumber" ? "sm" : "xs"} >
+        <DialogTitle className="flex items-center justify-between">
             <span className='text-xl'>{getTitle()}</span>
             <IconButton onClick={onClose}>
                 <CloseIcon/>
             </IconButton>
         </DialogTitle>
         <DialogContent className="w-full min-w-[350px]">
-            {componentMap[view]}
+            {componentMap(onClose)[view]}
         </DialogContent>
     </Dialog>
   )

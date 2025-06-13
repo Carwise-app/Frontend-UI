@@ -43,11 +43,9 @@ export default function ShowcaseCard({ listing }) {
 
       <CardContent>
         <Typography gutterBottom variant="h6" component="div">
-          {/* Marka + Seri */}
           {listing.brand?.name} {listing.series?.name}
         </Typography>
 
-        {/* Model adı küçük gri metin */}
         <Typography variant="body2" color="text.secondary">
           {listing.model?.name}
         </Typography>
@@ -55,7 +53,7 @@ export default function ShowcaseCard({ listing }) {
 
       <CardActions className="flex justify-end px-4 pb-3">
         <Typography>
-          <span className="text-2xl font-semibold text-black">
+          <span className="text-2xl font-semibold text-[#dc143c]">
             {listing.price?.toLocaleString()} ₺
           </span>
         </Typography>

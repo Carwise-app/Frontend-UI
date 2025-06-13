@@ -4,7 +4,7 @@ import React from 'react'
 
 export default function NoAds({title, desc, textBtn}) {
   return (
-    <Box className="flex flex-col items-center w-full py-5 text-black bg-white rounded-md shadow-md gap-y-1">
+    <Box className="flex flex-col items-center w-full py-5 text-black bg-white border-gray-100 rounded-md shadow-md gap-y-1 border-1">
         <InfoOutlineIcon sx={{fontSize:80, color:"#dc143c"}}/>
         <span className='text-2xl font-medium'>{title}</span>
         <span className='text-lg'>{desc}</span>

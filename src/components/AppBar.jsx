@@ -8,10 +8,8 @@ export default function AppBar({onOpenClick, isLoggedIn, user, onLogout, setIsLo
   const navigate = useNavigate();
   const [searchValue, setSearchValue] = useState('');
   const location = useLocation()
-
   const hideFooterRoutes = ['/kokpit', '/fiyat-ogren'];
   const shouldHideFooter = hideFooterRoutes.some(path => location.pathname.startsWith(path));
-    
   const isKokpitOrFiyatOgren = location.pathname.startsWith('/kokpit') || location.pathname.startsWith('/fiyat-ogren');
 
   const handleSearch = () => {
@@ -37,7 +35,7 @@ export default function AppBar({onOpenClick, isLoggedIn, user, onLogout, setIsLo
           <p className='text-[32px] text-black  font-serif font-black cursor-pointer tracking-wide'>CARWISE</p>
         </NavLink>
         {!shouldHideFooter &&
-          <Box className='flex w-90  rounded bg-gray-200'>
+          <Box className='flex bg-gray-200 rounded w-90'>
             <input 
               type="search" 
               id='search' 
@@ -48,7 +46,7 @@ export default function AppBar({onOpenClick, isLoggedIn, user, onLogout, setIsLo
                 if (e.key === 'Enter') handleSearch();
               }}
               placeholder='Kelime, ilan numarası veya satıcı adı ara' 
-              className='w-full border-none bg-transparent px-4 py-2 text-black outline-none focus:outline-none text-sm'
+              className='w-full px-4 py-2 text-sm text-black bg-transparent border-none outline-none focus:outline-none'
               />
               <button className='rounded bg-[#dc143c] px-6 py-2 text-white cursor-pointer' onClick={handleSearch}>
                 Ara
@@ -56,7 +54,7 @@ export default function AppBar({onOpenClick, isLoggedIn, user, onLogout, setIsLo
           </Box>
         }
       </Box>
-      <Box className='flex gap-8 items-center text-lg cursor-pointer '>
+      <Box className='flex items-center gap-8 text-lg cursor-pointer '>
         {!shouldHideFooter && 
           <>
               <NavLink to="/arac-satin-al">
@@ -78,7 +76,7 @@ export default function AppBar({onOpenClick, isLoggedIn, user, onLogout, setIsLo
             {isLoggedIn ? (
               <LoginAccount onLogout={onLogout} fullName="Batuhan Gözüpek"/>
             ): (
-              <button className='bg-[#dc143c] px-4 py-2 rounded-xl text-white cursor-pointer' onClick={() => onOpenClick("login","login-bton")}>
+              <button className='bg-[#dc143c] px-4 py-2 rounded-xl text-white cursor-pointer' onClick={() => onOpenClick("login","notLogin")}>
                 Giriş Yap
               </button>           
             )}

@@ -16,15 +16,15 @@ export default function Kokpit() {
   return (
     <Box className="flex min-h-[calc(100vh-90px)] w-[80%] mx-auto gap-x-3">
         <Box className="w-[25%] flex flex-col bg-neutral-800">
-          <Box className="relative px-6 py-12 bg-cover bg-center" sx={{ backgroundImage: `url(${PanelPhoto})` }}>
-            <Box className="absolute inset-0 bg-black/25 z-0" />
+          <Box className="relative px-6 py-12 bg-center bg-cover" sx={{ backgroundImage: `url(${PanelPhoto})` }}>
+            <Box className="absolute inset-0 z-0 bg-black/25" />
             <Box className="relative z-10 flex flex-col">
-              <span className='text-xl text-white font-bold'>Merhaba, BATUHAN</span>
-              <span className='text-xs text-gray-300 tracking-wider'>ID: 14612581</span>
+              <span className='text-xl font-bold text-white'>Merhaba, BATUHAN</span>
+              <span className='text-xs tracking-wider text-gray-300'>ID: 14612581</span>
             </Box>
           </Box>  
           <Box className="flex-grow px-6 py-6 bg-neutral-700">
-            <Box className="flex flex-col gap-y-8 font-medium">
+            <Box className="flex flex-col font-medium gap-y-8">
               <NavLink to="/kokpit" end className={({isActive}) => `flex items-center gap-x-1 hover:text-[#dc143c] cursor-pointer ${isActive ? `text-[#dc143c]` : `text-white`}`}>
                   <GridViewIcon />Hızlı İşlemler
               </NavLink>
@@ -42,13 +42,13 @@ export default function Kokpit() {
               </NavLink>
             </Box>
           </Box>
-          <Box className="px-6 py-4 bg-neutral-600 sticky bottom-0 z-10">
-            <span className='flex items-center gap-x-1 text-white hover:text-[#dc143c] '>
+          <Box className="sticky bottom-0 z-10 px-6 py-4 bg-neutral-600">
+            <span className='flex items-center gap-x-1 cursor-pointer text-white hover:text-[#dc143c] '>
               <LogoutIcon />Çıkış Yap
             </span>
           </Box>
         </Box>
-        <Box className="flex flex-col w-[75%]">
+        <Box className="flex flex-col w-[75%] mb-5">
           <Outlet/>
         </Box>
     </Box>

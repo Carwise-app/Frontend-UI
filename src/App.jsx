@@ -1,83 +1,64 @@
-import { Routes, Route, useLocation } from 'react-router-dom'
-import AppBar from './components/AppBar'
-import MainPageBanner from './components/Banner'
-import BlinkingScrollHint from './components/Scroll'
-import React, { useState, useEffect } from 'react'
-import ShowcaseArea from './components/Showcase'
-import Footer from './components/Footer'
-import HomePage from './pages/Home'
-import LearnPrice from './pages/LearnPrice'
-import SearchCar from './pages/SearchCar'
-import LearnMainPage from './components/LearnMainPage'
-import LearnLoginPage from './components/LearnLoginPage'
-import AuthDialog from './components/AuthDialog'
+import { Routes, Route, useLocation } from 'react-router-dom';
+import AppBar from './components/AppBar';
+import MainPageBanner from './components/Banner';
+import BlinkingScrollHint from './components/Scroll';
+import React, { useState, useEffect } from 'react';
+import ShowcaseArea from './components/Showcase';
+import Footer from './components/Footer';
+import HomePage from './pages/Home';
+import LearnPrice from './pages/LearnPrice';
+import SearchCar from './pages/SearchCar';
+import LearnMainPage from './components/LearnMainPage';
+import LearnLoginPage from './components/LearnLoginPage';
+import AuthDialog from './components/AuthDialog';
 import { AnimatePresence } from 'framer-motion';
-import SnackbarAlert from './components/SnackbarAlert'
-import api from './api/axios'
+import api from './api/axios';
 import Kokpit from './pages/Kokpit';
-import QuickTransactions from './components/QuickTransactions'
-import MyAds from './components/MyAds'
-import FavMyAds from './components/FavMyAds'
-import MyMessages from './components/MyMessages'
-import ProfileAndSettings from './components/ProfileAndSettings'
-import YayindaOlanlar from './components/YayindaOlanlar'
-import YayindaOlmayanlar from './components/YayindaOlmayanlar'
-
-// ÇALIŞMADAKİ YORUM SATIRLARI YAPILACAK İŞLERİ TEMSİL ETMEKTEDİR. YAPILMASI GEREKENLER YAPILMADAN YORUM SATIRINI SİLMEYİN !!!
-// YAPILDIKTAN SONRA İSE SİLMEYİ UNUTMAYIN.
-//GPT'den OLAN YORUM SATIRLARINI KALDIR BE ADAM ERENSARIALP'E MESAJ :d
+import QuickTransactions from './components/QuickTransactions';
+import MyAds from './components/MyAds';
+import FavMyAds from './components/FavMyAds';
+import MyMessages from './components/MyMessages';
+import ProfileAndSettings from './components/ProfileAndSettings';
+import YayindaOlanlar from './components/YayindaOlanlar';
+import YayindaOlmayanlar from './components/YayindaOlmayanlar';
+import { useSnackbar } from './context/SnackbarContext'; // ✅ burası önemli
 
 export default function App() {
   const [authOpen, setAuthOpen] = useState(false);
   const [authView, setAuthView] = useState("login");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  //const [user, setUser] = useState(null); // opsiyonel
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [snackbarSeverity, setSnackbarSeverity] = useState('');
-  const location = useLocation()
+  const location = useLocation();
+  const { showSnackbar } = useSnackbar(); // ✅ context'ten showSnackbar'ı al
 
   const hideFooterRoutes = ['/kokpit', '/fiyat-ogren'];
   const shouldHideFooter = hideFooterRoutes.some(path => location.pathname.startsWith(path));
 
-  // Giriş sonrası snackbar gösterme fonksiyonu
-  const showSnackbar = (message, severity) => {
-    setSnackbarMessage(message);
-    setSnackbarSeverity(severity);
-    setSnackbarOpen(true);
-  };
-
-  // Login/Register modalını açar
   const handleOpenClick = (mode, id) => {
-    setAuthView(mode)
-    setAuthOpen(true)
-    if (id !== "login-bton") {
-      showSnackbar('Bu işlemi yapmak için giriş yapınız.', 'error')
+    setAuthView(mode);
+    setAuthOpen(true);
+    if (id !== "notLogin") {
+      showSnackbar('Bu işlemi yapmak için giriş yapınız.', 'error');
     }
-  }
-
-  // Başarılı giriş sonrası yapılacaklar
-  const handleLoginSuccess = (userData) => {
-    setIsLoggedIn(true);
-    //setUser(userData);
-    setAuthOpen(false);
   };
 
-  // Çıkış işlemi
+  const handleLoginSuccess = () => {
+    setIsLoggedIn(true);
+    setAuthOpen(false);
+    showSnackbar("Giriş başarılı!", "success");
+  };
+
   const handleLogout = () => {
     setIsLoggedIn(false);
-    //setUser(null);
     localStorage.removeItem("token");
+    showSnackbar("Çıkış yapıldı.", "info");
   };
 
-  // Sayfa yenilendiğinde token varsa kullanıcıyı kontrol et
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
       api.get('/auth/profile')
         .then(() => {
           setIsLoggedIn(true);
-          // setUser(response.data); // Kullanıcı verisi tutulmak istenirse açılabilir
         })
         .catch(() => {
           setIsLoggedIn(false);
@@ -95,9 +76,6 @@ export default function App() {
           <Route path='/arac-satin-al'>
             <Route index element={<SearchCar />} />
             <Route path=':brand' element={<SearchCar />} />
-            {/* :brand route kısmı card verileri dinamik olarak çekildikten sonra düzeltilecektir 
-                ve sadece cardList filtrelenerek güncellenecektir.
-            */}
           </Route>
           <Route path='/fiyat-ogren' element={<LearnPrice isLoggedIn={isLoggedIn} />}>
             <Route index element={<LearnLoginPage />} />
@@ -108,24 +86,19 @@ export default function App() {
             <Route path="yakit-tipi" element={<LearnMainPage />} />
             <Route path="vites-tipi" element={<LearnMainPage />} />
           </Route>
-          <Route path='/kokpit' element={<Kokpit/>}>
-              <Route index element={<QuickTransactions/>}/>
-              <Route path='ilanlarim' element={<MyAds/>}>
-                <Route index element={<YayindaOlanlar/>}/>
-                <Route path='yayinda-olmayanlar' element={<YayindaOlmayanlar/>}/>
-              </Route>
-              <Route path='fav-ilan' element={<FavMyAds/>}/>
-              <Route path='mesajlarim' element={<MyMessages/>}/>
-              <Route path='profil-ve-ayarlar' element={<ProfileAndSettings/>}/>
+          <Route path='/kokpit' element={<Kokpit />}>
+            <Route index element={<QuickTransactions />} />
+            <Route path='ilanlarim' element={<MyAds />}>
+              <Route index element={<YayindaOlanlar />} />
+              <Route path='yayinda-olmayanlar' element={<YayindaOlmayanlar />} />
+            </Route>
+            <Route path='fav-ilan' element={<FavMyAds />} />
+            <Route path='mesajlarim' element={<MyMessages />} />
+            <Route path='profil-ve-ayarlar' element={<ProfileAndSettings onOpenClick={handleOpenClick} />} />
           </Route>
         </Routes>
       </AnimatePresence>
-      <SnackbarAlert
-        open={snackbarOpen}
-        message={snackbarMessage}
-        severity={snackbarSeverity}
-        onClose={() => setSnackbarOpen(false)}
-      />
+
       <AuthDialog
         open={authOpen}
         onClose={() => setAuthOpen(false)}
@@ -133,6 +106,7 @@ export default function App() {
         setView={setAuthView}
         onLoginSuccess={handleLoginSuccess}
       />
+
       {!shouldHideFooter && <Footer />}
     </>
   );

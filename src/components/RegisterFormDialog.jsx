@@ -3,7 +3,8 @@ import {
   Box,
   FormControlLabel,
   Checkbox,
-  Link
+  Link,
+  InputAdornment
 } from "@mui/material";
 import React, { useState } from 'react';
 import PasswordControlLabel from "./PasswordControlLabel";
@@ -103,10 +104,23 @@ export default function RegisterFormDialog({ onSwitch }) {
         type="tel"
         fullWidth
         value={phoneNumber}
-        onChange={(e) => setPhoneNumber(e.target.value)}
+        onChange={(e) => {
+          const value = e.target.value;
+          if (/^\d*$/.test(value) && value.length <= 10) {
+            setPhoneNumber(value);
+          }
+        }}
         error={Boolean(errors.phoneNumber)}
         helperText={errors.phoneNumber}
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              +90
+            </InputAdornment>
+          ),
+        }}
       />
+
 
       <PasswordControlLabel
         title="Şifre"
@@ -146,10 +160,10 @@ export default function RegisterFormDialog({ onSwitch }) {
       </Box>
 
       {errors.kvkk && (
-        <span className="text-xs text-red-600 -mt-2 ml-2">{errors.kvkk}</span>
+        <span className="ml-2 -mt-2 text-xs text-red-600">{errors.kvkk}</span>
       )}
       {errors.form && (
-        <span className="text-xs text-red-600 -mt-2 ml-2">{errors.form}</span>
+        <span className="ml-2 -mt-2 text-xs text-red-600">{errors.form}</span>
       )}
 
       <button
@@ -173,7 +187,7 @@ export default function RegisterFormDialog({ onSwitch }) {
         <span className="text-sm font-medium text-gray-700">Google ile Kayıt Ol</span>
       </button>
 
-      <p className="text-sm text-center mt-2">
+      <p className="mt-2 text-sm text-center">
         Zaten bir hesabınız var mı?{" "}
         <span className="text-[#dc143c] cursor-pointer" onClick={onSwitch}>
           Giriş Yap

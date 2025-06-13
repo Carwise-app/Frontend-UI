@@ -5,9 +5,9 @@ import { Box } from '@mui/material'
 
 export default function CardQuickTransactions({icon, title, description}) {
   return (
-    <Box className="grid grid-cols-[1fr_3fr_1fr] h-40 cursor-pointer bg-neutral-50 shadow-md rounded-md transition-transform duration-300 hover:-translate-y-2">
+    <Box className="grid grid-cols-[1fr_3fr_1fr] h-40 cursor-pointer bg-neutral-50 shadow-md rounded-md border-1 border-gray-100 transition-transform duration-300 hover:-translate-y-2">
               <Box>
-                <Box className="bg-amber-100 rounded-tr-full rounded-br-full rounded-bl-full inline-flex items-center justify-center p-3 ">
+                <Box className="inline-flex items-center justify-center p-3 rounded-tr-full rounded-bl-full rounded-br-full bg-amber-100 ">
                   {icon}
                 </Box>
               </Box>
@@ -18,7 +18,7 @@ export default function CardQuickTransactions({icon, title, description}) {
                 </Box>
               </Box>
               <Box>
-                <Box className="flex justify-center items-center h-full">
+                <Box className="flex items-center justify-center h-full">
                   <ArrowForwardIosIcon sx={{fontSize:40, color:'gray'}}/>
                 </Box>
               </Box>
