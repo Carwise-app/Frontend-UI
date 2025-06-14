@@ -6,6 +6,7 @@ import RegisterFormDialog from './RegisterFormDialog';
 import ForgotPasswordFormDialog from './ForgotPasswordFormDialog';
 import SuccessDialog from './SuccessDialog';
 import ChangePhoneNumberDialog from './ChangePhoneNumberDialog';
+import ChangeMailDialog from './ChangeMailDialog';
 
 export default function AuthDialog({ open, onClose, view, setView, onLoginSuccess }) {
 
@@ -25,7 +26,8 @@ export default function AuthDialog({ open, onClose, view, setView, onLoginSucces
                        onClose={onClose}
                    />,
         success: <SuccessDialog onClose={onClose} />,
-        changePhoneNumber: <ChangePhoneNumberDialog onClose={onClose} />
+        changePhoneNumber: <ChangePhoneNumberDialog onClose={onClose} />,
+        changeMail: <ChangeMailDialog onClose={onClose}/>
     });
 
     const getTitle = () => {
@@ -34,7 +36,8 @@ export default function AuthDialog({ open, onClose, view, setView, onLoginSucces
             case 'register': return 'Kayıt Ol';
             case 'password': return 'Şifremi Unuttum';
             case 'success': return '';
-            case 'changePhoneNumber' : return 'Telefon Numarası Güncelle'
+            case 'changePhoneNumber' : return 'Telefon Numarası Güncelle';
+            case 'changeMail' : return 'Mail Adresi Güncelle'
             default: return '';
         }
     };

@@ -9,9 +9,9 @@ import PanelPhoto from '../assets/ControlPanelPhoto.jpg'
 import { NavLink, Outlet } from 'react-router-dom';
 import React from 'react'
 
-export default function Kokpit() {
+export default function Kokpit({onLogout}) {
 
-
+  
 
   return (
     <Box className="flex min-h-[calc(100vh-90px)] w-[80%] mx-auto gap-x-3">
@@ -43,7 +43,7 @@ export default function Kokpit() {
             </Box>
           </Box>
           <Box className="sticky bottom-0 z-10 px-6 py-4 bg-neutral-600">
-            <span className='flex items-center gap-x-1 cursor-pointer text-white hover:text-[#dc143c] '>
+            <span className='flex items-center gap-x-1 cursor-pointer text-white hover:text-[#dc143c]' onClick={onLogout}>
               <LogoutIcon />Çıkış Yap
             </span>
           </Box>

@@ -1,7 +1,6 @@
 import { Box, Button, InputAdornment, TextField } from "@mui/material";
 import { useSnackbar } from '../context/SnackbarContext';
 import React, { useState } from "react";
-import SnackbarAlert from "./SnackbarAlert";
 
 export default function ChangePhoneNumberDialog({onClose}) {
   const [phone, setPhone] = useState("");
@@ -28,7 +27,7 @@ export default function ChangePhoneNumberDialog({onClose}) {
   };
   
   const handleComplete = () => {
-    showSnackbar("Telefon numaranız başarıyla değiştirildi", "success");
+    showSnackbar("Telefon numaranız başarıyla değiştirildi","success");
     onClose(); 
   }
 

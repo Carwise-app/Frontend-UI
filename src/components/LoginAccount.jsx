@@ -13,7 +13,6 @@ import { NavLink, useNavigate } from 'react-router-dom';
 export default function LoginAccount({fullName, onLogout}) {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
-  const navigate = useNavigate();
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -30,10 +29,6 @@ export default function LoginAccount({fullName, onLogout}) {
   return `${firstName} ${lastNameInitial}`;
 }
 
-const handleGoToKokpit = () =>(
-  navigate("/kokpit")
-);
-
   return (
     <Box>
       <button
@@ -44,7 +39,7 @@ const handleGoToKokpit = () =>(
         aria-expanded={open ? 'true' : undefined}
         onClick={handleClick}
       >
-        <span className='flex gap-x-2 items-center'>{formatName(fullName)}<ExpandMoreIcon/></span>
+        <span className='flex items-center gap-x-2'>{formatName(fullName)}<ExpandMoreIcon/></span>
       </button>
       <Menu
         id="basic-menu"
@@ -62,11 +57,13 @@ const handleGoToKokpit = () =>(
           },
         }}
       >
-        <Box className="flex flex-col gap-y-2 px-3 cursor-pointer"> 
+        <Box className="flex flex-col px-3 cursor-pointer gap-y-2"> 
           <NavLink to="/kokpit" onClick={handleClose}>
             <span className='hover:text-[#dc143c]'><AssignmentIcon sx={{marginRight:0.5, fontSize:18}}/>Kokpit</span>
           </NavLink>
+          <NavLink to="/kokpit/profil-ve-ayarlar" onClick={handleClose}>
             <span className='hover:text-[#dc143c]'><SettingsIcon sx={{marginRight:0.5, fontSize:18}}/>Ayarlar</span>
+          </NavLink>
             <span className='hover:text-[#dc143c]' onClick={onLogout}><LogoutIcon sx={{marginRight:0.5, fontSize:18}}/>Çıkış Yap</span>
         </Box>
       </Menu>

@@ -1,4 +1,4 @@
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import AppBar from './components/AppBar';
 import MainPageBanner from './components/Banner';
 import BlinkingScrollHint from './components/Scroll';
@@ -21,17 +21,18 @@ import MyMessages from './components/MyMessages';
 import ProfileAndSettings from './components/ProfileAndSettings';
 import YayindaOlanlar from './components/YayindaOlanlar';
 import YayindaOlmayanlar from './components/YayindaOlmayanlar';
-import { useSnackbar } from './context/SnackbarContext'; // ✅ burası önemli
+import { useSnackbar } from './context/SnackbarContext'; 
+import ResetPassword from './pages/ResetPassword';
 
 export default function App() {
   const [authOpen, setAuthOpen] = useState(false);
   const [authView, setAuthView] = useState("login");
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
   const location = useLocation();
-  const { showSnackbar } = useSnackbar(); // ✅ context'ten showSnackbar'ı al
-
-  const hideFooterRoutes = ['/kokpit', '/fiyat-ogren'];
+  const { showSnackbar } = useSnackbar(); 
+  const hideFooterRoutes = ['/kokpit', '/fiyat-ogren','/sifre-yenile'];
   const shouldHideFooter = hideFooterRoutes.some(path => location.pathname.startsWith(path));
+  const navigate = useNavigate()
 
   const handleOpenClick = (mode, id) => {
     setAuthView(mode);
@@ -51,6 +52,7 @@ export default function App() {
     setIsLoggedIn(false);
     localStorage.removeItem("token");
     showSnackbar("Çıkış yapıldı.", "info");
+    navigate("/")
   };
 
   useEffect(() => {
@@ -86,7 +88,7 @@ export default function App() {
             <Route path="yakit-tipi" element={<LearnMainPage />} />
             <Route path="vites-tipi" element={<LearnMainPage />} />
           </Route>
-          <Route path='/kokpit' element={<Kokpit />}>
+          <Route path='/kokpit' element={<Kokpit onLogout={handleLogout} />}>
             <Route index element={<QuickTransactions />} />
             <Route path='ilanlarim' element={<MyAds />}>
               <Route index element={<YayindaOlanlar />} />
@@ -96,6 +98,7 @@ export default function App() {
             <Route path='mesajlarim' element={<MyMessages />} />
             <Route path='profil-ve-ayarlar' element={<ProfileAndSettings onOpenClick={handleOpenClick} />} />
           </Route>
+          <Route path='/sifre-yenile' element={<ResetPassword />}/>
         </Routes>
       </AnimatePresence>
 

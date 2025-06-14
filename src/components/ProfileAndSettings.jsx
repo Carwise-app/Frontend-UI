@@ -9,6 +9,9 @@ import { Box, Button, IconButton, Toolbar, Tooltip } from '@mui/material';
 
 
 export default function ProfileAndSettings({onOpenClick}) {
+    const goToNewTab = (path) => {
+    window.open(path, "_blank");
+  };
   
   return (
     <Box className="flex flex-col gap-y-4">
@@ -72,7 +75,7 @@ export default function ProfileAndSettings({onOpenClick}) {
               </Box>
               <Box className="flex items-center justify-center bg-gray-200 rounded-r-md">
                 <Tooltip arrow title="Mail adresini değiştir" placement="right">
-                  <IconButton onClick={() => onOpenClick("login","notLogin")}>
+                  <IconButton onClick={() => onOpenClick("changeMail","notLogin")}>
                       <EditIcon sx={{fontWeight:25, color:'gray',fontSize:25}}/>
                   </IconButton>
                 </Tooltip>
@@ -102,7 +105,7 @@ export default function ProfileAndSettings({onOpenClick}) {
       <Box className="flex w-full bg-white border-gray-100 rounded-md shadow-md border-1 ">
         <Box className="py-2 w-[95%] mx-auto flex items-center justify-between">
           <span>Şifrenizi değiştirirken güvenli bir şifre oluşturduğunuza dikkat ediniz</span>
-          <Button variant="outlined" color="info" sx={{ textTransform: 'none', fontSize:15,}}>
+          <Button variant="outlined" color="info" sx={{ textTransform: 'none', fontSize:15,}} onClick={() => goToNewTab("/sifre-yenile")}>
             Şifreyi Güncelle
           </Button>
         </Box>
