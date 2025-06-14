@@ -88,6 +88,7 @@ const allSteps = [
   'Renk',
   'Kilometre',
   'Hasar Kaydı',
+  'Fiyat Tahmini'
 ];
 
 export default function CustomizedSteppers({ activeStep }) {

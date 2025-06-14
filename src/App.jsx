@@ -90,6 +90,7 @@ export default function App() {
             <Route path="vites-tipi" element={<LearnMainPage />} />
             <Route path="km" element={<LearnMainPage />} />
             <Route path="hasar" element={<LearnMainPage />} />
+            <Route path="sonuc" element={<LearnMainPage />} />
           </Route>
           <Route path='/kokpit' element={<Kokpit onLogout={handleLogout} />}>
             <Route index element={<QuickTransactions />} />

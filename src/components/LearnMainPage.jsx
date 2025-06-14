@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Box, Button, TextField } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
@@ -15,7 +15,8 @@ const steps = [
   { path: 'vites-tipi', label: 'Vites Tipi Seçiniz', placeholder: 'Aracınızın vites tipini arayın', options: ['Manuel', 'Otomatik'], next: 'renk' },
   { path: 'renk', label: 'Renk Seçiniz', placeholder: 'Aracınızın rengini arayın', options: ['Siyah', 'Beyaz', 'Kırmızı'], next: 'km' },
   { path: 'km', label: 'Kilometre Bilginizi Giriniz', placeholder: 'Örn: 120000', options: '', next: 'hasar' },
-  { path: 'hasar', label: 'Hasar Bilginizi Giriniz', placeholder: '', options: '', next: null }
+  { path: 'hasar', label: 'Hasar Bilgilerinizi Doldurun', placeholder: '', options: '', next: 'sonuc' },
+  { path: 'sonuc', label: 'CARWISE.AI Tarafından Belirlenen Fiyat', placeholder:'',options:'', next:null}
 ];
 
 export default function LearnMainPage() {
@@ -23,8 +24,8 @@ export default function LearnMainPage() {
   const location = useLocation();
   const currentStepIndex = steps.findIndex(step => location.pathname.includes(step.path));
   const currentStep = steps[currentStepIndex];
-  const [searchValue, setSearchValue] = React.useState('');
-  const [kmValue, setKmValue] = React.useState('');
+  const [searchValue, setSearchValue] = useState('');
+  const [kmValue, setKmValue] = useState('');
 
   const filteredOptions = currentStep.options && Array.isArray(currentStep.options)
     ? currentStep.options.filter(option =>
@@ -56,7 +57,7 @@ export default function LearnMainPage() {
 
   if (currentStep.path === 'hasar') {
     return (
-      <Box className='bg-[#f7f7f7] w-[70%] pt-5 pb-15 my-5 mx-auto rounded-sm min-h-160'>
+      <Box className='bg-[#f7f7f7] w-[70%] pt-5 pb-15 my-5 mx-auto rounded-sm min-h-160 shadow-xs border-1 border-gray-100'>
         <Box className="bg-white w-[70%] mx-auto py-5 px-10 rounded-md flex flex-col shadow-md ">
           <span className='mb-2 text-3xl'>Arabam Kaç Para?</span>
           <span className='text-sm text-gray-600'>Araç bilgilerinizi seçerek aracınızın fiyatı öğrenin.</span>
@@ -67,7 +68,9 @@ export default function LearnMainPage() {
         <Box className="flex justify-between items-center w-[70%] mx-auto mt-5">
           <Button onClick={handleBack} variant='outlined' color='error'>Geri</Button>
         </Box>
-        <DamageStep onNext={() => console.log('Hasar bilgisi tamamlandı')} />
+        <Box className="flex flex-col w-[70%] mx-auto mt-4 gap-y-4">
+          <DamageStep onClick={handleNext} onNext={() => console.log('Hasar bilgisi tamamlandı')} stepLabel={currentStep.label} />
+        </Box>
       </Box>
     );
   }
@@ -75,7 +78,7 @@ export default function LearnMainPage() {
   if (currentStep.path === 'km') {
     return (
       <Box className='bg-[#f7f7f7] w-[70%] pt-5 pb-15 my-5 mx-auto rounded-sm min-h-160'>
-        <Box className="bg-white w-[70%] mx-auto py-5 px-10 rounded-md flex flex-col shadow-md border-1 border-gray-100">
+        <Box className="bg-white w-[70%] mx-auto py-5 px-10 rounded-md flex flex-col shadow-xs border-1 border-gray-100">
           <span className='mb-2 text-3xl'>Arabam Kaç Para?</span>
           <span className='text-sm text-gray-600'>Araç bilgilerinizi seçerek aracınızın fiyatı öğrenin.</span>
         </Box>
@@ -86,9 +89,9 @@ export default function LearnMainPage() {
           <Button onClick={handleBack} variant='outlined' color='error'>Geri</Button>
         </Box>
         <Box className="flex flex-col w-[70%] mx-auto mt-4 gap-y-4">
-          <Box className="bg-white border-gray-100 rounded-md shadow-sm border-1">
+          <Box className="bg-white border-gray-100 rounded-md shadow-xs border-1">
             <Box className="w-[95%] mx-auto py-2">
-              <span className='text-lg'>{currentStep.label} :</span>
+              <span className='text-lg'>{currentStep.label}</span>
             </Box>
           </Box>
           <TextField
@@ -97,7 +100,7 @@ export default function LearnMainPage() {
             value={kmValue}
             onChange={(e) => setKmValue(e.target.value)}
             placeholder="Örn: 120000"
-            type="number"
+            type="text"
             variant="outlined"
           />
           <Button
@@ -115,7 +118,7 @@ export default function LearnMainPage() {
   }
 
   return (
-    <Box className='bg-[#f7f7f7] w-[70%] pt-5 pb-15 my-5 mx-auto rounded-sm min-h-160'>
+    <Box className='bg-[#f7f7f7] w-[70%] pt-5 pb-15 my-5 mx-auto rounded-sm min-h-160 shadow-xs border-1 border-gray-100'>
       <Box className="bg-white w-[70%] mx-auto py-5 px-10 rounded-md flex flex-col shadow-md ">
         <span className='mb-2 text-3xl'>Arabam Kaç Para?</span>
         <span className='text-sm text-gray-600'>Araç bilgilerinizi seçerek aracınızın fiyatı öğrenin.</span>
