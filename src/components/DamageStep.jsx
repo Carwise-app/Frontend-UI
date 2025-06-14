@@ -5,17 +5,31 @@ import DamageStepCard from './DamageStepCard';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 
 export default function DamageStep({stepLabel, onClick}) {
-  const [selectedChip, setSelectedChip] = useState("Belirtilmemiş");
-  const options = ["Belirtilmemiş","Orjinal", "Boyalı", "Lokal Boyalı", "Değişen" ];
-  const categorys = [
-    "Ön Tampon","Arka Tampon",
-    "Sol ön çamurluk","Motor kaputu","Sağ ön çamurluk",
-    "Sol ön kapı","Sol arka kapı",
-    "Sağ ön kapı","Sağ arka kapı",
-    "Tavan",
-    "Sol arka çamurluk","Arka kaput","Sağ arka çamurluk"
-]
+    const options = ["Belirtilmemiş","Orjinal", "Boyalı", "Lokal Boyalı", "Değişen" ];
+    const categorys = [
+        "Ön Tampon","Arka Tampon",
+        "Sol ön çamurluk","Motor kaputu","Sağ ön çamurluk",
+        "Sol ön kapı","Sol arka kapı",
+        "Sağ ön kapı","Sağ arka kapı",
+        "Tavan",
+        "Sol arka çamurluk","Arka kaput","Sağ arka çamurluk"
+    ]
+    
+    const [selectedChips, setSelectedChips] = useState(() => {
+    const init = {};
+    categorys.forEach(cat => {
+      init[cat] = "Belirtilmemiş";
+    });
+    return init;
+  });
   
+    const handleChipChange = (category, value) => {
+    setSelectedChips(prev => ({
+        ...prev,
+        [category]: value
+    }));
+    };
+    
   return (
     <Box>
         <Box className="bg-white border-gray-100 rounded-md shadow-xs border-1">
@@ -25,7 +39,13 @@ export default function DamageStep({stepLabel, onClick}) {
         </Box>
         <Box className="grid grid-cols-[1fr_1fr] w-full h-auto gap-4 mt-2">
             {categorys.map((category)=>(
-                <DamageStepCard selectedChip={selectedChip} setSelectedChip={setSelectedChip} options={options} title={category}/>
+                <DamageStepCard 
+                    key={category} 
+                    selectedChip={selectedChips[category]} 
+                    setSelectedChip={(value) => handleChipChange(category, value)} 
+                    options={options} 
+                    title={category}
+                />
             ))}
             <Box>
                 <Box className="flex items-center justify-center h-full">
