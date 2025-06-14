@@ -4,3 +4,7 @@
 @import '@fontsource/roboto/500.css';
 @import '@fontsource/roboto/700.css';
 @import url('https://fonts.googleapis.com/css2?family=Anton&display=swap');
+
+input[type="search"]::-webkit-search-cancel-button {
+  cursor: pointer;
+}

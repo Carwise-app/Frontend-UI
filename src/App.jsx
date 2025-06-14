@@ -84,9 +84,12 @@ export default function App() {
             <Route path="marka" element={<LearnMainPage />} />
             <Route path="yil" element={<LearnMainPage />} />
             <Route path="model" element={<LearnMainPage />} />
+            <Route path="govde-tipi" element={<LearnMainPage />} />
             <Route path="renk" element={<LearnMainPage />} />
             <Route path="yakit-tipi" element={<LearnMainPage />} />
             <Route path="vites-tipi" element={<LearnMainPage />} />
+            <Route path="km" element={<LearnMainPage />} />
+            <Route path="hasar" element={<LearnMainPage />} />
           </Route>
           <Route path='/kokpit' element={<Kokpit onLogout={handleLogout} />}>
             <Route index element={<QuickTransactions />} />
