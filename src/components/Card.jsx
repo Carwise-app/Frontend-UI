@@ -14,7 +14,7 @@ export default function ShowcaseCard({ listing }) {
     : "";
 
   return (
-    <Card sx={{ maxWidth: 320, borderRadius: 3 }}>
+    <Card sx={{ maxWidth: 320,borderRadius: 3 }}>
       <Box
         sx={{
           height: 180,

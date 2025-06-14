@@ -18,9 +18,9 @@ export default function SearchCarList({ item }) {
       <Box className="bg-gray-50 w-[30%] object-contain rounded-l-xl flex items-center justify-center">
         <img className="object-contain pointer-events-none" src={imageUrl} alt="car photo" />
       </Box>
-      <Box className="w-[67%] mx-auto my-2 ">
+      <Box className="w-[67%] mx-auto my-2 grid grid-rows-[1fr_6fr_1fr]">
         <Box className="flex justify-between text-xs text-gray-500">
-          <span>İlan Numarası: {item.id}</span>
+          <span className='truncate w-[140px] block'>İlan Numarası: {item.id}</span>
           <Stack className="flex items-center" direction="row" spacing={1}>
             <LocationOnIcon fontSize="small" />
             <span>{item.city} / {item.district}</span>
