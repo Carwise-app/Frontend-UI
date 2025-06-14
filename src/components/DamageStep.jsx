@@ -1,10 +1,11 @@
-import { Box, Button } from '@mui/material'
+import { Box, Button, TextField } from '@mui/material'
 import React, { useState } from 'react'
 import ClickableChip from './ClickableChip'
 import DamageStepCard from './DamageStepCard';
-import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+
 
 export default function DamageStep({stepLabel, onClick}) {
+    const [tramer, setTramer] = useState('');
     const options = ["Belirtilmemiş","Orjinal", "Boyalı", "Lokal Boyalı", "Değişen" ];
     const categorys = [
         "Ön Tampon","Arka Tampon",
@@ -47,13 +48,16 @@ export default function DamageStep({stepLabel, onClick}) {
                     title={category}
                 />
             ))}
-            <Box>
-                <Box className="flex items-center justify-center h-full">
-                    <button className='bg-[#dc143c] py-2 px-6 text-white rounded-2xl cursor-pointer' onClick={onClick}>
-                        <span>Aracının Fiyatını Öğren</span>
-                        <NavigateNextIcon/>
-                    </button>   
-                </Box>
+            <Box className="flex items-center justify-center bg-white border-gray-100 rounded-md shadow-xs border-1">                
+                <TextField
+                    sx={{width:"90%"}}
+                    label="Tramer Bilgisi"
+                    value={tramer}
+                    onChange={(e) => setTramer(e.target.value)}
+                    placeholder="Örn: 1200"
+                    type="text"
+                    variant="outlined"
+                />                      
             </Box>
         </Box>
     </Box>

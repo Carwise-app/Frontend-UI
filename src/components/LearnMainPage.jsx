@@ -4,7 +4,9 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
 import CustomizedSteppers from './CustomizedSteppers';
 import LearnPriceCard from './LearnPriceCard';
-import DamageStep from './DamageStep';
+import LearnKmMainPage from './LearnKmMainPage';
+import LearnDamageMainPage from './LearnDamageMainPage';
+import LearnResultsMainPage from './LearnResultsMainPage';
 
 const steps = [
   { path: 'marka', label: 'Marka Seçiniz', placeholder: 'Aracınızın markasını arayın', options: ['BMW', 'Audi', 'Toyota'], next: 'yil' },
@@ -16,7 +18,7 @@ const steps = [
   { path: 'renk', label: 'Renk Seçiniz', placeholder: 'Aracınızın rengini arayın', options: ['Siyah', 'Beyaz', 'Kırmızı'], next: 'km' },
   { path: 'km', label: 'Kilometre Bilginizi Giriniz', placeholder: 'Örn: 120000', options: '', next: 'hasar' },
   { path: 'hasar', label: 'Hasar Bilgilerinizi Doldurun', placeholder: '', options: '', next: 'sonuc' },
-  { path: 'sonuc', label: 'CARWISE.AI Tarafından Belirlenen Fiyat', placeholder:'',options:'', next:null}
+  { path: 'sonuc', label: 'Aracınız İçin Belirlenen Fiyat', placeholder:'',options:'', next:null}
 ];
 
 export default function LearnMainPage() {
@@ -25,7 +27,6 @@ export default function LearnMainPage() {
   const currentStepIndex = steps.findIndex(step => location.pathname.includes(step.path));
   const currentStep = steps[currentStepIndex];
   const [searchValue, setSearchValue] = useState('');
-  const [kmValue, setKmValue] = useState('');
 
   const filteredOptions = currentStep.options && Array.isArray(currentStep.options)
     ? currentStep.options.filter(option =>
@@ -57,64 +58,20 @@ export default function LearnMainPage() {
 
   if (currentStep.path === 'hasar') {
     return (
-      <Box className='bg-[#f7f7f7] w-[70%] pt-5 pb-15 my-5 mx-auto rounded-sm min-h-160 shadow-xs border-1 border-gray-100'>
-        <Box className="bg-white w-[70%] mx-auto py-5 px-10 rounded-md flex flex-col shadow-md ">
-          <span className='mb-2 text-3xl'>Arabam Kaç Para?</span>
-          <span className='text-sm text-gray-600'>Araç bilgilerinizi seçerek aracınızın fiyatı öğrenin.</span>
-        </Box>
-        <Box className="w-[70%] mx-auto mt-5">
-          <CustomizedSteppers activeStep={currentStepIndex} />
-        </Box>
-        <Box className="flex justify-between items-center w-[70%] mx-auto mt-5">
-          <Button onClick={handleBack} variant='outlined' color='error'>Geri</Button>
-        </Box>
-        <Box className="flex flex-col w-[70%] mx-auto mt-4 gap-y-4">
-          <DamageStep onClick={handleNext} onNext={() => console.log('Hasar bilgisi tamamlandı')} stepLabel={currentStep.label} />
-        </Box>
-      </Box>
+      <LearnDamageMainPage onHandleBack={handleBack} onHandleNext={handleNext} activeStep={currentStepIndex} stepLabel={currentStep.label}/>
     );
   }
 
   if (currentStep.path === 'km') {
     return (
-      <Box className='bg-[#f7f7f7] w-[70%] pt-5 pb-15 my-5 mx-auto rounded-sm min-h-160'>
-        <Box className="bg-white w-[70%] mx-auto py-5 px-10 rounded-md flex flex-col shadow-xs border-1 border-gray-100">
-          <span className='mb-2 text-3xl'>Arabam Kaç Para?</span>
-          <span className='text-sm text-gray-600'>Araç bilgilerinizi seçerek aracınızın fiyatı öğrenin.</span>
-        </Box>
-        <Box className="w-[70%] mx-auto mt-5">
-          <CustomizedSteppers activeStep={currentStepIndex} />
-        </Box>
-        <Box className="flex justify-between items-center w-[70%] mx-auto mt-5">
-          <Button onClick={handleBack} variant='outlined' color='error'>Geri</Button>
-        </Box>
-        <Box className="flex flex-col w-[70%] mx-auto mt-4 gap-y-4">
-          <Box className="bg-white border-gray-100 rounded-md shadow-xs border-1">
-            <Box className="w-[95%] mx-auto py-2">
-              <span className='text-lg'>{currentStep.label}</span>
-            </Box>
-          </Box>
-          <TextField
-            fullWidth
-            label="Kilometre Bilgisi"
-            value={kmValue}
-            onChange={(e) => setKmValue(e.target.value)}
-            placeholder="Örn: 120000"
-            type="text"
-            variant="outlined"
-          />
-          <Button
-            onClick={handleNext}
-            variant='contained'
-            color='error'
-            className='flex w-[30%]'
-            disabled={!kmValue.trim()}
-          >
-            Devam Et
-          </Button>
-        </Box>
-      </Box>
+      <LearnKmMainPage onHandleBack={handleBack} onHandleNext={handleNext} activeStep={currentStepIndex} stepLabel={currentStep.label}/>
     );
+  }
+  
+  if(currentStep.path === 'sonuc'){
+    return(
+      <LearnResultsMainPage onHandleBack={handleBack} onHandleNext={handleNext} activeStep={currentStepIndex} stepLabel={currentStep.label}/>
+    )
   }
 
   return (
@@ -132,10 +89,9 @@ export default function LearnMainPage() {
           Geri
         </Button>
       </Box>
-
       <Box>
         <Box className="flex w-[70%] mx-auto mt-4">
-          <span className='text-lg'>{currentStep.label} :</span>
+          <span className='text-lg'>{currentStep.label}</span>
         </Box>
         <Box className='flex w-[70%] rounded bg-white mx-auto mt-2 shadow-sm'>
           <input
@@ -149,7 +105,6 @@ export default function LearnMainPage() {
             <SearchIcon sx={{ fontSize: 40 }} className='text-[#dc143c]' />
           </button>
         </Box>
-
         <Box className="flex w-[70%] mx-auto mt-5 flex-wrap justify-start gap-x-3 gap-y-3">
           {filteredOptions.map(option => (
             <LearnPriceCard key={option} onClick={() => handleOptionClick(option)} content={option} />
