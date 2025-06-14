@@ -15,7 +15,11 @@ export default function SearchCar() {
   const queryParams = new URLSearchParams(location.search);
   const searchQuery = queryParams.get('q')?.toLowerCase() || '';
 
-  const [filters, setFilters] = useState({});
+  const [filters, setFilters] = useState({
+    gearType: [], color: [], fuelType: [],
+    vehicleStatus: [], heavyDamageRecord: [],
+    brand: '', city: []
+  });
 
   useEffect(() => {
     api.get('/listing/')
@@ -40,38 +44,8 @@ export default function SearchCar() {
     setCurrentPage(value);
   };
 
-  const handleBrandSelect = (brandId) => {
-    api.get('/listing/', { params: { brand_id: brandId } })
-      .then(res => {
-        setCarData(res.data.listings || []);
-        setCurrentPage(1);
-      })
-      .catch(err => {
-        console.error("Filtreli araç verisi alınamadı:", err);
-      });
-  };
-
-  const handleSeriesSelect = (seriesId) => {
-    api.get('/listing/', { params: { series_id: seriesId } })
-      .then(res => {
-        setCarData(res.data.listings || []);
-        setCurrentPage(1);
-      })
-      .catch(err => {
-        console.error("Seri filtresi ile veri alınamadı:", err);
-      });
-  };
-
   const handleSubmit = (selectedFilters) => {
     setFilters(selectedFilters);
-    api.get('/listing/', { params: selectedFilters })
-      .then(res => {
-        setCarData(res.data.listings || []);
-        setCurrentPage(1);
-      })
-      .catch(err => {
-        console.error("Filtreli araç verisi alınamadı:", err);
-      });
   };
 
   useEffect(() => {
@@ -80,7 +54,7 @@ export default function SearchCar() {
 
   return (
     <Box className="flex h-full w-[75%] mx-auto gap-10 mb-20 mt-5 justify-between">
-      <FilterBox onSubmit={handleSubmit} onBrandSelect={handleBrandSelect} onSeriesSelect={handleSeriesSelect} />
+      <FilterBox onSubmit={handleSubmit} />
       <Box className="flex flex-col w-[85%]">
         <Box className="bg-white py-2 px-5 rounded-sm mb-5 shadow-md flex justify-between">
           <span className='text-xl flex items-center'>Satılık Araçlar</span>
@@ -96,7 +70,6 @@ export default function SearchCar() {
             </Select>
           </FormControl>
         </Box>
-
         {currentCars.length > 0 ? (
           <>
             <Box className="flex flex-col gap-y-4">
