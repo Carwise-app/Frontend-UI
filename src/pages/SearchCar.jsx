@@ -79,10 +79,8 @@ export default function SearchCar() {
       />
 
       <Box className="flex flex-col w-[85%]">
-        {/* Üst Başlık ve Sıralama Dropdown */}
-        <Box className="bg-white py-2 px-5 rounded-sm mb-5 shadow-md flex justify-between items-center">
+        <Box className="flex items-center justify-between px-5 py-2 mb-5 bg-white rounded-sm shadow-md">
           <span className="text-xl font-semibold">Satılık Araçlar</span>
-
           <FormControl sx={{ minWidth: 200 }} size="small">
             <InputLabel
               id="sorting-label"
@@ -100,24 +98,6 @@ export default function SearchCar() {
               label="Sıralama Türü"
               value={sorting}
               onChange={e => setSorting(e.target.value)}
-              sx={{
-                '.MuiOutlinedInput-notchedOutline': {
-                  borderRadius: '20px',
-                  borderColor: 'error.main',
-                },
-                '&:hover .MuiOutlinedInput-notchedOutline': {
-                  borderColor: 'error.dark',
-                },
-                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                  borderColor: 'error.dark',
-                },
-                '& .MuiSelect-icon': {
-                  color: 'error.main',
-                },
-                '> .MuiInputBase-root': {
-                  borderRadius: '20px',
-                },
-              }}
             >
               <MenuItem value="">Varsayılan</MenuItem>
               <MenuItem value="price_asc">Ucuzdan Pahalıya</MenuItem>
@@ -125,8 +105,6 @@ export default function SearchCar() {
             </Select>
           </FormControl>
         </Box>
-
-        {/* Araç Listesi ve Sayfalama */}
         {currentCars.length > 0 ? (
           <>
             <Box className="flex flex-col gap-y-4">

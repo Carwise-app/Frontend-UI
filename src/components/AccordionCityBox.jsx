@@ -1,41 +1,25 @@
 import { Accordion, AccordionDetails, AccordionSummary, FormGroup} from '@mui/material';
-import ExpandMoreIcon  from '@mui/icons-material/ExpandMore';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 
-export default function AccordionCityBox({ title, cityDistrictData, selectedOptions = { city: '', district: '' }, onChange }) {
-const [districtOptions, setDistrictOptions] = useState([]);
-
-useEffect(() => {
-    const newDistricts = cityDistrictData[selectedOptions.city] || [];
-    setDistrictOptions(newDistricts);
-  }, [selectedOptions.city, cityDistrictData]);
-
-const handleCityChange = (event) => {
-    const newCity = event.target.value;
-    onChange({ city: newCity, district: '' }); 
-  };
-const handleDistrictChange = (event) => {
-    const newDistrict = event.target.value;
-    onChange({ ...selectedOptions, district: newDistrict });
-  };
+export default function AccordionCityBox({ mainTitle, title1, title2, provinces, districts, city, district, onCityChange, onDistrictChange }) {
 
   return (
     <Accordion expanded={true} disableGutters square className="rounded-none">
         <AccordionSummary
         >
-            <span className='font-semibold'>{title}</span>
+            <span className='font-semibold'>{mainTitle}</span>
         </AccordionSummary>
-        <AccordionDetails className='flex flex-col gap-y-2'>
+        <AccordionDetails className='flex flex-col gap-y-4'>
             <FormControl sx={{ minWidth: 120 }} size="small">
-                <InputLabel>İl</InputLabel>
+                <InputLabel>{title1}</InputLabel>
                 <Select
-                    value={selectedOptions.city}
-                    label="City"
-                    onChange={handleCityChange}
+                    value={city}
+                    label="İl"
+                    onChange={onCityChange}
                     MenuProps={{
                         PaperProps:{
                             style:{
@@ -47,17 +31,17 @@ const handleDistrictChange = (event) => {
                     <MenuItem value="">
                     Seçim yapma
                     </MenuItem>
-                    {Object.keys(cityDistrictData)?.map((city) => (
-                        <MenuItem key={city} value={city}>{city}</MenuItem>
+                    {provinces.map((p) => (
+                        <MenuItem key={p.name} value={p.name}>{p.name}</MenuItem>
                     ))}
                 </Select>
             </FormControl>
             <FormControl sx={{ minWidth: 120 }} size="small">
-                <InputLabel>İlçe</InputLabel>
+                <InputLabel>{title2}</InputLabel>
                 <Select
-                    value={selectedOptions.district}
-                    label="District"
-                    onChange={handleDistrictChange}
+                    value={district}
+                    label="İlçe"
+                    onChange={onDistrictChange}
                     MenuProps={{
                         PaperProps:{
                             style:{
@@ -69,9 +53,9 @@ const handleDistrictChange = (event) => {
                     <MenuItem value="">
                     Seçim yapma
                     </MenuItem>
-                    {districtOptions?.map((district) => (
-                        <MenuItem key={district} value={district}>
-                        {district}
+                    {districts?.map((p) => (
+                        <MenuItem key={p.name} value={p.name}>
+                        {p.name}
                         </MenuItem>
                     ))}
                 </Select>

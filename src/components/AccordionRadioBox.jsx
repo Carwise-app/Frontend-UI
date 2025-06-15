@@ -1,10 +1,9 @@
-import { Accordion, AccordionDetails, AccordionSummary, FormGroup, Box} from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Radio, RadioGroup} from '@mui/material';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
 import ExpandMoreIcon  from '@mui/icons-material/ExpandMore';
-import React, { useState } from 'react'
+import React from 'react'
 
-export default function AccordionCheckBox({ title, options, selectedOptions, onChange }) {
+export default function AccordionCheckBox({ title, options, onChange, name, type }) {
 
   return (
     <Accordion disableGutters square className="rounded-none !mb-0" >
@@ -13,14 +12,15 @@ export default function AccordionCheckBox({ title, options, selectedOptions, onC
         >
             <span className='font-semibold'>{title}</span>
         </AccordionSummary>
-        <AccordionDetails className='flex flex-col max-h-35 overflow-y-auto'>
-            <FormGroup className='space-y-0'>
+        <AccordionDetails className='flex flex-col overflow-y-auto max-h-35'>
+            <RadioGroup className='space-y-0' name={name} value={type} onChange={onChange}>
                 {options?.map((opt) => (
                     <FormControlLabel
                     className='hover:text-[#dc143c]'
                         key={opt}
+                        value={opt}
                         control={
-                        <Checkbox
+                        <Radio
                             sx={{
                                 padding: '1px',            
                                 transform: 'scale(0.7)',   
@@ -28,16 +28,14 @@ export default function AccordionCheckBox({ title, options, selectedOptions, onC
                                 color: '#dc143c',       
                                 },
                             }}
-                            checked={selectedOptions.includes(opt)}
-                            onChange={() => onChange(opt)}
                         />
                         }
-                            label={
-                                <span className='text-sm select-none'>{opt}</span>
-                            }
+                        label={
+                            <span className='text-sm select-none'>{opt}</span>
+                        }
                     />
                 ))}
-              </FormGroup>
+              </RadioGroup>
         </AccordionDetails>
     </Accordion>
  )

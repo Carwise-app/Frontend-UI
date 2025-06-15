@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Box, Link, Accordion, AccordionSummary, AccordionDetails,
-  RadioGroup, FormControlLabel, Radio, Select, MenuItem,
-  FormControl, InputLabel, TextField, Button
-} from '@mui/material';
+import {Box, Link, Button} from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import api from '../api/axios';
+import AccordionRadioBox from './AccordionRadioBox';
+import AccordionCityBox from './AccordionCityBox';
+import AccordionBox from './AccordionBox';
 
 export default function FilterBox({ onBrandSelect, onSeriesSelect, onSubmit }) {
   const [brands, setBrands] = useState([]);
@@ -106,10 +104,14 @@ export default function FilterBox({ onBrandSelect, onSeriesSelect, onSubmit }) {
     setter(formatNumber(e.target.value));
   };
 
+  const fuelType = ['Benzin','Dizel','LPG','Elektrik'];
+  const gearType = ['Manuel','Otomatik','Yarı Otomatik'];
+  const colorOptions = ['Beyaz','Siyah','Gri','Kırmızı']; 
+  
   return (
     <Box className="flex flex-col">
       <Box className="w-48 p-4 border rounded bg-white max-h-[280px] overflow-hidden" sx={{ boxShadow: 1 }}>
-        <Box className="font-semibold mb-3 text-lg">Tüm Araçlar</Box>
+        <Box className="mb-3 text-lg font-semibold">Tüm Araçlar</Box>
         <Box component="ul" sx={{ listStyle: 'none', p: 0, m: 0, overflowY: 'auto', maxHeight: 220 }}>
           {brands.map(b => (
             <Box component="li" key={b.id} sx={{ mb: 1 }}>
@@ -137,127 +139,38 @@ export default function FilterBox({ onBrandSelect, onSeriesSelect, onSubmit }) {
         </Box>
       </Box>
 
-      <Box className="mt-4 w-48">
+      <Box className="w-48 mt-4">
         {/* Address */}
-        <Accordion>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}><b>Adres</b></AccordionSummary>
-          <AccordionDetails>
-            <FormControl fullWidth size="small" className="mb-2">
-              <InputLabel>İl</InputLabel>
-              <Select value={city} onChange={e => setCity(e.target.value)} label="İl">
-                {provinces.map(p => <MenuItem key={p.name} value={p.name}>{p.name}</MenuItem>)}
-              </Select>
-            </FormControl>
-            <FormControl fullWidth size="small">
-              <InputLabel>İlçe</InputLabel>
-              <Select value={district} onChange={e => setDistrict(e.target.value)} label="İlçe">
-                {districts.map(d => <MenuItem key={d.name} value={d.name}>{d.name}</MenuItem>)}
-              </Select>
-            </FormControl>
-          </AccordionDetails>
-        </Accordion>
+        <AccordionCityBox mainTitle="Adres" title1="İl" title2="İlçe" provinces={provinces} districts={districts} city={city} district={district} onCityChange={e => setCity(e.target.value)} onDistrictChange={e => setDistrict(e.target.value)}/> 
 
         {/* Vites Tipi */}
-        <Accordion>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}><b>Vites Tipi</b></AccordionSummary>
-          <AccordionDetails>
-            <RadioGroup name="gear" value={gear} onChange={e => setGear(e.target.value)}>
-              {['Manuel','Otomatik','Yarı Otomatik'].map(v => (
-                <FormControlLabel key={v} value={v} control={<Radio />} label={v} />
-              ))}
-            </RadioGroup>
-          </AccordionDetails>
-        </Accordion>
+        <AccordionRadioBox name="gear" title="Vites Tipi" options={gearType} type={gear} onChange={e => setGear(e.target.value)}/>
+       
 
         {/* Yakıt Tipi */}
-        <Accordion>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}><b>Yakıt Tipi</b></AccordionSummary>
-          <AccordionDetails>
-            <RadioGroup name="fuel" value={fuel} onChange={e => setFuel(e.target.value)}>
-              {['Benzin','Dizel','LPG','Elektrik'].map(v => (
-                <FormControlLabel key={v} value={v} control={<Radio />} label={v} />
-              ))}
-            </RadioGroup>
-          </AccordionDetails>
-        </Accordion>
+        <AccordionRadioBox name="fuel" title="Yakıt Tipi" options={fuelType} type={fuel} onChange={e => setFuel(e.target.value)}/>
 
         {/* Renk */}
-        <Accordion>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}><b>Renk</b></AccordionSummary>
-          <AccordionDetails>
-            <RadioGroup name="color" value={color} onChange={e => setColor(e.target.value)}>
-              {['Beyaz','Siyah','Gri','Kırmızı'].map(v => (
-                <FormControlLabel key={v} value={v} control={<Radio />} label={v} />
-              ))}
-            </RadioGroup>
-          </AccordionDetails>
-        </Accordion>
+        <AccordionRadioBox name="color" title="Renk" options={colorOptions} type={color} onChange={e => setColor(e.target.value)}/>
 
         {/* Year */}
-        <Accordion>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}><b>Yıl Aralığı</b></AccordionSummary>
-          <AccordionDetails>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-              <TextField
-                label="Min Yıl" type="text" size="small" fullWidth
-                value={minYear} onChange={e => setMinYear(e.target.value.replace(/[^\d]/g,''))}
-              />
-              <TextField
-                label="Max Yıl" type="text" size="small" fullWidth
-                value={maxYear} onChange={e => setMaxYear(e.target.value.replace(/[^\d]/g,''))}
-              />
-            </Box>
-          </AccordionDetails>
-        </Accordion>
+        <AccordionBox labelMin="Min Yıl" labelMax="Max Yıl" title="Yıl Aralığı" minValue={minYear} onMinChange={e => setMinYear(e.target.value.replace(/[^\d]/g,''))} maxValue={maxYear} onMaxChange={e => setMaxYear(e.target.value.replace(/[^\d]/g,''))}/>
 
         {/* KM */}
-        <Accordion>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}><b>Kilometre Aralığı</b></AccordionSummary>
-          <AccordionDetails>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-              <TextField
-                label="Min KM" type="text" size="small" fullWidth
-                value={minKm} onChange={commonNumberHandler(setMinKm)}
-              />
-              <TextField
-                label="Max KM" type="text" size="small" fullWidth
-                value={maxKm} onChange={commonNumberHandler(setMaxKm)}
-              />
-            </Box>
-          </AccordionDetails>
-        </Accordion>
+        <AccordionBox labelMin="Min KM" labelMax="Max KM" title="Kilometre Aralığı" minValue={minKm} onMinChange={commonNumberHandler(setMinKm)} maxValue={maxKm} onMaxChange={commonNumberHandler(setMaxKm)}/>
 
         {/* Price */}
-        <Accordion>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}><b>Fiyat Aralığı</b></AccordionSummary>
-          <AccordionDetails>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-              <TextField
-                label="Min Fiyat" type="text" size="small" fullWidth
-                value={minPrice} onChange={commonNumberHandler(setMinPrice)}
-              />
-              <TextField
-                label="Max Fiyat" type="text" size="small" fullWidth
-                value={maxPrice} onChange={commonNumberHandler(setMaxPrice)}
-              />
-            </Box>
-          </AccordionDetails>
-        </Accordion>
-
+        <AccordionBox labelMin="Min Fiyat" labelMax="Max Fiyat" title="Fiyat Aralığı" minValue={minPrice} onMinChange={commonNumberHandler(setMinPrice)} maxValue={maxPrice} onMaxChange={commonNumberHandler(setMaxPrice)}/>
+        
         {/* Buttons */}
-        <Box className="mt-4 flex gap-2">
+        <Box className="flex gap-2 mt-4">
           <Button variant="contained" color="error" fullWidth onClick={handleSearch}>Ara</Button>
           <Button 
           variant="outlined" 
           fullWidth onClick={handleReset}
           sx ={{
-            borderColor: 'error.main',
-            color: 'error.main',
-            '&:hover' : {
-              backgroundColor: 'error.light',
-              borderColor: 'error.dark',
-              color: 'white'
-            },
+            borderColor: 'info.main',
+            color: 'info.main',
           }}
           >
           Temizle

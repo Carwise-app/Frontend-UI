@@ -1,8 +1,8 @@
-import { Accordion, AccordionDetails, AccordionSummary, FormGroup} from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Box, TextField} from '@mui/material';
 import ExpandMoreIcon  from '@mui/icons-material/ExpandMore';
 import React from 'react'
 
-export default function AccordionBox({title}) {
+export default function AccordionBox({title, minValue, onMinChange, maxValue, onMaxChange, labelMin, labelMax}) {
   return (
     <Accordion disableGutters square className="rounded-none">
         <AccordionSummary
@@ -11,8 +11,16 @@ export default function AccordionBox({title}) {
             <span className='font-semibold'>{title}</span>
         </AccordionSummary>
         <AccordionDetails className='flex flex-col gap-y-2'>
-            <input  type="text" className='bg-gray-100 w-full py-1 px-2 rounded-sm'  maxLength={11} placeholder='Min'/>
-            <input  type="text" className='bg-gray-100 w-full py-1 px-2 rounded-sm' maxLength={11} placeholder='Max'/>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+              <TextField
+                label={labelMin} type="text" size="small" fullWidth
+                value={minValue} onChange={onMinChange}
+              />
+              <TextField
+                label={labelMax} type="text" size="small" fullWidth
+                value={maxValue} onChange={onMaxChange}
+              />
+            </Box>
         </AccordionDetails>
     </Accordion>
   )

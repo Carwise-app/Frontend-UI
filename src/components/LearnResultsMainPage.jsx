@@ -41,7 +41,7 @@ export default function LearnResultsMainPage({activeStep,stepLabel}) {
                         >
                             <span className='font-semibold'>Sorgulanan Araç Bilgileri</span>
                         </AccordionSummary>
-                        <AccordionDetails className='grid grid-cols-5 gap-3'>
+                        <AccordionDetails className='grid grid-cols-4 gap-3'>
                             <Chip label="BMW" sx={{color:"white"}} color='error'/>
                             <Chip label="2021" sx={{color:"white"}} color='error'/>
                             <Chip label="A4" sx={{color:"white"}} color='error'/>
