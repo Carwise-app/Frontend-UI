@@ -78,20 +78,9 @@ QontoStepIcon.propTypes = {
   icon: PropTypes.node,
 };
 
-const allSteps = [
-  'Marka',
-  'Yıl',
-  'Model',
-  'Gövde Tipi',
-  'Yakıt Tipi',
-  'Vites Tipi',
-  'Renk',
-  'Kilometre',
-  'Hasar Kaydı',
-  'Fiyat Tahmini'
-];
 
-export default function CustomizedSteppers({ activeStep }) {
+
+export default function CustomizedSteppers({ activeStep, allSteps}) {
   const visibleSteps = allSteps.slice(
     Math.max(0, activeStep - 1),
     Math.min(allSteps.length, activeStep + 2)

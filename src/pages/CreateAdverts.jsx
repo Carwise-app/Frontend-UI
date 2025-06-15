@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import { Box, Button, TextField } from '@mui/material';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { Box, Button } from '@mui/material'
+import React, { useState } from 'react'
+import CustomizedSteppers from '../components/CustomizedSteppers'
+import LearnPriceCard from '../components/LearnPriceCard'
 import SearchIcon from '@mui/icons-material/Search';
-import CustomizedSteppers from './CustomizedSteppers';
-import LearnPriceCard from './LearnPriceCard';
-import LearnKmMainPage from './LearnKmMainPage';
-import LearnDamageMainPage from './LearnDamageMainPage';
-import LearnResultsMainPage from './LearnResultsMainPage';
+import { useLocation, useNavigate } from 'react-router-dom';
+import LearnDamageMainPage from '../components/LearnDamageMainPage';
+import LearnKmMainPage from '../components/LearnKmMainPage';
+import LearnResultsMainPage from '../components/LearnResultsMainPage';
 
 const steps = [
   { path: 'marka', label: 'Marka Seçiniz', placeholder: 'Aracınızın markasını arayın', options: ['BMW', 'Audi', 'Toyota'], next: 'yil' },
@@ -15,10 +15,10 @@ const steps = [
   { path: 'govde-tipi', label: 'Gövde Tipi Seçiniz', placeholder: 'Aracınızın gövde tipini arayın', options: ['Sedan', 'SUV', 'Hatchback'], next: 'yakit-tipi' },
   { path: 'yakit-tipi', label: 'Yakıt Tipi Seçiniz', placeholder: 'Aracınızın yakıt tipini arayın', options: ['Benzin', 'Dizel', 'Elektrik'], next: 'vites-tipi' },
   { path: 'vites-tipi', label: 'Vites Tipi Seçiniz', placeholder: 'Aracınızın vites tipini arayın', options: ['Manuel', 'Otomatik'], next: 'renk' },
-  { path: 'renk', label: 'Renk Seçiniz', placeholder: 'Aracınızın rengini arayın', options: ['Siyah', 'Beyaz', 'Kırmızı'], next: 'km' },
-  { path: 'km', label: 'Kilometre Bilginizi Giriniz', placeholder: 'Örn: 120000', options: '', next: 'hasar' },
-  { path: 'hasar', label: 'Hasar Bilgilerinizi Doldurun', placeholder: '', options: '', next: 'sonuc' },
-  { path: 'sonuc', label: 'Aracınız İçin Belirlenen Fiyat', placeholder:'',options:'', next:null}
+  { path: 'renk', label: 'Renk Seçiniz', placeholder: 'Aracınızın rengini arayın', options: ['Siyah', 'Beyaz', 'Kırmızı'], next: 'detaylar' },
+  { path: 'detaylar', label: 'Kilometre Bilginizi Giriniz', placeholder: 'Örn: 120000', options: [], next: 'hasar' },
+  { path: 'hasar', label: 'Hasar Bilgilerinizi Doldurun', placeholder: '', options: [], next: 'sonuc' },
+  { path: 'sonuc', label: 'Aracınız İçin Belirlenen Fiyat', placeholder:'',options:[], next:null}
 ];
 
 const allSteps = [
@@ -29,17 +29,25 @@ const allSteps = [
   'Yakıt Tipi',
   'Vites Tipi',
   'Renk',
-  'Kilometre',
+  'Detaylı Bilgiler',
   'Hasar Kaydı',
   'Fiyat Tahmini'
 ];
 
-export default function LearnMainPage() {
+export default function CreateAdverts() {
   const navigate = useNavigate();
   const location = useLocation();
   const currentStepIndex = steps.findIndex(step => location.pathname.includes(step.path));
-  const currentStep = steps[currentStepIndex];
+  const currentStep = currentStepIndex !== -1 ? steps[currentStepIndex] : null;
   const [searchValue, setSearchValue] = useState('');
+
+  if (!currentStep) {
+    return (
+      <Box className='mt-10 font-bold text-center text-red-600'>
+        Sayfa bulunamadı. Lütfen doğru bir adım adresinde olduğunuzdan emin olun.
+      </Box>
+    );
+  }
 
   const filteredOptions = currentStep.options && Array.isArray(currentStep.options)
     ? currentStep.options.filter(option =>
@@ -50,7 +58,7 @@ export default function LearnMainPage() {
   const handleOptionClick = (value) => {
     console.log(`Seçilen ${currentStep.path}:`, value);
     if (currentStep.next) {
-      navigate(`/fiyat-ogren/${currentStep.next}`);
+      navigate(`/ilan-olustur/${currentStep.next}`);
       setSearchValue('');
     } else {
       console.log('Tüm adımlar tamamlandı.');
@@ -59,63 +67,63 @@ export default function LearnMainPage() {
 
   const handleBack = () => {
     if (currentStepIndex > 0) {
-      navigate(`/fiyat-ogren/${steps[currentStepIndex - 1].path}`);
+      navigate(`/ilan-olustur/${steps[currentStepIndex - 1].path}`);
     }
   };
 
   const handleNext = () => {
     if (currentStep.next) {
-      navigate(`/fiyat-ogren/${currentStep.next}`);
+      navigate(`/ilan-olustur/${currentStep.next}`);
     }
   };
 
   if (currentStep.path === 'hasar') {
-    return (
-      <LearnDamageMainPage 
-        title="Arabam Kaç Para?" 
-        desc="Araç bilgilerinizi seçerek aracınızın fiyatı öğrenin." 
-        onHandleBack={handleBack} 
-        onHandleNext={handleNext}
-        activeStep={currentStepIndex} 
-        stepLabel={currentStep.label}
-        allSteps={allSteps}
-      />
-    );
-  }
-
-  if (currentStep.path === 'km') {
-    return (
-      <LearnKmMainPage 
-        title="Arabam Kaç Para?"
-        desc="Araç bilgilerinizi seçerek aracınızın fiyatı öğrenin." 
-        onHandleBack={handleBack} 
-        onHandleNext={handleNext} 
-        activeStep={currentStepIndex} 
-        stepLabel={currentStep.label}
-        allSteps={allSteps}
-      />
-    );
-  }
+      return (
+        <LearnDamageMainPage 
+          title="Arabam Kaç Para?" 
+          desc="Araç bilgilerinizi seçerek aracınızın fiyatı öğrenin." 
+          onHandleBack={handleBack} 
+          onHandleNext={handleNext}
+          activeStep={currentStepIndex} 
+          stepLabel={currentStep.label}
+          allSteps={allSteps}
+        />
+      );
+    }
   
-  if(currentStep.path === 'sonuc'){
-    return(
-      <LearnResultsMainPage 
-        title="Arabam Kaç Para?" 
-        desc="Araç bilgilerinizi seçerek aracınızın fiyatı öğrenin." 
-        onHandleBack={handleBack} 
-        onHandleNext={handleNext} 
-        activeStep={currentStepIndex} 
-        stepLabel={currentStep.label}
-        allSteps={allSteps}
-      />
-    )
-  }
+    if (currentStep.path === 'km') {
+      return (
+        <LearnKmMainPage 
+          title="Arabam Kaç Para?"
+          desc="Araç bilgilerinizi seçerek aracınızın fiyatı öğrenin." 
+          onHandleBack={handleBack} 
+          onHandleNext={handleNext} 
+          activeStep={currentStepIndex} 
+          stepLabel={currentStep.label}
+          allSteps={allSteps}
+        />
+      );
+    }
+    
+    if(currentStep.path === 'sonuc'){
+      return(
+        <LearnResultsMainPage 
+          title="Arabam Kaç Para?" 
+          desc="Araç bilgilerinizi seçerek aracınızın fiyatı öğrenin." 
+          onHandleBack={handleBack} 
+          onHandleNext={handleNext} 
+          activeStep={currentStepIndex} 
+          stepLabel={currentStep.label}
+          allSteps={allSteps}
+        />
+      )
+    }
 
   return (
     <Box className='bg-[#f7f7f7] w-[70%] pt-5 pb-15 my-5 mx-auto rounded-sm min-h-160 shadow-xs border-1 border-gray-100'>
       <Box className="bg-white w-[70%] mx-auto py-5 px-10 rounded-md flex flex-col shadow-md ">
-        <span className='mb-2 text-3xl'>Arabam Kaç Para?</span>
-        <span className='text-sm text-gray-600'>Araç bilgilerinizi seçerek aracınızın fiyatı öğrenin.</span>
+        <span className='mb-2 text-3xl'>İlan Oluştur</span>
+        <span className='text-sm text-gray-600'>Araç bilgilerinizi doldurarak aracınızın ilanını oluşturun.</span>
       </Box>
       <Box className="w-[70%] mx-auto mt-5">
         <CustomizedSteppers allSteps={allSteps} activeStep={currentStepIndex} />
@@ -149,5 +157,5 @@ export default function LearnMainPage() {
         </Box>
       </Box>
     </Box>
-  );
+  )
 }

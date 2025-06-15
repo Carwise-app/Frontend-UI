@@ -23,6 +23,7 @@ import YayindaOlanlar from './components/YayindaOlanlar';
 import YayindaOlmayanlar from './components/YayindaOlmayanlar';
 import { useSnackbar } from './context/SnackbarContext'; 
 import ResetPassword from './pages/ResetPassword';
+import CreateAdverts from './pages/CreateAdverts';
 
 export default function App() {
   const [authOpen, setAuthOpen] = useState(false);
@@ -30,7 +31,7 @@ export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(true);
   const location = useLocation();
   const { showSnackbar } = useSnackbar(); 
-  const hideFooterRoutes = ['/kokpit', '/fiyat-ogren','/sifre-yenile'];
+  const hideFooterRoutes = ['/kokpit', '/fiyat-ogren','/sifre-yenile','/ilan-olustur'];
   const shouldHideFooter = hideFooterRoutes.some(path => location.pathname.startsWith(path));
   const navigate = useNavigate()
 
@@ -103,6 +104,18 @@ export default function App() {
             <Route path='profil-ve-ayarlar' element={<ProfileAndSettings onOpenClick={handleOpenClick} />} />
           </Route>
           <Route path='/sifre-yenile' element={<ResetPassword />}/>
+          <Route path='/ilan-olustur' element={<CreateAdverts isLoggedIn={isLoggedIn} />}>
+            <Route index path="marka" element={<CreateAdverts />} />
+            <Route path="yil" element={<CreateAdverts />} />
+            <Route path="model" element={<CreateAdverts />} />
+            <Route path="govde-tipi" element={<CreateAdverts />} />
+            <Route path="renk" element={<CreateAdverts />} />
+            <Route path="yakit-tipi" element={<CreateAdverts />} />
+            <Route path="vites-tipi" element={<CreateAdverts />} />
+            <Route path="km" element={<CreateAdverts />} />
+            <Route path="hasar" element={<CreateAdverts />} />
+            <Route path="sonuc" element={<CreateAdverts />} />
+          </Route>
         </Routes>
       </AnimatePresence>
 

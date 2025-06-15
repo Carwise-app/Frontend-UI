@@ -23,9 +23,9 @@ export default function AppBar({onOpenClick, isLoggedIn, user, onLogout, setIsLo
   const handleGoToFiyatOgren = () => (
     navigate('/fiyat-ogren')
   );
-  const handleGoToAracSat = () => (
-    navigate('/fiyat-ogren')
-  ) //İlan ver sayfası yapılınca navigate değiştirelecek.
+  const handleGoToIlanVer = () => (
+    navigate('/ilan-olustur/marka')
+  )
 
   return (
     <>
@@ -63,7 +63,7 @@ export default function AppBar({onOpenClick, isLoggedIn, user, onLogout, setIsLo
                   <span className="absolute left-0 bottom-0 h-[2px] w-0 bg-[#dc143c] transition-all duration-300 group-hover:w-full"></span>
                 </span>
               </NavLink>
-              <span className="relative group " onClick={isLoggedIn ? (handleGoToAracSat) : () => onOpenClick("login")}>
+              <span className="relative group " onClick={isLoggedIn ? (handleGoToIlanVer) : () => onOpenClick("login")}>
                 İlan Ver
                 <span className="absolute left-0 bottom-0 h-[2px] w-0 bg-[#dc143c] transition-all duration-300 group-hover:w-full"></span>
               </span>
