@@ -29,7 +29,7 @@ export default function ShowcaseArea() {
       </Typography>
 
       {/* Kartlar */}
-      <Box className="flex justify-start px-5 gap-6 flex-wrap">
+      <Box className="grid grid-cols-4 gap-5 px-5">
         {visibleListings.map((listing, index) => (
           <Link key={index} href="#" underline="none">
             <ShowcaseCard listing={listing} />
@@ -37,7 +37,6 @@ export default function ShowcaseArea() {
         ))}
       </Box>
 
-      {/* Daha Fazlası / Gizle butonu */}
       {listings.length > 4 && (
         <Box className="flex justify-center mt-3">
           <button

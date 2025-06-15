@@ -2,11 +2,14 @@ import { TextField, Box, Checkbox, FormControlLabel } from "@mui/material";
 import React, { useState } from 'react';
 import PasswordControlLabel from "./PasswordControlLabel";
 import api from "../api/axios";
+import { useNavigate } from "react-router-dom";
 
-export default function LoginFormDialog({ onSwitch, onForgotPassword }) {
+export default function LoginFormDialog({ onSwitch, onForgotPassword, onLoginSuccess }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({ email: '', password: '', form: '' });
+
+  const navigate = useNavigate()
 
   const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const validatePassword = (password) => {
@@ -32,8 +35,13 @@ export default function LoginFormDialog({ onSwitch, onForgotPassword }) {
 
     try {
       const response = await api.post("/auth/login", { email, password });
-      localStorage.setItem("token", response.data.token);
-      window.location.reload();
+      localStorage.setItem("access_token", response.data.access_token);
+      // window.location.reload();
+      if(response.status == 200){
+        
+        navigate("/kokpit")
+      }
+      console.log(response)
     } catch (error) {
       const errMsg = (error.response?.data?.error?.[0] || "").toLowerCase();
       let newErrors = {};
@@ -75,9 +83,10 @@ export default function LoginFormDialog({ onSwitch, onForgotPassword }) {
         </Box>
       </Box>
 
-      {errors.form && <span className="text-xs text-red-600 ml-1">{errors.form}</span>}
+      {errors.form && <span className="ml-1 text-xs text-red-600">{errors.form}</span>}
 
       <button
+      onClick={onLoginSuccess}
         type="submit"
         className="cursor-pointer bg-[#dc143c] py-2 w-[45%] flex justify-center mx-auto rounded-md"
       >
@@ -98,7 +107,7 @@ export default function LoginFormDialog({ onSwitch, onForgotPassword }) {
         <span className="text-sm font-medium text-gray-700">Google ile Giriş Yap</span>
       </button>
 
-      <p className="text-sm text-center mt-2">
+      <p className="mt-2 text-sm text-center">
         Hesabınız yok mu?{" "}
         <span className="text-[#dc143c] cursor-pointer" onClick={onSwitch}>
           Kayıt Ol

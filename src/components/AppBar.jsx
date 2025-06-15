@@ -18,8 +18,7 @@ export default function AppBar({onOpenClick, isLoggedIn, user, onLogout, setIsLo
     setSearchValue('');
   }
 };
-
-  
+ 
   const handleGoToFiyatOgren = () => (
     navigate('/fiyat-ogren')
   );

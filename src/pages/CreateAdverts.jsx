@@ -5,7 +5,7 @@ import LearnPriceCard from '../components/LearnPriceCard'
 import SearchIcon from '@mui/icons-material/Search';
 import { useLocation, useNavigate } from 'react-router-dom';
 import LearnDamageMainPage from '../components/LearnDamageMainPage';
-import LearnKmMainPage from '../components/LearnKmMainPage';
+import LearnDetailInfo from '../components/LearnDetailsInfo';
 import LearnResultsMainPage from '../components/LearnResultsMainPage';
 
 const steps = [
@@ -91,9 +91,9 @@ export default function CreateAdverts() {
       );
     }
   
-    if (currentStep.path === 'km') {
+    if (currentStep.path === 'detaylar') {
       return (
-        <LearnKmMainPage 
+        <LearnDetailInfo 
           title="Arabam Kaç Para?"
           desc="Araç bilgilerinizi seçerek aracınızın fiyatı öğrenin." 
           onHandleBack={handleBack} 
