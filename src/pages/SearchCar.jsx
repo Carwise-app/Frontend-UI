@@ -1,5 +1,12 @@
-import { Box, FormControl, InputLabel, MenuItem, Select, Pagination } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import {
+  Box,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Pagination
+} from '@mui/material';
 import SearchCarList from '../components/SearchCarList';
 import FilterBox from '../components/Filter';
 import { useLocation } from 'react-router-dom';
@@ -10,28 +17,51 @@ const ITEMS_PER_PAGE = 10;
 export default function SearchCar() {
   const [carData, setCarData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [sorting, setSorting] = useState('');
 
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const searchQuery = queryParams.get('q')?.toLowerCase() || '';
 
-  const [filters, setFilters] = useState({
-    gearType: [], color: [], fuelType: [],
-    vehicleStatus: [], heavyDamageRecord: [],
-    brand: '', city: []
-  });
-
   useEffect(() => {
     api.get('/listing/')
-      .then(res => {
-        setCarData(res.data.listings || []);
-      })
-      .catch(err => {
-        console.error("Araç verisi alınamadı:", err);
-      });
+      .then(res => setCarData(res.data.listings || []))
+      .catch(err => console.error("Araç verisi alınamadı:", err));
   }, []);
 
-  const filteredItems = carData.filter(item =>
+  const handlePageChange = (e, page) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleBrandSelect = brandId => {
+    setCurrentPage(1);
+    api.get('/listing/', { params: { brand_id: brandId } })
+      .then(res => setCarData(res.data.listings || []))
+      .catch(err => console.error("Filtreli araç verisi alınamadı:", err));
+  };
+
+  const handleSeriesSelect = seriesId => {
+    setCurrentPage(1);
+    api.get('/listing/', { params: { series_id: seriesId } })
+      .then(res => setCarData(res.data.listings || []))
+      .catch(err => console.error("Seri filtresi ile veri alınamadı:", err));
+  };
+
+  const handleSubmit = selectedFilters => {
+    setCurrentPage(1);
+    api.get('/listing/', { params: selectedFilters })
+      .then(res => setCarData(res.data.listings || []))
+      .catch(err => console.error("Filtreli araç verisi alınamadı:", err));
+  };
+
+  const sortedCars = [...carData].sort((a, b) => {
+    if (sorting === 'price_asc') return a.price - b.price;
+    if (sorting === 'price_desc') return b.price - a.price;
+    return 0;
+  });
+
+  const filteredItems = sortedCars.filter(item =>
     item.title?.toLowerCase().includes(searchQuery) ||
     item.id?.toString().includes(searchQuery)
   );
@@ -40,36 +70,63 @@ export default function SearchCar() {
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const currentCars = filteredItems.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
-  const handleChange = (event, value) => {
-    setCurrentPage(value);
-  };
-
-  const handleSubmit = (selectedFilters) => {
-    setFilters(selectedFilters);
-  };
-
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [currentPage]);
-
   return (
     <Box className="flex h-full w-[75%] mx-auto gap-10 mb-20 mt-5 justify-between">
-      <FilterBox onSubmit={handleSubmit} />
+      <FilterBox
+        onBrandSelect={handleBrandSelect}
+        onSeriesSelect={handleSeriesSelect}
+        onSubmit={handleSubmit}
+      />
+
       <Box className="flex flex-col w-[85%]">
-        <Box className="bg-white py-2 px-5 rounded-sm mb-5 shadow-md flex justify-between">
-          <span className='text-xl flex items-center'>Satılık Araçlar</span>
-          <FormControl sx={{ minWidth: 200 }} size='small'>
-            <InputLabel>Sıralama Türü</InputLabel>
-            <Select
-              labelId='demo-select-small-label'
-              id='demo-select-small'
-              label="Gelişmiş Sıralama"
+        {/* Üst Başlık ve Sıralama Dropdown */}
+        <Box className="bg-white py-2 px-5 rounded-sm mb-5 shadow-md flex justify-between items-center">
+          <span className="text-xl font-semibold">Satılık Araçlar</span>
+
+          <FormControl sx={{ minWidth: 200 }} size="small">
+            <InputLabel
+              id="sorting-label"
+              sx={{
+                color: 'text.primary',
+                '&.Mui-focused': {
+                  color: 'text.primary',
+                },
+              }}
             >
-              <MenuItem value="Ucuzdan Pahalıya">Ucuzdan Pahalıya</MenuItem>
-              <MenuItem value="Pahalıdan Ucuza">Pahalıdan Ucuza</MenuItem>
+              Sıralama Türü
+            </InputLabel>
+            <Select
+              labelId="sorting-label"
+              label="Sıralama Türü"
+              value={sorting}
+              onChange={e => setSorting(e.target.value)}
+              sx={{
+                '.MuiOutlinedInput-notchedOutline': {
+                  borderRadius: '20px',
+                  borderColor: 'error.main',
+                },
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'error.dark',
+                },
+                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'error.dark',
+                },
+                '& .MuiSelect-icon': {
+                  color: 'error.main',
+                },
+                '> .MuiInputBase-root': {
+                  borderRadius: '20px',
+                },
+              }}
+            >
+              <MenuItem value="">Varsayılan</MenuItem>
+              <MenuItem value="price_asc">Ucuzdan Pahalıya</MenuItem>
+              <MenuItem value="price_desc">Pahalıdan Ucuza</MenuItem>
             </Select>
           </FormControl>
         </Box>
+
+        {/* Araç Listesi ve Sayfalama */}
         {currentCars.length > 0 ? (
           <>
             <Box className="flex flex-col gap-y-4">
@@ -81,13 +138,15 @@ export default function SearchCar() {
               <Pagination
                 count={totalPages}
                 page={currentPage}
-                onChange={handleChange}
+                onChange={handlePageChange}
                 color="standard"
               />
             </Box>
           </>
         ) : (
-          <p>'{searchQuery.toUpperCase()}' adına ait sonuç bulunamadı.</p>
+          <Box className="p-6 text-center text-gray-600">
+            '{searchQuery.toUpperCase()}' adına ait sonuç bulunamadı.
+          </Box>
         )}
       </Box>
     </Box>
