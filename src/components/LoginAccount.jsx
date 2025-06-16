@@ -39,7 +39,7 @@ export default function LoginAccount({fullName, onLogout}) {
         aria-expanded={open ? 'true' : undefined}
         onClick={handleClick}
       >
-        <span className='flex items-center gap-x-2'>{formatName(fullName)}<ExpandMoreIcon/></span>
+        <span className='flex justify-center gap-x-2'>{formatName(fullName)}<ExpandMoreIcon/></span>
       </button>
       <Menu
         id="basic-menu"
