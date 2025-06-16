@@ -7,6 +7,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import LearnDamageMainPage from '../components/LearnDamageMainPage';
 import LearnDetailInfo from '../components/LearnDetailsInfo';
 import LearnResultsMainPage from '../components/LearnResultsMainPage';
+import CreateAdvertsPrice from '../components/CreateAdvertsPrice';
 
 const steps = [
   { path: 'marka', label: 'Marka Seçiniz', placeholder: 'Aracınızın markasını arayın', options: ['BMW', 'Audi', 'Toyota'], next: 'yil' },
@@ -16,9 +17,12 @@ const steps = [
   { path: 'yakit-tipi', label: 'Yakıt Tipi Seçiniz', placeholder: 'Aracınızın yakıt tipini arayın', options: ['Benzin', 'Dizel', 'Elektrik'], next: 'vites-tipi' },
   { path: 'vites-tipi', label: 'Vites Tipi Seçiniz', placeholder: 'Aracınızın vites tipini arayın', options: ['Manuel', 'Otomatik'], next: 'renk' },
   { path: 'renk', label: 'Renk Seçiniz', placeholder: 'Aracınızın rengini arayın', options: ['Siyah', 'Beyaz', 'Kırmızı'], next: 'detaylar' },
-  { path: 'detaylar', label: 'Kilometre Bilginizi Giriniz', placeholder: 'Örn: 120000', options: [], next: 'hasar' },
-  { path: 'hasar', label: 'Hasar Bilgilerinizi Doldurun', placeholder: '', options: [], next: 'sonuc' },
-  { path: 'sonuc', label: 'Aracınız İçin Belirlenen Fiyat', placeholder:'',options:[], next:null}
+  { path: 'detaylar', label: 'Gereken Bilgilerinizi Doldurun', options: [], next: 'hasar' },
+  { path: 'hasar', label: 'Hasar Bilgilerinizi Doldurun', options: [], next: 'fiyat-ve-baslik' },
+  { path: 'fiyat-ve-baslik', label: 'İlanınız İçin Fiyat ve Başlık Belirleyin', options: [], next: 'acıklama' },
+  { path: 'acıklama', label: 'İlan İçin Açıklama Yazınız', options: [], next: 'konum-bilgisi' },
+  { path: 'konum-bilgisi', label: 'Konum Bilgisi Giriniz', options: [], next: 'fotoğraf-yükle' },
+  { path: 'fotoğraf-yükle', label: 'Aracınızın Fotoğraflarını yükleyiniz', options:[], next:null}
 ];
 
 const allSteps = [
@@ -30,8 +34,11 @@ const allSteps = [
   'Vites Tipi',
   'Renk',
   'Detaylı Bilgiler',
-  'Hasar Kaydı',
-  'Fiyat Tahmini'
+  'Hasar Bilgileri',
+  'Fiyat ve Başlık',
+  'Açıklama',
+  'Konum Bilgisi',
+  'Fotoğraf Yükleme'
 ];
 
 export default function CreateAdverts() {
@@ -80,8 +87,8 @@ export default function CreateAdverts() {
   if (currentStep.path === 'hasar') {
       return (
         <LearnDamageMainPage 
-          title="Arabam Kaç Para?" 
-          desc="Araç bilgilerinizi seçerek aracınızın fiyatı öğrenin." 
+          title="İlan Oluştur" 
+          desc="Araç bilgilerinizi doldurarak aracınızın ilanını oluşturun." 
           onHandleBack={handleBack} 
           onHandleNext={handleNext}
           activeStep={currentStepIndex} 
@@ -94,8 +101,8 @@ export default function CreateAdverts() {
     if (currentStep.path === 'detaylar') {
       return (
         <LearnDetailInfo 
-          title="Arabam Kaç Para?"
-          desc="Araç bilgilerinizi seçerek aracınızın fiyatı öğrenin." 
+          title="İlan Oluştur"
+          desc="Araç bilgilerinizi doldurarak aracınızın ilanını oluşturun." 
           onHandleBack={handleBack} 
           onHandleNext={handleNext} 
           activeStep={currentStepIndex} 
@@ -105,11 +112,11 @@ export default function CreateAdverts() {
       );
     }
     
-    if(currentStep.path === 'sonuc'){
+    if(currentStep.path === 'fiyat-ve-baslik'){
       return(
-        <LearnResultsMainPage 
-          title="Arabam Kaç Para?" 
-          desc="Araç bilgilerinizi seçerek aracınızın fiyatı öğrenin." 
+        <CreateAdvertsPrice 
+          title="İlan Oluştur" 
+          desc="Araç bilgilerinizi doldurarak aracınızın ilanını oluşturun." 
           onHandleBack={handleBack} 
           onHandleNext={handleNext} 
           activeStep={currentStepIndex} 

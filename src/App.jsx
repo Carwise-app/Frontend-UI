@@ -28,7 +28,7 @@ import CreateAdverts from "./pages/CreateAdverts";
 export default function App() {
   const [authOpen, setAuthOpen] = useState(false);
   const [authView, setAuthView] = useState("login");
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const location = useLocation();
   const { showSnackbar } = useSnackbar();
   const hideFooterRoutes = [
@@ -142,7 +142,7 @@ export default function App() {
             <Route path="vites-tipi" element={<CreateAdverts />} />
             <Route path="detaylar" element={<CreateAdverts />} />
             <Route path="hasar" element={<CreateAdverts />} />
-            <Route path="sonuc" element={<CreateAdverts />} />
+            <Route path="fiyat-ve-baslik" element={<CreateAdverts />} />
           </Route>
         </Routes>
       </AnimatePresence>
