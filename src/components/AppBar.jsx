@@ -93,7 +93,7 @@ export default function AppBar({onOpenClick, isLoggedIn, onLogout, setIsLoggedIn
           </>
         }
             {isLoggedIn ? (
-              <LoginAccount onLogout={onLogout} fullName={user ? `${user.first_name} ${user.last_name.slice(0,1).toUpperCase()}` : " "}/>
+              <LoginAccount onLogout={onLogout} fullName={user ? `${user?.first_name} ${user?.last_name.slice(0,1).toUpperCase()}` : " "}/>
             ): (
               <button className='bg-[#dc143c] px-4 py-2 rounded-xl text-white cursor-pointer' onClick={() => onOpenClick("login","notLogin")}>
                 Giriş Yap
