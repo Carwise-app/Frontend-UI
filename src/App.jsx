@@ -28,7 +28,7 @@ import CreateAdverts from './pages/CreateAdverts';
 export default function App() {
   const [authOpen, setAuthOpen] = useState(false);
   const [authView, setAuthView] = useState("login");
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const location = useLocation();
   const { showSnackbar } = useSnackbar();
   const hideFooterRoutes = ['/kokpit', '/fiyat-ogren', '/sifre-yenile', '/ilan-olustur'];
