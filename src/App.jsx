@@ -118,7 +118,7 @@ export default function App() {
             <Route path="vites-tipi" element={<CreateAdverts />} />
             <Route path="detaylar" element={<CreateAdverts />} />
             <Route path="hasar" element={<CreateAdverts />} />
-            <Route path="sonuc" element={<CreateAdverts />} />
+            <Route path="fiyat-ve-baslik" element={<CreateAdverts />} />
           </Route>
         </Routes>
       </AnimatePresence>

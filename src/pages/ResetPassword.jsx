@@ -26,8 +26,8 @@ export default function ResetPassword() {
         }
     }
   return (
-    <Box className=" w-[30%] bg-white border-gray-100 rounded-md shadow-xs border-1 ms-15 mt-10">
-        <Box className="flex flex-col w-[80%] py-5 ps-10 gap-y-5">
+    <Box className=" w-[35%] bg-white border-gray-100 rounded-md shadow-xs border-1 mx-auto mt-10">
+        <Box className="flex flex-col w-[80%] py-5 gap-y-5 mx-auto">
             <Box className="text-2xl font-medium">
                 <span className='text-[#dc143c]'>Şifre Yenileme</span>       
             </Box>

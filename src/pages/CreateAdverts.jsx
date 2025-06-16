@@ -7,6 +7,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import LearnDamageMainPage from '../components/LearnDamageMainPage';
 import LearnDetailInfo from '../components/LearnDetailsInfo';
 import LearnResultsMainPage from '../components/LearnResultsMainPage';
+import CreateAdvertsPrice from '../components/CreateAdvertsPrice';
 
 const steps = [
   { path: 'marka', label: 'Marka Seçiniz', placeholder: 'Aracınızın markasını arayın', options: ['BMW', 'Audi', 'Toyota'], next: 'yil' },
@@ -16,12 +17,12 @@ const steps = [
   { path: 'yakit-tipi', label: 'Yakıt Tipi Seçiniz', placeholder: 'Aracınızın yakıt tipini arayın', options: ['Benzin', 'Dizel', 'Elektrik'], next: 'vites-tipi' },
   { path: 'vites-tipi', label: 'Vites Tipi Seçiniz', placeholder: 'Aracınızın vites tipini arayın', options: ['Manuel', 'Otomatik'], next: 'renk' },
   { path: 'renk', label: 'Renk Seçiniz', placeholder: 'Aracınızın rengini arayın', options: ['Siyah', 'Beyaz', 'Kırmızı'], next: 'detaylar' },
-  { path: 'detaylar', label: 'Gereken Bilgilerinizi Doldurun', placeholder: 'Örn: 120000', options: [], next: 'hasar' },
-  { path: 'hasar', label: 'Hasar Bilgilerinizi Doldurun', placeholder: '', options: [], next: 'sonuc' },
-  { path: 'fiyat-ve-baslik', label: 'İlanınız İçin Fiyat ve Başlık Belirleyin', placeholder: 'Örn: 120000', options: [], next: 'hasar' },
-  { path: 'acıklama', label: 'İlan İçin Açıklama Yazınız', placeholder: '', options: [], next: 'sonuc' },
-  { path: 'konum-bilgisi', label: 'Konum Bilgisi Giriniz', placeholder: 'Örn: 120000', options: [], next: 'hasar' },
-  { path: 'fotoğraf-yükle', label: 'Aracınızın Fotoğraflarını yükleyiniz', placeholder:'',options:[], next:null}
+  { path: 'detaylar', label: 'Gereken Bilgilerinizi Doldurun', options: [], next: 'hasar' },
+  { path: 'hasar', label: 'Hasar Bilgilerinizi Doldurun', options: [], next: 'fiyat-ve-baslik' },
+  { path: 'fiyat-ve-baslik', label: 'İlanınız İçin Fiyat ve Başlık Belirleyin', options: [], next: 'acıklama' },
+  { path: 'acıklama', label: 'İlan İçin Açıklama Yazınız', options: [], next: 'konum-bilgisi' },
+  { path: 'konum-bilgisi', label: 'Konum Bilgisi Giriniz', options: [], next: 'fotoğraf-yükle' },
+  { path: 'fotoğraf-yükle', label: 'Aracınızın Fotoğraflarını yükleyiniz', options:[], next:null}
 ];
 
 const allSteps = [
@@ -111,9 +112,9 @@ export default function CreateAdverts() {
       );
     }
     
-    if(currentStep.path === 'sonuc'){
+    if(currentStep.path === 'fiyat-ve-baslik'){
       return(
-        <LearnResultsMainPage 
+        <CreateAdvertsPrice 
           title="İlan Oluştur" 
           desc="Araç bilgilerinizi doldurarak aracınızın ilanını oluşturun." 
           onHandleBack={handleBack} 
