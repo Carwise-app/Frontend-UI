@@ -1,13 +1,12 @@
-import { Box, Button, TextField } from '@mui/material'
+import { Box, TextField } from '@mui/material'
 import React, { useState } from 'react'
-import ClickableChip from './ClickableChip'
 import DamageStepCard from './DamageStepCard';
 
 
 export default function DamageStep({stepLabel, onClick}) {
     const [tramer, setTramer] = useState('');
     const options = ["Belirtilmemiş","Orjinal", "Boyalı", "Lokal Boyalı", "Değişen" ];
-    const categorys = [
+    const categories = [
         "Ön Tampon","Arka Tampon",
         "Sol ön çamurluk","Motor kaputu","Sağ ön çamurluk",
         "Sol ön kapı","Sol arka kapı",
@@ -18,7 +17,7 @@ export default function DamageStep({stepLabel, onClick}) {
     
     const [selectedChips, setSelectedChips] = useState(() => {
     const init = {};
-    categorys.forEach(cat => {
+    categories.forEach(cat => {
       init[cat] = "Belirtilmemiş";
     });
     return init;
@@ -39,7 +38,7 @@ export default function DamageStep({stepLabel, onClick}) {
             </Box>
         </Box>
         <Box className="grid grid-cols-[1fr_1fr] w-full h-auto gap-4 mt-2">
-            {categorys.map((category)=>(
+            {categories.map((category)=>(
                 <DamageStepCard 
                     key={category} 
                     selectedChip={selectedChips[category]} 

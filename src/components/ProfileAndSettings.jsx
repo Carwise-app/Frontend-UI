@@ -101,7 +101,7 @@ export default function ProfileAndSettings({ onOpenClick }) {
               </Box>
             </Box>
           </Box>
-          <Box className="flex flex-col gap-y-4">
+          {/* <Box className="flex flex-col gap-y-4">
             <span className='text-lg'>Konum Bilgisi</span>
             <Box className="grid grid-cols-[1fr_15fr_2fr] rounded-md w-[85%] h-10">
               <Box className="flex items-center justify-center bg-gray-700 rounded-l-md">
@@ -118,7 +118,7 @@ export default function ProfileAndSettings({ onOpenClick }) {
                 </Tooltip>
               </Box>
             </Box>
-          </Box>
+          </Box> */}
         </Box>
       </Box>
       <Box className="flex w-full bg-white border-gray-100 rounded-md shadow-md border-1 ">
