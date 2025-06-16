@@ -13,7 +13,7 @@ export default function LoginFormDialog({ onSwitch, onForgotPassword, onLoginSuc
 
   const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const validatePassword = (password) => {
-    const minLength = password.length >= 7;
+    const minLength = password.length >= 6;
     const hasUpperCase = /[A-Z]/.test(password);
     return { isValid: minLength && hasUpperCase, minLength, hasUpperCase };
   };
@@ -25,7 +25,7 @@ export default function LoginFormDialog({ onSwitch, onForgotPassword, onLoginSuc
     if (!validateEmail(email)) emailError = 'Geçerli bir email adresi giriniz.';
     const pwCheck = validatePassword(password);
     if (!pwCheck.isValid) passwordError = !pwCheck.minLength
-      ? 'Şifre en az 7 karakter olmalıdır.'
+      ? 'Şifre en az 6 karakter olmalıdır.'
       : 'Şifre en az bir büyük harf içermelidir.';
 
     if (emailError || passwordError) {
