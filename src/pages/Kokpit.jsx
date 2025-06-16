@@ -8,19 +8,39 @@ import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import PanelPhoto from '../assets/ControlPanelPhoto.jpg'
 import { NavLink, Outlet } from 'react-router-dom';
 import React from 'react'
+import { useEffect, useState } from 'react';
+import api from '../api/axios';
+
 
 export default function Kokpit({onLogout}) {
 
-  
+  const [user, setUser] = useState(null);
+  const token = localStorage.getItem("access_token");
 
+   useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await api.get("/profile/", {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        setUser(response.data);
+      } catch (error) {
+        console.error("Profil verisi alınamadı:", error.response?.data || error.message);
+      }
+    };
+    fetchUser();
+  }, []);
+
+  
   return (
     <Box className="flex min-h-[calc(100vh-90px)] w-[80%] mx-auto gap-x-3">
         <Box className="w-[25%] flex flex-col bg-neutral-800">
           <Box className="relative px-6 py-12 bg-center bg-cover" sx={{ backgroundImage: `url(${PanelPhoto})` }}>
             <Box className="absolute inset-0 z-0 bg-black/25" />
             <Box className="relative z-10 flex flex-col">
-              <span className='text-xl font-bold text-white'>Merhaba, BATUHAN</span>
-              <span className='text-xs tracking-wider text-gray-300'>ID: 14612581</span>
+              <span className='text-xl font-bold text-white'>Merhaba {user ? `${user.first_name.toUpperCase()}` : "Yükleniyor..."}</span>
             </Box>
           </Box>  
           <Box className="flex-grow px-6 py-6 bg-neutral-700">

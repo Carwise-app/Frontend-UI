@@ -2,15 +2,18 @@ import { Avatar, Box, IconButton, Menu, MenuItem, Stack } from '@mui/material';
 import React, { useState } from 'react';
 import LoginAccount from './LoginAccount';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import api from '../api/axios';
 
 
-export default function AppBar({onOpenClick, isLoggedIn, user, onLogout, setIsLoggedIn}) {
+export default function AppBar({onOpenClick, isLoggedIn, onLogout, setIsLoggedIn}) {
   const navigate = useNavigate();
   const [searchValue, setSearchValue] = useState('');
   const location = useLocation()
   const hideFooterRoutes = ['/kokpit', '/fiyat-ogren'];
   const shouldHideFooter = hideFooterRoutes.some(path => location.pathname.startsWith(path));
   const isKokpitOrFiyatOgren = location.pathname.startsWith('/kokpit') || location.pathname.startsWith('/fiyat-ogren');
+  const [user, setUser] = useState(null);
 
   const handleSearch = () => {
   if (searchValue.trim() !== '') {
@@ -25,6 +28,23 @@ export default function AppBar({onOpenClick, isLoggedIn, user, onLogout, setIsLo
   const handleGoToIlanVer = () => (
     navigate('/ilan-olustur/marka')
   )
+
+  const token = localStorage.getItem("access_token");
+   useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await api.get("/profile/", {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        setUser(response.data);
+      } catch (error) {
+        console.error("Profil verisi alınamadı:", error.response?.data || error.message);
+      }
+    };
+    fetchUser();
+  }, []);
 
   return (
     <>
@@ -73,7 +93,7 @@ export default function AppBar({onOpenClick, isLoggedIn, user, onLogout, setIsLo
           </>
         }
             {isLoggedIn ? (
-              <LoginAccount onLogout={onLogout} fullName="Batuhan Gözüpek"/>
+              <LoginAccount onLogout={onLogout} fullName={user ? `${user.first_name} ${user.last_name.slice(0,1).toUpperCase()}` : " "}/>
             ): (
               <button className='bg-[#dc143c] px-4 py-2 rounded-xl text-white cursor-pointer' onClick={() => onOpenClick("login","notLogin")}>
                 Giriş Yap
