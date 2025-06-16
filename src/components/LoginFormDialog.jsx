@@ -11,36 +11,14 @@ export default function LoginFormDialog({ onSwitch, onForgotPassword, onLoginSuc
 
   const navigate = useNavigate()
 
-  const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  const validatePassword = (password) => {
-    const minLength = password.length >= 6;
-    const hasUpperCase = /[A-Z]/.test(password);
-    return { isValid: minLength && hasUpperCase, minLength, hasUpperCase };
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    let emailError = '', passwordError = '', formError = '';
-
-    if (!validateEmail(email)) emailError = 'Geçerli bir email adresi giriniz.';
-    const pwCheck = validatePassword(password);
-    if (!pwCheck.isValid) passwordError = !pwCheck.minLength
-      ? 'Şifre en az 6 karakter olmalıdır.'
-      : 'Şifre en az bir büyük harf içermelidir.';
-
-    if (emailError || passwordError) {
-      setErrors({ email: emailError, password: passwordError, form: '' });
-      return;
-    }
-
+    
     try {
       const response = await api.post("/auth/login", { email, password });
       localStorage.setItem("access_token", response.data.access_token);
       // window.location.reload();
-      if(response.status == 200){
-        
-        navigate("/kokpit")
-      }
       console.log(response)
     } catch (error) {
       const errMsg = (error.response?.data?.error?.[0] || "").toLowerCase();
