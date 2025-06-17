@@ -25,24 +25,41 @@ export default function SearchCar() {
   const queryParams = new URLSearchParams(location.search);
   const searchQuery = queryParams.get('q')?.toLowerCase() || '';
 
-  // 🔁 Sayfa değiştiğinde veri çek
   useEffect(() => {
     fetchFilteredData(activeFilters, currentPage);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [currentPage]);
 
-  // 🚀 Başlangıçta tüm araçları getir
   useEffect(() => {
     fetchFilteredData({}, 1);
   }, []);
 
-  // 🔄 Filtrelenmiş veya sıralanmış veri al
-  const fetchFilteredData = (filters = {}, page = 1) => {
+  // Helper function to parse sorting value and return sort field and order
+  const getSortParams = (sortingValue) => {
+    if (!sortingValue) return {};
+    
+    const sortMap = {
+      'price_asc': { sort: 'price', order: 'asc' },
+      'price_desc': { sort: 'price', order: 'desc' },
+      'kilometers_asc': { sort: 'kilometers', order: 'asc' },
+      'kilometers_desc': { sort: 'kilometers', order: 'desc' },
+      'year_asc': { sort: 'year', order: 'asc' },
+      'year_desc': { sort: 'year', order: 'desc' },
+      'created_at_asc': { sort: 'created_at', order: 'asc' },
+      'created_at_desc': { sort: 'created_at', order: 'desc' },
+    };
+    
+    return sortMap[sortingValue] || {};
+  };
+
+  const fetchFilteredData = (filters = {}, page = 1, sortingValue = sorting) => {
+    const sortParams = getSortParams(sortingValue);
+    
     const params = {
       ...filters,
       page,
       limit: ITEMS_PER_PAGE,
-      ...(sorting && { sort: 'price', order: sorting === 'price_asc' ? 'asc' : 'desc' }),
+      ...sortParams,
     };
 
     api.get('/listing/', { params })
@@ -54,7 +71,6 @@ export default function SearchCar() {
       .catch(err => console.error("Araç verisi alınamadı:", err));
   };
 
-  // Filtrelerden gelenler
   const handleBrandSelect = brandId => {
     setCurrentPage(1);
     fetchFilteredData({ ...activeFilters, brand_id: String(brandId) }, 1);
@@ -74,7 +90,13 @@ export default function SearchCar() {
     setCurrentPage(page);
   };
 
-  // Arama kutusu üzerinden gelen filtreleme
+  const handleSortingChange = (e) => {
+    const newSorting = e.target.value;
+    setSorting(newSorting);
+    setCurrentPage(1);
+    fetchFilteredData(activeFilters, 1, newSorting);
+  };
+
   const filteredItems = searchQuery
     ? carData.filter(item =>
         item.title?.toLowerCase().includes(searchQuery) ||
@@ -112,15 +134,17 @@ export default function SearchCar() {
               labelId="sorting-label"
               label="Sıralama Türü"
               value={sorting}
-              onChange={e => {
-                setSorting(e.target.value);
-                setCurrentPage(1);
-                fetchFilteredData(activeFilters, 1);
-              }}
+              onChange={handleSortingChange}
             >
               <MenuItem value="">Varsayılan</MenuItem>
-              <MenuItem value="price_desc">Ucuzdan Pahalıya</MenuItem>
-              <MenuItem value="price_asc">Pahalıdan Ucuza</MenuItem>
+              <MenuItem value="price_asc">Fiyat: Ucuzdan Pahalıya</MenuItem>
+              <MenuItem value="price_desc">Fiyat: Pahalıdan Ucuza</MenuItem>
+              <MenuItem value="kilometers_asc">Kilometre: Azdan Çoğa</MenuItem>
+              <MenuItem value="kilometers_desc">Kilometre: Çoktan Aza</MenuItem>
+              <MenuItem value="year_asc">Yıl: Eskiden Yeniye</MenuItem>
+              <MenuItem value="year_desc">Yıl: Yeniden Eskiye</MenuItem>
+              <MenuItem value="created_at_asc">Tarih: Eskiden Yeniye</MenuItem>
+              <MenuItem value="created_at_desc">Tarih: Yeniden Eskiye</MenuItem>
             </Select>
           </FormControl>
         </Box>
