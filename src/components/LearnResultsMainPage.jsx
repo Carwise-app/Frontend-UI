@@ -43,11 +43,12 @@ export default function LearnResultsMainPage({activeStep,stepLabel,title,desc,al
                         </AccordionSummary>
                         <AccordionDetails className='grid grid-cols-4 gap-3'>
                             <Chip label="BMW" sx={{color:"white"}} color='error'/>
-                            <Chip label="2021" sx={{color:"white"}} color='error'/>
+                            <Chip label="Seri İsmi" sx={{color:"white"}} color='error'/>
                             <Chip label="A4" sx={{color:"white"}} color='error'/>
+                            <Chip label="2021" sx={{color:"white"}} color='error'/>
                             <Chip label="Sedan" sx={{color:"white"}} color='error'/>
-                            <Chip label="Dizel" sx={{color:"white"}} color='error'/>
                             <Chip label="Otomatik" sx={{color:"white"}} color='error'/>
+                            <Chip label="Dizel" sx={{color:"white"}} color='error'/>
                             <Chip label="Siyah" sx={{color:"white"}} color='error'/>
                             <Chip label="12.000 Km" sx={{color:"white"}} color='error'/>
                             <Chip label="4 Orjinal Parça" sx={{color:"white"}} color='error'/>

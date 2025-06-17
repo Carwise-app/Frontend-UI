@@ -16,7 +16,7 @@ export default function SearchCarList({ item }) {
   return (
     <Box className="bg-white shadow-sm rounded-sm w-full h-50 flex cursor-pointer hover:shadow-[#ffb8c6] overflow-hidden">
       <Box className="bg-gray-50 w-[30%] object-contain rounded-l-xl flex items-center justify-center">
-        <img className="object-contain pointer-events-none" src={imageUrl} alt="car photo" />
+        <img className="object-contain border-gray-100 pointer-events-none border-r-1" src={imageUrl} alt="car photo" />
       </Box>
       <Box className="w-[67%] mx-auto my-2 grid grid-rows-[1fr_6fr_1fr]">
         <Box className="flex justify-between text-xs text-gray-500">

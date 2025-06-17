@@ -11,9 +11,9 @@ import CreateAdvertsPrice from '../components/CreateAdvertsPrice';
 import CreateAdvertsDescription from '../components/CreateAdvertsDescription';
 
 const steps = [
-  { path: 'marka', label: 'Marka Seçiniz', placeholder: 'Aracınızın markasını arayın', options: ['BMW', 'Audi', 'Toyota'], next: 'model' },
-  { path: 'model', label: 'Model Seçiniz', placeholder: 'Aracınızın modelini arayın', options: ['320i', 'A4', 'Corolla'], next: 'seri' },
-  { path: 'seri', label: 'Seri Seçiniz', placeholder: 'Aracınızın serisini arayın', options: ['1.4 Urban', '1.3 Multijet'], next: 'yil' },
+  { path: 'marka', label: 'Marka Seçiniz', placeholder: 'Aracınızın markasını arayın', options: ['BMW', 'Audi', 'Toyota'], next: 'seri' },
+  { path: 'seri', label: 'Seri Seçiniz', placeholder: 'Aracınızın serisini arayın', options: ['1.4 Urban', '1.3 Multijet'], next: 'model' },
+  { path: 'model', label: 'Model Seçiniz', placeholder: 'Aracınızın modelini arayın', options: ['320i', 'A4', 'Corolla'], next: 'yil' },
   { path: 'yil', label: 'Yıl Seçiniz', placeholder: 'Aracınızın yılını arayın', options: ['2020', '2021', '2022'], next: 'govde-tipi' },
   { path: 'govde-tipi', label: 'Gövde Tipi Seçiniz', placeholder: 'Aracınızın gövde tipini arayın', options: ['Sedan', 'SUV', 'Hatchback'], next: 'yakit-tipi' },
   { path: 'yakit-tipi', label: 'Yakıt Tipi Seçiniz', placeholder: 'Aracınızın yakıt tipini arayın', options: ['Benzin', 'Dizel', 'Elektrik'], next: 'vites-tipi' },
@@ -29,8 +29,8 @@ const steps = [
 
 const allSteps = [
   'Marka',
-  'Model',
   'Seri',
+  'Model',
   'Yıl',
   'Gövde Tipi',
   'Yakıt Tipi',
