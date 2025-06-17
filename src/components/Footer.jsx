@@ -5,6 +5,7 @@ import ContactDialog from "./ContactDialog";
 import PrivacyDialog from "./PrivacyDialog";
 import NewsDialog from "./NewsDialog";
 import SafeShoppingDialog from "./SafeShoppingDialog";
+import { useNavigate } from "react-router-dom";
 
 export default function Footer(){
     const [openAboutUs, setOpenAboutUs] = useState(false);
@@ -12,6 +13,7 @@ export default function Footer(){
     const [openPrivacy, setOpenPrivacy] = useState(false);
     const [openNews, setOpenNews] = useState(false);
     const [openSafeShopping, setOpenSafeShopping] = useState(false);
+    const navigate = useNavigate();
 
     const handleOpenAboutUs = () => setOpenAboutUs(true);
     const handleCloseAboutUs = () => setOpenAboutUs(false);
@@ -37,9 +39,9 @@ export default function Footer(){
                 </Box>
                 <Box className="flex flex-col gap-y-2">
                     <span className="text-2xl ">Hizmetlerimiz</span>
-                    <span className="text-gray-700 text-sm">Arabamın Fiyatı Ne Kadar?</span>
-                    <span className="text-gray-700 text-sm">Araç Al</span>
-                    <span className="text-gray-700 text-sm">İlan Ver</span>
+                    <span className="text-gray-700 text-sm cursor-pointer" onClick={() => navigate("/fiyat-ogren") }>Arabamın Fiyatı Ne Kadar? </span>
+                    <span className="text-gray-700 text-sm cursor-pointer" onClick={() => navigate("/arac-satin-al") }>Araç Al</span>
+                    <span className="text-gray-700 text-sm cursor-pointer" onClick={() => navigate("/ilan-olustur/marka") }>İlan Ver</span>
                 </Box>
                 <Box className="flex flex-col gap-y-2">
                     <span className="text-2xl ">Kurumsal</span>
