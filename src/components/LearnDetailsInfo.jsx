@@ -1,4 +1,4 @@
-import { Box, Button, FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material'
+import { Box, Button, FormControl, InputAdornment, InputLabel, MenuItem, Select, TextField } from '@mui/material'
 import React, { useState } from 'react'
 import CustomizedSteppers from './CustomizedSteppers'
 import DamageStepCard from './DamageStepCard';
@@ -79,13 +79,16 @@ export default function LearnKmMainPage({activeStep,onHandleBack,stepLabel,onHan
                     setKmValue(onlyDigits);
                     }
                 }}
+                InputProps={{
+                endAdornment: <InputAdornment position="end">KM</InputAdornment>
+              }}
                 placeholder="Örn: 120000"
                 type="text"
                 variant="outlined"
               />
               <TextField
                 fullWidth
-                label="Motor Hacmi (cc)"
+                label="Motor Hacmi"
                 value={engineSizeValue}
                 onChange={(e) => {
                     const onlyDigits = e.target.value.replace(/\D/g, '');
@@ -93,13 +96,16 @@ export default function LearnKmMainPage({activeStep,onHandleBack,stepLabel,onHan
                     setEngineSizeValue(onlyDigits);
                     }
                 }}
+                InputProps={{
+                endAdornment: <InputAdornment position="end">cc</InputAdornment>
+              }}
                 placeholder='Örn: 1598'
                 type='text'
                 variant='outlined'
               />
               <TextField
                 fullWidth
-                label="Motor Gücü (hp)"
+                label="Motor Gücü"
                 value={enginePowerValue}
                 onChange={(e) => {
                     const onlyDigits = e.target.value.replace(/\D/g, '');
@@ -107,6 +113,9 @@ export default function LearnKmMainPage({activeStep,onHandleBack,stepLabel,onHan
                     setEnginePowerValue(onlyDigits);
                     }
                 }}
+                InputProps={{
+                endAdornment: <InputAdornment position="end">hp</InputAdornment>
+              }}
                 placeholder='Örn: 140'
                 type='text'
                 variant='outlined'

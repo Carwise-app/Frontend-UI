@@ -23,7 +23,6 @@ export default function ShowcaseCard({ listing }) {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          backgroundColor: "#f0f0f0",
         }}
       >
         <img

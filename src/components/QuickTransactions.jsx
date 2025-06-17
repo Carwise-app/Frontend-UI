@@ -13,7 +13,7 @@ export default function QuickTransactions() {
     <>
         <ControlPanelHeader icon={<GridViewIcon sx={{fontSize:115,color:'black',opacity:0.1,marginRight:1}}/>} title="Hızlı İşlemler" description="Bu sekmede hızlı bir şekilde işlemlere ulaşabilirsiniz." />
         <Box className="grid grid-cols-1 gap-4 mt-5 md:grid-cols-2">
-          <NavLink to="/ilan-olustur">
+          <NavLink to="/ilan-olustur/marka">
             <CardQuickTransactions icon={<FormatListBulletedIcon sx={{fontSize:50, color:'black'}}/>} title="İlan Ver" description="İlan ver, aracın CARWISE ile satılsın."/>
           </NavLink>
           <NavLink to="/arac-satin-al">

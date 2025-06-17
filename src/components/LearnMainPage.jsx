@@ -28,7 +28,7 @@ const steps = [
     path: "model",
     label: "Model Seçiniz",
     placeholder: "Aracınızın modelini arayın",
-    options: ["320i", "A4", "Corolla"],
+    options: ["1.6 Urban", "1.3 Multijet"],
     next: "yil",
   },
   {
@@ -264,7 +264,7 @@ export default function LearnMainPage() {
             <SearchIcon sx={{ fontSize: 40 }} className="text-[#dc143c]" />
           </button>
         </Box>
-        <Box className="flex w-[70%] mx-auto mt-5 flex-wrap justify-start gap-x-3 gap-y-3">
+        <Box className="flex w-[70%] mx-auto mt-5 flex-wrap justify-start gap-x-[11px] gap-y-3">
           {filteredOptions.map((option) => (
             <LearnPriceCard
               key={option}

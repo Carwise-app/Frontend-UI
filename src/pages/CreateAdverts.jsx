@@ -8,27 +8,30 @@ import LearnDamageMainPage from '../components/LearnDamageMainPage';
 import LearnDetailInfo from '../components/LearnDetailsInfo';
 import LearnResultsMainPage from '../components/LearnResultsMainPage';
 import CreateAdvertsPrice from '../components/CreateAdvertsPrice';
+import CreateAdvertsDescription from '../components/CreateAdvertsDescription';
 
 const steps = [
-  { path: 'marka', label: 'Marka Seçiniz', placeholder: 'Aracınızın markasını arayın', options: ['BMW', 'Audi', 'Toyota'], next: 'yil' },
-  { path: 'yil', label: 'Yıl Seçiniz', placeholder: 'Aracınızın yılını arayın', options: ['2020', '2021', '2022'], next: 'model' },
-  { path: 'model', label: 'Model Seçiniz', placeholder: 'Aracınızın modelini arayın', options: ['320i', 'A4', 'Corolla'], next: 'govde-tipi' },
+  { path: 'marka', label: 'Marka Seçiniz', placeholder: 'Aracınızın markasını arayın', options: ['BMW', 'Audi', 'Toyota'], next: 'model' },
+  { path: 'model', label: 'Model Seçiniz', placeholder: 'Aracınızın modelini arayın', options: ['320i', 'A4', 'Corolla'], next: 'seri' },
+  { path: 'seri', label: 'Seri Seçiniz', placeholder: 'Aracınızın serisini arayın', options: ['1.4 Urban', '1.3 Multijet'], next: 'yil' },
+  { path: 'yil', label: 'Yıl Seçiniz', placeholder: 'Aracınızın yılını arayın', options: ['2020', '2021', '2022'], next: 'govde-tipi' },
   { path: 'govde-tipi', label: 'Gövde Tipi Seçiniz', placeholder: 'Aracınızın gövde tipini arayın', options: ['Sedan', 'SUV', 'Hatchback'], next: 'yakit-tipi' },
   { path: 'yakit-tipi', label: 'Yakıt Tipi Seçiniz', placeholder: 'Aracınızın yakıt tipini arayın', options: ['Benzin', 'Dizel', 'Elektrik'], next: 'vites-tipi' },
   { path: 'vites-tipi', label: 'Vites Tipi Seçiniz', placeholder: 'Aracınızın vites tipini arayın', options: ['Manuel', 'Otomatik'], next: 'renk' },
   { path: 'renk', label: 'Renk Seçiniz', placeholder: 'Aracınızın rengini arayın', options: ['Siyah', 'Beyaz', 'Kırmızı'], next: 'detaylar' },
   { path: 'detaylar', label: 'Gereken Bilgilerinizi Doldurun', options: [], next: 'hasar' },
   { path: 'hasar', label: 'Hasar Bilgilerinizi Doldurun', options: [], next: 'fiyat-ve-baslik' },
-  { path: 'fiyat-ve-baslik', label: 'İlanınız İçin Fiyat ve Başlık Belirleyin', options: [], next: 'acıklama' },
-  { path: 'acıklama', label: 'İlan İçin Açıklama Yazınız', options: [], next: 'konum-bilgisi' },
+  { path: 'fiyat-ve-baslik', label: 'İlanınız İçin Fiyat ve Başlık Belirleyin', options: [], next: 'aciklama' },
+  { path: 'aciklama', label: 'İlan İçin Açıklama Yazınız', options: [], next: 'konum-bilgisi' },
   { path: 'konum-bilgisi', label: 'Konum Bilgisi Giriniz', options: [], next: 'fotoğraf-yükle' },
   { path: 'fotoğraf-yükle', label: 'Aracınızın Fotoğraflarını yükleyiniz', options:[], next:null}
 ];
 
 const allSteps = [
   'Marka',
-  'Yıl',
   'Model',
+  'Seri',
+  'Yıl',
   'Gövde Tipi',
   'Yakıt Tipi',
   'Vites Tipi',
@@ -116,6 +119,20 @@ export default function CreateAdverts() {
       return(
         <CreateAdvertsPrice 
           title="İlan Oluştur" 
+          desc="Araç bilgilerinizi doldurarak aracınızın ilanını oluşturun." 
+          onHandleBack={handleBack} 
+          onHandleNext={handleNext} 
+          activeStep={currentStepIndex} 
+          stepLabel={currentStep.label}
+          allSteps={allSteps}
+        />
+      )
+    }
+
+    if(currentStep.path === "aciklama"){
+      return(
+        <CreateAdvertsDescription
+          title="İlan Oluştur"
           desc="Araç bilgilerinizi doldurarak aracınızın ilanını oluşturun." 
           onHandleBack={handleBack} 
           onHandleNext={handleNext} 

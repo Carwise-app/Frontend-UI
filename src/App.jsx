@@ -120,8 +120,9 @@ export default function App() {
           >
             <Route index element={<LearnLoginPage />} />
             <Route path="marka" element={<LearnMainPage />} />
-            <Route path="yil" element={<LearnMainPage />} />
+            <Route path="seri" element={<LearnMainPage/>}/>
             <Route path="model" element={<LearnMainPage />} />
+            <Route path="yil" element={<LearnMainPage />} />
             <Route path="govde-tipi" element={<LearnMainPage />} />
             <Route path="renk" element={<LearnMainPage />} />
             <Route path="yakit-tipi" element={<LearnMainPage />} />
@@ -153,6 +154,7 @@ export default function App() {
           >
             <Route index path="marka" element={<CreateAdverts />} />
             <Route path="yil" element={<CreateAdverts />} />
+            <Route path="seri" element={<CreateAdverts />} />
             <Route path="model" element={<CreateAdverts />} />
             <Route path="govde-tipi" element={<CreateAdverts />} />
             <Route path="renk" element={<CreateAdverts />} />
@@ -160,6 +162,8 @@ export default function App() {
             <Route path="vites-tipi" element={<CreateAdverts />} />
             <Route path="detaylar" element={<CreateAdverts />} />
             <Route path="hasar" element={<CreateAdverts />} />
+            <Route path="fiyat-ve-baslik" element={<CreateAdverts />} />
+            <Route path="aciklama" element={<CreateAdverts />} />
             <Route path="fiyat-ve-baslik" element={<CreateAdverts />} />
           </Route>
         </Routes>

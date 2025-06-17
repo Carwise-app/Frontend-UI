@@ -1,9 +1,21 @@
-import { Box, Button, FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material'
-import React from 'react'
+import { Box, Button, FormControl, InputAdornment, InputLabel, MenuItem, Select, TextField } from '@mui/material'
+import React, { useState } from 'react'
 import CustomizedSteppers from './CustomizedSteppers';
 import DamageStepCard from './DamageStepCard';
 
+function formatNumber(value) {
+ if (!value) return '';
+  return value.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+
 export default function CreateAdvertsPrice({title, desc, allSteps, stepLabel, activeStep, onHandleNext, onHandleBack}) {
+  const [price, setPrice] = useState();
+  const [productTitle, setProductTitle] = useState();
+
+  const isFormValid = 
+      price !== "" &&
+      productTitle !== "";
+  
   return (
    <Box className='bg-[#f7f7f7] w-[70%] pt-5 pb-15 my-5 mx-auto rounded-sm min-h-160'>
         <Box className="bg-white w-[70%] mx-auto py-5 px-10 rounded-md flex flex-col shadow-xs border-1 border-gray-100">
@@ -23,7 +35,41 @@ export default function CreateAdvertsPrice({title, desc, allSteps, stepLabel, ac
             </Box>
           </Box>
           <form className='flex flex-col gap-y-3' >
-          
+            <TextField
+              fullWidth
+              label="Fiyat Bilgisi Giriniz"
+              value={formatNumber(price)}
+              onChange={(e) => {
+                const onlyDigits = e.target.value.replace(/\D/g, '');
+                if (onlyDigits.length <= 10) {
+                setPrice(onlyDigits);
+                }
+              }}
+              InputProps={{
+                endAdornment: <InputAdornment position="end">TL</InputAdornment>,
+              }}
+              placeholder="Örn: 2.000.000"
+              type="text"
+              variant="outlined"
+            />
+            <TextField
+              fullWidth
+              label="İlanınız için başlık yazın"
+              value={productTitle}
+              onChange={(e) => {
+                if(onlyDigits.length <= 80){
+                  setProductTitle(onlyDigits);
+                }
+              }}
+              placeholder='Sahibinden satılık araba'
+              type='text'
+              variant='outlined'
+            />
+            <Box className="flex justify-end">
+              <Button variant='outlined' color='error' disabled={!isFormValid}  onClick={onHandleNext}>
+                Devam Et
+              </Button>
+            </Box>
           </form>
         </Box>
       </Box>
