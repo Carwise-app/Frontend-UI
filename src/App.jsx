@@ -125,6 +125,7 @@ export default function App() {
             <Route path="yil" element={<LearnMainPage />} />
             <Route path="govde-tipi" element={<LearnMainPage />} />
             <Route path="renk" element={<LearnMainPage />} />
+            <Route path="motor-bilgisi" element={<LearnMainPage />} />
             <Route path="yakit-tipi" element={<LearnMainPage />} />
             <Route path="vites-tipi" element={<LearnMainPage />} />
             <Route path="km" element={<LearnMainPage />} />
@@ -164,7 +165,7 @@ export default function App() {
             <Route path="hasar" element={<CreateAdverts />} />
             <Route path="fiyat-ve-baslik" element={<CreateAdverts />} />
             <Route path="aciklama" element={<CreateAdverts />} />
-            <Route path="fiyat-ve-baslik" element={<CreateAdverts />} />
+            <Route path="konum-bilgisi" element={<CreateAdverts />} />
           </Route>
         </Routes>
       </AnimatePresence>

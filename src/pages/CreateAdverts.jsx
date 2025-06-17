@@ -5,10 +5,11 @@ import LearnPriceCard from '../components/LearnPriceCard'
 import SearchIcon from '@mui/icons-material/Search';
 import { useLocation, useNavigate } from 'react-router-dom';
 import LearnDamageMainPage from '../components/LearnDamageMainPage';
-import LearnDetailInfo from '../components/LearnDetailsInfo';
+import CreateDetailsInfo from '../components/CreateDetailsInfo';
 import LearnResultsMainPage from '../components/LearnResultsMainPage';
 import CreateAdvertsPrice from '../components/CreateAdvertsPrice';
 import CreateAdvertsDescription from '../components/CreateAdvertsDescription';
+import CreateAdvertsLocation from '../components/CreateAdvertsLocation';
 
 const steps = [
   { path: 'marka', label: 'Marka Seçiniz', placeholder: 'Aracınızın markasını arayın', options: ['BMW', 'Audi', 'Toyota'], next: 'seri' },
@@ -103,7 +104,7 @@ export default function CreateAdverts() {
   
     if (currentStep.path === 'detaylar') {
       return (
-        <LearnDetailInfo 
+        <CreateDetailsInfo 
           title="İlan Oluştur"
           desc="Araç bilgilerinizi doldurarak aracınızın ilanını oluşturun." 
           onHandleBack={handleBack} 
@@ -132,6 +133,20 @@ export default function CreateAdverts() {
     if(currentStep.path === "aciklama"){
       return(
         <CreateAdvertsDescription
+          title="İlan Oluştur"
+          desc="Araç bilgilerinizi doldurarak aracınızın ilanını oluşturun." 
+          onHandleBack={handleBack} 
+          onHandleNext={handleNext} 
+          activeStep={currentStepIndex} 
+          stepLabel={currentStep.label}
+          allSteps={allSteps}
+        />
+      )
+    }
+
+    if(currentStep.path === "konum-bilgisi"){
+      return(
+        <CreateAdvertsLocation
           title="İlan Oluştur"
           desc="Araç bilgilerinizi doldurarak aracınızın ilanını oluşturun." 
           onHandleBack={handleBack} 

@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import CustomizedSteppers from './CustomizedSteppers';
 import TextareaAutosize from '@mui/material/TextareaAutosize';
 
-export default function CreateAdvertsDescription({title, desc, allSteps, stepLabel, activeStep, onHandleNext, onHandleBack}) {
+export default function CreateAdvertsLocation({title, desc, allSteps, stepLabel, activeStep, onHandleNext, onHandleBack}) {
   const [text, setText] = useState('');
   const maxLength = 1200;
 
@@ -36,26 +36,7 @@ export default function CreateAdvertsDescription({title, desc, allSteps, stepLab
               </Box>
               <Box >
                 <form className='flex flex-col gap-y-3' >  
-                  <TextareaAutosize
-                    minRows={4}
-                    value={text}
-                    onChange={handleChange}
-                    placeholder="İlan açıklamanızı buraya yazınız..."
-                    className="w-full p-3 text-base bg-white border border-gray-300 rounded-md resize-none focus:outline-none focus:border-blue-500"
-                    />
-                  <Box className="flex justify-end mt-1">
-                    <Typography
-                      variant="caption"
-                      className={text.length >= maxLength ? 'text-red-600' : 'text-gray-500'}
-                      >
-                      {maxLength - text.length} karakter kaldı
-                    </Typography>
-                  </Box>
-                  <Box className="flex justify-end">
-                    <Button variant='outlined' color='error' disabled={!isFormValid}  onClick={onHandleNext}>
-                      Devam Et
-                    </Button>
-                  </Box>
+                  
                 </form>
               </Box>
             </Box>
