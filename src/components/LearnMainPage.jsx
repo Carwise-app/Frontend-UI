@@ -22,28 +22,30 @@ const steps = [
     path: "seri",
     label: "Seri Seçiniz",
     placeholder: "Aracınızın serisini arayın",
-    options: ["320i", "A4", "Corolla"],
+    options: [],
     next: "model",
   },
   {
     path: "model",
     label: "Model Seçiniz",
     placeholder: "Aracınızın modelini arayın",
-    options: ["1.6 Urban", "1.3 Multijet"],
+    options: [],
     next: "yil",
   },
   {
     path: "yil",
     label: "Yıl Seçiniz",
     placeholder: "Aracınızın yılını arayın",
-    options: ["2020", "2021", "2022"],
+    options: Array.from({ length: 2025 - 1990 + 1 }, (_, i) =>
+      String(1990 + i)
+    ),
     next: "govde-tipi",
   },
   {
     path: "govde-tipi",
     label: "Gövde Tipi Seçiniz",
     placeholder: "Aracınızın gövde tipini arayın",
-    options: ["Sedan", "SUV", "Hatchback"],
+    options: ["Sedan", "SUV", "Hatchback", "Coupe", "Station Wagon"],
     next: "yakit-tipi",
   },
   {
@@ -97,21 +99,6 @@ const steps = [
   },
 ];
 
-// const fetchBrands = async () => {
-//   const response = await api.get("/brand/", {
-//     headers: {
-//       Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-//     },
-//   });
-//   const data = await response.data;
-
-//   const brandNames = data.brands?.map((item) => item.name);
-//   steps[0].options = brandNames;
-//   console.log(data.brands.map((item) => item.name));
-// };
-
-// fetchBrands();
-
 const allSteps = [
   "Marka",
   "Seri",
@@ -137,17 +124,31 @@ export default function LearnMainPage() {
   const [searchValue, setSearchValue] = useState("");
 
   const [brands, setBrands] = useState([]);
+  const [selectedBrand, setSelectedBrand] = useState(null);
+  const [selectedSeries, setSelectedSeries] = useState(null);
 
   const filteredOptions = (() => {
-    const options = currentStep.path === "marka" ? brands : currentStep.options;
+    let options = [];
+    if (currentStep.path === "marka") {
+      options = brands;
+    } else if (currentStep.path === "seri" && selectedBrand?.series) {
+      options = selectedBrand.series;
+    } else if (currentStep.path === "model" && selectedSeries?.models) {
+      options = selectedSeries.models;
+    } else {
+      options = currentStep.options;
+    }
+
     return Array.isArray(options)
       ? options.filter((option) =>
-          option.toLowerCase().includes(searchValue.trim().toLowerCase())
+          (option.name || option)
+            .toLowerCase()
+            .includes(searchValue.trim().toLowerCase())
         )
       : [];
   })();
 
-  // const [brands, setBrands] = useState([]);
+  // console.log(filteredOptions)
 
   // Marka verisini çek
   useEffect(() => {
@@ -159,8 +160,18 @@ export default function LearnMainPage() {
           },
         });
         const data = response.data;
-        const brandNames = data.brands?.map((item) => item.name) || [];
-        setBrands(brandNames);
+        const brandData =
+          data.brands?.map((item) => ({
+            id: item.id,
+            name: item.name,
+            series: item.series?.map((series) => ({
+              id: series.id,
+              name: series.name,
+              models: series.models,
+            })),
+          })) || [];
+        setBrands(brandData);
+        console.log("Marka verisi:", data);
       } catch (error) {
         console.error("Markalar alınamadı:", error);
       }
@@ -173,6 +184,25 @@ export default function LearnMainPage() {
 
   const handleOptionClick = (value) => {
     console.log(`Seçilen ${currentStep.path}:`, value);
+
+    // Marka seçildiğinde brand bilgisini kaydet
+    if (currentStep.path === "marka") {
+      setSelectedBrand(value);
+      setSelectedSeries(null); // Seri seçimini sıfırla
+      localStorage.setItem("selectedBrand", JSON.stringify(value));
+    }
+
+    // Seri seçildiğinde seri bilgisini kaydet
+    if (currentStep.path === "seri") {
+      setSelectedSeries(value);
+      localStorage.setItem("selectedSeries", JSON.stringify(value));
+    }
+
+    // Model seçildiğinde model bilgisini kaydet
+    if (currentStep.path === "model") {
+      localStorage.setItem("selectedModel", JSON.stringify(value));
+    }
+
     if (currentStep.next) {
       navigate(`/fiyat-ogren/${currentStep.next}`);
       setSearchValue("");
@@ -180,6 +210,22 @@ export default function LearnMainPage() {
       console.log("Tüm adımlar tamamlandı.");
     }
   };
+
+  // Sayfa yüklendiğinde localStorage'dan seçimleri al
+  useEffect(() => {
+    const savedBrand = localStorage.getItem("selectedBrand");
+    const savedSeries = localStorage.getItem("selectedSeries");
+
+    if (savedBrand) {
+      const brandData = JSON.parse(savedBrand);
+      setSelectedBrand(brandData);
+    }
+
+    if (savedSeries) {
+      const seriesData = JSON.parse(savedSeries);
+      setSelectedSeries(seriesData);
+    }
+  }, []);
 
   const handleBack = () => {
     if (currentStepIndex > 0) {
@@ -290,9 +336,10 @@ export default function LearnMainPage() {
         <Box className="flex w-[70%] mx-auto mt-5 flex-wrap justify-start gap-x-[11px] gap-y-3">
           {filteredOptions.map((option) => (
             <LearnPriceCard
-              key={option}
+              key={option.id || option}
               onClick={() => handleOptionClick(option)}
-              content={option}
+              content={option.name || option}
+              carId={option.id}
             />
           ))}
         </Box>
