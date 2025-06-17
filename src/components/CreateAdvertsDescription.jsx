@@ -5,7 +5,7 @@ import TextareaAutosize from '@mui/material/TextareaAutosize';
 
 export default function CreateAdvertsDescription({title, desc, allSteps, stepLabel, activeStep, onHandleNext, onHandleBack}) {
   const [text, setText] = useState('');
-  const maxLength = 1200;
+  const maxLength = 2500;
 
   const handleChange = (e) => {
     if (e.target.value.length <= maxLength) {

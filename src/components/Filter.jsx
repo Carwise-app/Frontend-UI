@@ -172,6 +172,8 @@ export default function FilterBox({ onBrandSelect, onSeriesSelect, onSubmit }) {
           title2="İlçe"
           provinces={provinces}
           districts={districts}
+          setCity={setCity}
+          setDistrict={setDistrict}
           city={city}
           district={district}
           onCityChange={e => setCity(e.target.value)}

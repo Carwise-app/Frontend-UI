@@ -66,7 +66,7 @@ const steps = [
     path: "renk",
     label: "Renk Seçiniz",
     placeholder: "Aracınızın rengini arayın",
-    options: ["Siyah", "Beyaz", "Kırmızı"],
+    options: ["Siyah", "Beyaz", "Gri","Kırmızı","Mavi","Yeşil","Kahverengi","Sarı","Turuncu","Mor"],
     next: "motor-bilgisi",
   },
   {

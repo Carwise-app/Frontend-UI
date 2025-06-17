@@ -3,10 +3,14 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-import React from 'react'
+import React, { useState } from 'react'
 
-export default function AccordionCityBox({ mainTitle, title1, title2, provinces, districts, city, district, onCityChange, onDistrictChange }) {
-
+export default function AccordionCityBox({ mainTitle, title1, title2, provinces, districts, city, district, onCityChange, onDistrictChange,setCity, setDistrict }) {
+        const handleCityChange = (e) => {
+        setCity(e.target.value);
+        setDistrict(''); 
+        };
+    
   return (
     <Accordion expanded={true} disableGutters square className="rounded-none">
         <AccordionSummary
@@ -36,12 +40,13 @@ export default function AccordionCityBox({ mainTitle, title1, title2, provinces,
                     ))}
                 </Select>
             </FormControl>
-            <FormControl sx={{ minWidth: 120 }} size="small">
+            <FormControl sx={{ minWidth: 120 }} size="small" disabled={!city}>
                 <InputLabel>{title2}</InputLabel>
                 <Select
                     value={district}
                     label="İlçe"
                     onChange={onDistrictChange}
+                    onCityChange={handleCityChange}
                     MenuProps={{
                         PaperProps:{
                             style:{

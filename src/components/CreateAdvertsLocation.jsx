@@ -1,20 +1,25 @@
-import { Box, Button, InputAdornment, TextField, Typography } from '@mui/material';
+import { Box, Button, FormControl, InputAdornment, InputLabel, MenuItem, Select, TextField, Typography } from '@mui/material';
 import React, { useState } from 'react'
 import CustomizedSteppers from './CustomizedSteppers';
 import TextareaAutosize from '@mui/material/TextareaAutosize';
 
 export default function CreateAdvertsLocation({title, desc, allSteps, stepLabel, activeStep, onHandleNext, onHandleBack}) {
-  const [text, setText] = useState('');
-  const maxLength = 1200;
+  const [selectedCity, setSelectedCity] = useState('');
+  const [selectedDistrict, setSelectedDistrict] = useState('');
+  const [selectedNeighborhood, setSelectedNeighborhood] = useState('');
 
-  const handleChange = (e) => {
-    if (e.target.value.length <= maxLength) {
-      setText(e.target.value);
-    }
+
+  const handleCityChange = (e) => {
+    setSelectedCity(e.target.value);
+    setSelectedDistrict(''); 
+    setSelectedNeighborhood('');
   };
 
-  const isFormValid = 
-      text !== "" ;
+  const handleDistrictChange = (e) => {
+    setSelectedDistrict(e.target.value);
+    setSelectedNeighborhood('');
+  };
+
 
   return (
     <Box className='bg-[#f7f7f7] w-[70%] pt-5 pb-15 my-5 mx-auto rounded-sm min-h-160'>
@@ -35,8 +40,36 @@ export default function CreateAdvertsLocation({title, desc, allSteps, stepLabel,
                 </Box>
               </Box>
               <Box >
-                <form className='flex flex-col gap-y-3' >  
-                  
+                <form className='grid grid-cols-3 gap-x-4' >  
+                  <FormControl fullWidth size='medium'>
+                    <InputLabel id="demo-simple-select-label">İl</InputLabel>
+                    <Select
+                      value={selectedCity}
+                      label="İl"
+                      onChange={handleCityChange}
+                    >
+                        <MenuItem value="naber">naber</MenuItem>
+                    </Select>
+                  </FormControl>
+                  <FormControl fullWidth size='medium' disabled={!selectedCity}>
+                    <InputLabel id="demo-simple-select-label">İlçe</InputLabel>
+                    <Select
+                     value={selectedDistrict}
+                      label="İlçe"
+                      onChange={handleDistrictChange}
+                    >
+                        <MenuItem value="naber">naber</MenuItem>
+                    </Select>
+                  </FormControl> 
+                  <FormControl fullWidth size='medium' disabled={!selectedDistrict}>
+                    <InputLabel id="demo-simple-select-label">Mahalle</InputLabel>
+                    <Select
+                      value={selectedNeighborhood}
+                      label="Mahalle"
+                    >
+                        <MenuItem value="naber">naber</MenuItem>
+                    </Select>
+                  </FormControl>     
                 </form>
               </Box>
             </Box>
