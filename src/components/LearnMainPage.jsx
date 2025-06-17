@@ -8,6 +8,7 @@ import LearnKmMainPage from "./LearnKmMainPage";
 import LearnDamageMainPage from "./LearnDamageMainPage";
 import LearnResultsMainPage from "./LearnResultsMainPage";
 import api from "../api/axios";
+import LearnEngineDetailsPage from "./LearnEngineDetailsPage";
 
 const steps = [
   {
@@ -65,7 +66,14 @@ const steps = [
     path: "renk",
     label: "Renk Seçiniz",
     placeholder: "Aracınızın rengini arayın",
-    options: ["Siyah", "Beyaz", "Gri", "Kırmızı", "Mor", "Mavi", "Turuncu", "Diğer"],
+    options: ["Siyah", "Beyaz", "Kırmızı"],
+    next: "motor-bilgisi",
+  },
+  {
+    path: "motor-bilgisi",
+    label: "Motor Bilgilerini Giriniz",
+    placeholder: "",
+    options: [],
     next: "km",
   },
   {
@@ -100,6 +108,7 @@ const allSteps = [
   "Yakıt Tipi",
   "Vites Tipi",
   "Renk",
+  "Motor Bilgisi",
   "Kilometre",
   "Hasar Kaydı",
   "Fiyat Tahmini",
@@ -242,6 +251,20 @@ export default function LearnMainPage() {
         allSteps={allSteps}
       />
     );
+  }
+
+  if(currentStep.path === "motor-bilgisi"){
+    return(
+      <LearnEngineDetailsPage
+        title="Arabam Kaç Para?"
+        desc="Araç bilgilerinizi seçerek aracınızın fiyatı öğrenin."
+        onHandleBack={handleBack}
+        onHandleNext={handleNext}
+        activeStep={currentStepIndex}
+        stepLabel={currentStep.label}
+        allSteps={allSteps}
+      />      
+    )
   }
 
   if (currentStep.path === "km") {
