@@ -38,7 +38,7 @@ const steps = [
     placeholder: "Aracınızın yılını arayın",
     options: Array.from({ length: 2025 - 1990 + 1 }, (_, i) =>
       String(1990 + i)
-    ),
+    ).reverse(),
     next: "govde-tipi",
   },
   {
@@ -66,7 +66,7 @@ const steps = [
     path: "renk",
     label: "Renk Seçiniz",
     placeholder: "Aracınızın rengini arayın",
-    options: ["Siyah", "Beyaz", "Gri","Kırmızı","Mavi","Yeşil","Kahverengi","Sarı","Turuncu","Mor"],
+    options: ["Siyah", "Beyaz", "Gri","Kırmızı","Mavi","Yeşil","Kahverengi","Sarı","Turuncu","Mor","Bordo","Diğer"],
     next: "motor-bilgisi",
   },
   {

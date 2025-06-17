@@ -26,6 +26,7 @@ import YayindaOlmayanlar from "./components/YayindaOlmayanlar";
 import { useSnackbar } from "./context/SnackbarContext";
 import ResetPassword from "./pages/ResetPassword";
 import CreateAdverts from "./pages/CreateAdverts";
+import ProductDetailsPage from "./pages/ProductDetailsPage";
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -112,10 +113,11 @@ export default function App() {
       <AnimatePresence mode="wait">
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/arac-satin-al">
+          <Route path="/arac-satin-al" >
             <Route index element={<SearchCar />} />
             <Route path=":brand" element={<SearchCar />} />
           </Route>
+          <Route path="/arac-detay/:id" element={<ProductDetailsPage />} />
           <Route
             path="/fiyat-ogren"
             element={<LearnPrice isLoggedIn={isLoggedIn} />}

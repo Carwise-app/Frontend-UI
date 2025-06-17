@@ -2,11 +2,13 @@ import { Box, Link, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import ShowcaseCard from "./Card";
 import api from "../api/axios";
+import { useNavigate } from "react-router-dom";
 
 export default function ShowcaseArea() {
   const [showAll, setShowAll] = useState(false);
   const [listings, setListings] = useState([]);
   const [randomExtras, setRandomExtras] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     api
@@ -30,7 +32,7 @@ export default function ShowcaseArea() {
     const shuffled = [...remaining].sort(() => 0.5 - Math.random());
     const selectedExtras = shuffled.slice(0, 8);
     setRandomExtras(selectedExtras);
-    setShowAll(true);
+    setShowAll(prev => !prev);
   };
 
   // Gösterilecek veriler:
@@ -47,20 +49,20 @@ export default function ShowcaseArea() {
       {/* Kartlar */}
       <Box className="grid grid-cols-4 gap-5 px-5">
         {visibleListings.map((listing, index) => (
-          <Link key={index} href="#" underline="none">
+          <Box key={index} onClick={() => navigate(`/arac-detay/${listing.slug}`)} className="cursor-pointer">
             <ShowcaseCard listing={listing} />
-          </Link>
+          </Box>
         ))}
       </Box>
 
-      {listings.length > 12 && !showAll && (
+      {listings.length > 12 &&  (
         <Box className="flex justify-center mt-3">
           <button
             onClick={handleShowMore}
             className="text-xl rounded-4xl px-8 py-2 cursor-pointer mt-3
               border-2 border-gray-400 text-gray-400 hover:bg-[#dc143c] hover:border-[#dc143c] hover:text-white transition"
           >
-            Daha Fazlası
+            {!showAll ? "Daha Fazlası" : "Gizle"}
           </button>
         </Box>
       )}

@@ -8,7 +8,6 @@ import api from '../api/axios';
 export default function LearnDamageMainPage({activeStep,onHandleBack,stepLabel,onHandleNext,title,desc,allSteps}) {
   const [loading, setLoading] = useState(false);
 
-  // Debug fonksiyonu - localStorage değerlerini kontrol et
   const debugLocalStorage = () => {
     console.log("=== LOCALSTORAGE DEBUG ===");
     console.log("selectedBrand:", localStorage.getItem("selectedBrand"));
@@ -25,16 +24,16 @@ export default function LearnDamageMainPage({activeStep,onHandleBack,stepLabel,o
     console.log("selectedDamage:", localStorage.getItem("selectedDamage"));
   };
 
-  // API çağrısı fonksiyonu
+ 
   const sendPredictionRequest = async () => {
     try {
       setLoading(true);
       console.log("=== TAHMİN İSTEĞİ BAŞLADI ===");
       
-      // Debug: localStorage değerlerini kontrol et
+     
       debugLocalStorage();
       
-      // localStorage'dan tüm seçimleri al
+      
       const selectedBrand = JSON.parse(localStorage.getItem("selectedBrand") || "{}");
       const selectedSeries = JSON.parse(localStorage.getItem("selectedSeries") || "{}");
       const selectedModel = JSON.parse(localStorage.getItem("selectedModel") || "{}");
@@ -63,7 +62,7 @@ export default function LearnDamageMainPage({activeStep,onHandleBack,stepLabel,o
       console.log("- Hasar:", selectedDamage);
       console.log("- Tramer:", selectedDamage.tramer);
 
-      // Hasar verilerini işle
+      
       const chips = selectedDamage.chips || {};
       let orjinalSayisi = 0;
       let boyaliSayisi = 0;
@@ -80,7 +79,7 @@ export default function LearnDamageMainPage({activeStep,onHandleBack,stepLabel,o
 
       console.log("Hasar sayıları:", { orjinalSayisi, boyaliSayisi, degisenSayisi });
 
-      // API'ye gönderilecek veri objesi
+      
       const predictionData = {
         "Boyalı_sayısı": boyaliSayisi,
         "Değişen_sayısı": degisenSayisi,
@@ -89,7 +88,7 @@ export default function LearnDamageMainPage({activeStep,onHandleBack,stepLabel,o
         "Marka": selectedBrand.name || "",
         "Model": selectedModel.name || "",
         "Motor_Gücü": parseInt(selectedMotorGucu) || 0,
-        "Motor_Hacmi": parseInt(selectedMotorHacmi) || 0, // cc cinsinden
+        "Motor_Hacmi": parseInt(selectedMotorHacmi) || 0, 
         "Orjinal_sayısı": orjinalSayisi,
         "Renk": selectedColor,
         "Seri": selectedSeries.name || "",
@@ -116,11 +115,11 @@ export default function LearnDamageMainPage({activeStep,onHandleBack,stepLabel,o
       console.log("Status:", response.status);
       console.log("Data:", response.data);
       
-      // Tahmin sonucunu localStorage'a kaydet
+    
       localStorage.setItem("predictionResult", JSON.stringify(response.data));
       console.log("Tahmin sonucu localStorage'a kaydedildi");
       
-      // Başarılı olduğunda sonraki sayfaya geç
+     
       onHandleNext();
       
     } catch (error) {

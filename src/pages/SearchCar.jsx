@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 import SearchCarList from '../components/SearchCarList';
 import FilterBox from '../components/Filter';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 
 const ITEMS_PER_PAGE = 10;
@@ -22,6 +22,7 @@ export default function SearchCar() {
   const [activeFilters, setActiveFilters] = useState({});
 
   const location = useLocation();
+  const navigate = useNavigate();
   const queryParams = new URLSearchParams(location.search);
   const searchQuery = queryParams.get('q')?.toLowerCase() || '';
 
@@ -151,9 +152,9 @@ export default function SearchCar() {
 
         {currentCars.length > 0 ? (
           <>
-            <Box className="flex flex-col gap-y-4">
+            <Box className="flex flex-col gap-y-4" >
               {currentCars.map(item => (
-                <SearchCarList key={item.id} item={item} />
+                <SearchCarList key={item.id} item={item} onClick={() => navigate(`/arac-detay/${item.slug}`)} />
               ))}
             </Box>
             <Box className="flex justify-center mt-8">

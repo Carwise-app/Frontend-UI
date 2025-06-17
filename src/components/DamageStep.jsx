@@ -4,7 +4,7 @@ import DamageStepCard from './DamageStepCard';
 
 export default function DamageStep({stepLabel, onClick}) {
     const [tramer, setTramer] = useState('');
-    const options = ["Belirtilmemiş","Orjinal", "Boyalı", "Lokal Boyalı", "Değişen" ];
+    const options = ["Orjinal", "Boyalı", "Lokal Boyalı", "Değişen" ];
     const categories = [
         "Ön Tampon","Arka Tampon",
         "Sol ön çamurluk","Motor kaputu","Sağ ön çamurluk",
@@ -23,12 +23,12 @@ export default function DamageStep({stepLabel, onClick}) {
         
         const init = {};
         categories.forEach(cat => {
-            init[cat] = "Belirtilmemiş";
+            init[cat] = "Orjinal";
         });
         return init;
     });
 
-    // Sayfa yüklendiğinde localStorage'dan tramer değerini al
+    
     useEffect(() => {
         const savedDamage = localStorage.getItem('selectedDamage');
         if (savedDamage) {
@@ -46,7 +46,7 @@ export default function DamageStep({stepLabel, onClick}) {
         };
         setSelectedChips(newSelectedChips);
         
-        // Hasar bilgilerini localStorage'a kaydet
+        
         const damageData = {
             chips: newSelectedChips,
             tramer: tramer
@@ -58,7 +58,7 @@ export default function DamageStep({stepLabel, onClick}) {
     const handleTramerChange = (value) => {
         setTramer(value);
         
-        // Tramer değerini localStorage'a kaydet
+    
         const damageData = {
             chips: selectedChips,
             tramer: value

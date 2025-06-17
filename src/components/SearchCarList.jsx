@@ -2,7 +2,7 @@ import { Box, Stack } from '@mui/material';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import React from 'react';
 
-export default function SearchCarList({ item }) {
+export default function SearchCarList({ item, onClick }) {
   const imageUrl = item.image?.path
     ? `https://carwisegw.yusuftalhaklc.com${item.image.path}`
     : '';
@@ -14,7 +14,7 @@ export default function SearchCarList({ item }) {
   const price = item.price?.toLocaleString() || '';
 
   return (
-    <Box className="bg-white shadow-sm rounded-sm w-full h-50 flex cursor-pointer hover:shadow-[#ffb8c6] overflow-hidden">
+    <Box className="bg-white shadow-sm rounded-sm w-full h-50 flex cursor-pointer hover:shadow-[#ffb8c6] overflow-hidden" onClick={onClick}>
       <Box className="bg-gray-50 w-[30%] object-contain rounded-l-xl flex items-center justify-center">
         <img className="object-contain border-gray-100 pointer-events-none border-r-1" src={imageUrl} alt="car photo" />
       </Box>
