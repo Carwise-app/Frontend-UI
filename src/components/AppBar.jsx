@@ -50,8 +50,13 @@ export default function AppBar({onOpenClick, isLoggedIn, onLogout, setIsLoggedIn
     <>
     <Box className={`bg-[#FDFDFD] w-full h-18 shadow-md flex items-center ${isKokpitOrFiyatOgren ? `justify-between px-[7%]`:`justify-around`}`}>
       <Box className='flex gap-28'>
-        <NavLink to="/">
-          <p className='text-[32px] text-black  font-serif font-black cursor-pointer tracking-wide'>CARWISE</p>
+        <NavLink to="/" className='flex items-center gap-2'>
+          <img 
+            src="/src/assets/logo.png" 
+            alt="Carwise Logo" 
+            className='w-8 h-8 filter brightness-0 saturate-100 invert-[0.2] sepia-100 saturate-10000 hue-rotate-0'
+          />
+          <p className='text-[32px] text-black font-normal cursor-pointer tracking-wide'>CARWISE</p>
         </NavLink>
         {!shouldHideFooter &&
           <Box className='flex bg-gray-200 rounded w-90'>
