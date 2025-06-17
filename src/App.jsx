@@ -18,6 +18,8 @@ import QuickTransactions from "./components/QuickTransactions";
 import MyAds from "./components/MyAds";
 import FavMyAds from "./components/FavMyAds";
 import MyMessages from "./components/MyMessages";
+import ChatDetail from "./components/ChatDetail";
+import Notifications from "./components/Notifications";
 import ProfileAndSettings from "./components/ProfileAndSettings";
 import YayindaOlanlar from "./components/YayindaOlanlar";
 import YayindaOlmayanlar from "./components/YayindaOlmayanlar";
@@ -142,11 +144,13 @@ export default function App() {
             </Route>
             <Route path="fav-ilan" element={<FavMyAds />} />
             <Route path="mesajlarim" element={<MyMessages />} />
+            <Route path="bildirimlerim" element={<Notifications />} />
             <Route
               path="profil-ve-ayarlar"
               element={<ProfileAndSettings onOpenClick={handleOpenClick} />}
             />
           </Route>
+          <Route path="/sohbet/:receiver_id" element={<ChatDetail />} />
           <Route path="/sifre-yenile" element={<ResetPassword />} />
           <Route
             path="/ilan-olustur"

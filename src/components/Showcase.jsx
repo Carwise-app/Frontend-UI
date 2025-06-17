@@ -6,10 +6,16 @@ import api from "../api/axios";
 export default function ShowcaseArea() {
   const [showAll, setShowAll] = useState(false);
   const [listings, setListings] = useState([]);
+  const [randomExtras, setRandomExtras] = useState([]);
 
   useEffect(() => {
     api
-      .get("/listing/")
+      .get("/listing/", {
+        params: {
+          page: 1,
+          limit: 100,
+        },
+      })
       .then((res) => {
         setListings(res.data.listings || []);
       })
@@ -18,8 +24,18 @@ export default function ShowcaseArea() {
       });
   }, []);
 
-  // Eğer showAll false ise sadece ilk 4 kayıt göster
-  const visibleListings = showAll ? listings : listings.slice(0, 4);
+  const handleShowMore = () => {
+    // İlk 4'ü dışarıda tut, geri kalanlar içinden rastgele 8 tanesini seç
+    const remaining = listings.slice(4);
+    const shuffled = [...remaining].sort(() => 0.5 - Math.random());
+    const selectedExtras = shuffled.slice(0, 8);
+    setRandomExtras(selectedExtras);
+    setShowAll(true);
+  };
+
+  // Gösterilecek veriler:
+  const firstFour = listings.slice(0, 4);
+  const visibleListings = showAll ? [...firstFour, ...randomExtras] : firstFour;
 
   return (
     <Box className="m-10">
@@ -37,14 +53,14 @@ export default function ShowcaseArea() {
         ))}
       </Box>
 
-      {listings.length > 4 && (
+      {listings.length > 12 && !showAll && (
         <Box className="flex justify-center mt-3">
           <button
-            onClick={() => setShowAll(!showAll)}
+            onClick={handleShowMore}
             className="text-xl rounded-4xl px-8 py-2 cursor-pointer mt-3
               border-2 border-gray-400 text-gray-400 hover:bg-[#dc143c] hover:border-[#dc143c] hover:text-white transition"
           >
-            {showAll ? "Gizle" : "Daha Fazlası"}
+            Daha Fazlası
           </button>
         </Box>
       )}

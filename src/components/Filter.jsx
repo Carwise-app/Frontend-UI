@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {Box, Link, Button} from '@mui/material';
+import { Box, Link, Button } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import api from '../api/axios';
 import AccordionRadioBox from './AccordionRadioBox';
@@ -19,6 +19,7 @@ export default function FilterBox({ onBrandSelect, onSeriesSelect, onSubmit }) {
   const [gear, setGear] = useState('');
   const [fuel, setFuel] = useState('');
   const [color, setColor] = useState('');
+  const [colorOptions, setColorOptions] = useState([]); // ✅ Dinamik renk listesi
 
   const [minYear, setMinYear] = useState('');
   const [maxYear, setMaxYear] = useState('');
@@ -29,34 +30,43 @@ export default function FilterBox({ onBrandSelect, onSeriesSelect, onSubmit }) {
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
 
-  // Fetch brand/series data
+  // ✅ Marka ve serileri çek
   useEffect(() => {
-    api.get('/listing/')
+    api.get('/brand/')
       .then(res => {
-        const list = res.data.listings || [];
-        const mp = new Map(), tmp = {};
-        list.forEach(item => {
-          const { brand: b, series: s } = item;
-          if (!mp.has(b.id)) {
-            mp.set(b.id, b);
-            tmp[b.id] = s ? [s] : [];
-          } else if (s && !tmp[b.id].some(x => x.id === s.id)) {
-            tmp[b.id].push(s);
-          }
+        const brandList = res.data.brands || [];
+        const tmpSeriesMap = {};
+        brandList.forEach(brand => {
+          tmpSeriesMap[brand.id] = brand.series || [];
         });
-        setBrands(Array.from(mp.values()).sort((a, b) => a.name.localeCompare(b.name)));
-        setSeriesMap(tmp);
+        setBrands(brandList.sort((a, b) => a.name.localeCompare(b.name)));
+        setSeriesMap(tmpSeriesMap);
       })
       .catch(console.error);
   }, []);
 
-  // Fetch provinces & districts
+  // ✅ Dinamik renkleri çek
+  useEffect(() => {
+    api.get('/listing/', { params: { limit: 1000 } })
+      .then(res => {
+        const listings = res.data.listings || [];
+        const colorSet = new Set();
+        listings.forEach(item => {
+          if (item.color) colorSet.add(item.color.trim());
+        });
+        setColorOptions(Array.from(colorSet).sort((a, b) => a.localeCompare(b, 'tr')));
+      })
+      .catch(console.error);
+  }, []);
+
+  // İl/ilçe
   useEffect(() => {
     fetch('https://turkiyeapi.herokuapp.com/api/v1/provinces')
       .then(r => r.json())
       .then(d => setProvinces(d.data))
       .catch(console.error);
   }, []);
+
   useEffect(() => {
     if (city) {
       fetch(`https://turkiyeapi.herokuapp.com/api/v1/provinces?name=${city}`)
@@ -92,11 +102,17 @@ export default function FilterBox({ onBrandSelect, onSeriesSelect, onSubmit }) {
 
   const handleReset = () => {
     setSelectedBrandId(null);
-    setCity(''); setDistrict('');
-    setGear(''); setFuel(''); setColor('');
-    setMinYear(''); setMaxYear('');
-    setMinKm(''); setMaxKm('');
-    setMinPrice(''); setMaxPrice('');
+    setCity('');
+    setDistrict('');
+    setGear('');
+    setFuel('');
+    setColor('');
+    setMinYear('');
+    setMaxYear('');
+    setMinKm('');
+    setMaxKm('');
+    setMinPrice('');
+    setMaxPrice('');
     onSubmit({});
   };
 
@@ -104,10 +120,9 @@ export default function FilterBox({ onBrandSelect, onSeriesSelect, onSubmit }) {
     setter(formatNumber(e.target.value));
   };
 
-  const fuelType = ['Benzin','Dizel','LPG','Elektrik'];
-  const gearType = ['Manuel','Otomatik','Yarı Otomatik'];
-  const colorOptions = ['Beyaz','Siyah','Gri','Kırmızı']; 
-  
+  const fuelType = ['Benzin', 'Dizel', 'LPG', 'Elektrik'];
+  const gearType = ['Manuel', 'Otomatik', 'Yarı Otomatik'];
+
   return (
     <Box className="flex flex-col">
       <Box className="w-48 p-4 border rounded bg-white max-h-[280px] overflow-hidden" sx={{ boxShadow: 1 }}>
@@ -115,16 +130,25 @@ export default function FilterBox({ onBrandSelect, onSeriesSelect, onSubmit }) {
         <Box component="ul" sx={{ listStyle: 'none', p: 0, m: 0, overflowY: 'auto', maxHeight: 220 }}>
           {brands.map(b => (
             <Box component="li" key={b.id} sx={{ mb: 1 }}>
-              <Link component={RouterLink} underline="none" onClick={() => { setSelectedBrandId(b.id); onBrandSelect(b.id); }}
+              <Link
+                component={RouterLink}
+                underline="none"
+                onClick={() => { setSelectedBrandId(b.id); onBrandSelect(b.id); }}
                 sx={{
                   display: 'block',
                   color: selectedBrandId === b.id ? '#dc143c' : 'text.primary',
                   fontWeight: selectedBrandId === b.id ? 'bold' : 'normal',
                   '&:hover': { color: '#dc143c' }
                 }}
-              >{b.name}</Link>
+              >
+                {b.name}
+              </Link>
               {selectedBrandId === b.id && seriesMap[b.id]?.map(s => (
-                <Link key={s.id} component="button" underline="none" onClick={() => onSeriesSelect(s.id)}
+                <Link
+                  key={s.id}
+                  component="button"
+                  underline="none"
+                  onClick={() => onSeriesSelect(s.id)}
                   sx={{
                     display: 'block',
                     pl: 2, mt: 0.5,
@@ -132,7 +156,9 @@ export default function FilterBox({ onBrandSelect, onSeriesSelect, onSubmit }) {
                     color: 'grey.600',
                     '&:hover': { color: 'error.main' },
                   }}
-                >{s.name}</Link>
+                >
+                  {s.name}
+                </Link>
               ))}
             </Box>
           ))}
@@ -140,41 +166,80 @@ export default function FilterBox({ onBrandSelect, onSeriesSelect, onSubmit }) {
       </Box>
 
       <Box className="w-48 mt-4">
-        {/* Address */}
-        <AccordionCityBox mainTitle="Adres" title1="İl" title2="İlçe" provinces={provinces} districts={districts} city={city} district={district} onCityChange={e => setCity(e.target.value)} onDistrictChange={e => setDistrict(e.target.value)}/> 
+        <AccordionCityBox
+          mainTitle="Adres"
+          title1="İl"
+          title2="İlçe"
+          provinces={provinces}
+          districts={districts}
+          city={city}
+          district={district}
+          onCityChange={e => setCity(e.target.value)}
+          onDistrictChange={e => setDistrict(e.target.value)}
+        />
 
-        {/* Vites Tipi */}
-        <AccordionRadioBox name="gear" title="Vites Tipi" options={gearType} type={gear} onChange={e => setGear(e.target.value)}/>
-       
+        <AccordionRadioBox
+          name="gear"
+          title="Vites Tipi"
+          options={gearType}
+          type={gear}
+          onChange={e => setGear(e.target.value)}
+        />
 
-        {/* Yakıt Tipi */}
-        <AccordionRadioBox name="fuel" title="Yakıt Tipi" options={fuelType} type={fuel} onChange={e => setFuel(e.target.value)}/>
+        <AccordionRadioBox
+          name="fuel"
+          title="Yakıt Tipi"
+          options={fuelType}
+          type={fuel}
+          onChange={e => setFuel(e.target.value)}
+        />
 
-        {/* Renk */}
-        <AccordionRadioBox name="color" title="Renk" options={colorOptions} type={color} onChange={e => setColor(e.target.value)}/>
+        <AccordionRadioBox
+          name="color"
+          title="Renk"
+          options={colorOptions}
+          type={color}
+          onChange={e => setColor(e.target.value)}
+        />
 
-        {/* Year */}
-        <AccordionBox labelMin="Min Yıl" labelMax="Max Yıl" title="Yıl Aralığı" minValue={minYear} onMinChange={e => setMinYear(e.target.value.replace(/[^\d]/g,''))} maxValue={maxYear} onMaxChange={e => setMaxYear(e.target.value.replace(/[^\d]/g,''))}/>
+        <AccordionBox
+          labelMin="Min Yıl"
+          labelMax="Max Yıl"
+          title="Yıl Aralığı"
+          minValue={minYear}
+          onMinChange={e => setMinYear(e.target.value.replace(/[^\d]/g, ''))}
+          maxValue={maxYear}
+          onMaxChange={e => setMaxYear(e.target.value.replace(/[^\d]/g, ''))}
+        />
 
-        {/* KM */}
-        <AccordionBox labelMin="Min KM" labelMax="Max KM" title="Kilometre Aralığı" minValue={minKm} onMinChange={commonNumberHandler(setMinKm)} maxValue={maxKm} onMaxChange={commonNumberHandler(setMaxKm)}/>
+        <AccordionBox
+          labelMin="Min KM"
+          labelMax="Max KM"
+          title="Kilometre Aralığı"
+          minValue={minKm}
+          onMinChange={commonNumberHandler(setMinKm)}
+          maxValue={maxKm}
+          onMaxChange={commonNumberHandler(setMaxKm)}
+        />
 
-        {/* Price */}
-        <AccordionBox labelMin="Min Fiyat" labelMax="Max Fiyat" title="Fiyat Aralığı" minValue={minPrice} onMinChange={commonNumberHandler(setMinPrice)} maxValue={maxPrice} onMaxChange={commonNumberHandler(setMaxPrice)}/>
-        
-        {/* Buttons */}
+        <AccordionBox
+          labelMin="Min Fiyat"
+          labelMax="Max Fiyat"
+          title="Fiyat Aralığı"
+          minValue={minPrice}
+          onMinChange={commonNumberHandler(setMinPrice)}
+          maxValue={maxPrice}
+          onMaxChange={commonNumberHandler(setMaxPrice)}
+        />
+
         <Box className="flex gap-2 mt-4">
           <Button variant="contained" color="error" fullWidth onClick={handleSearch}>Ara</Button>
-          <Button 
-          variant="outlined" 
-          fullWidth onClick={handleReset}
-          sx ={{
-            borderColor: 'info.main',
-            color: 'info.main',
-          }}
-          >
-          Temizle
-          </Button>
+          <Button
+            variant="outlined"
+            fullWidth
+            onClick={handleReset}
+            sx={{ borderColor: 'info.main', color: 'info.main' }}
+          >Temizle</Button>
         </Box>
       </Box>
     </Box>

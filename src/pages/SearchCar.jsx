@@ -16,59 +16,74 @@ const ITEMS_PER_PAGE = 10;
 
 export default function SearchCar() {
   const [carData, setCarData] = useState([]);
+  const [totalCount, setTotalCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [sorting, setSorting] = useState('');
+  const [activeFilters, setActiveFilters] = useState({});
 
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const searchQuery = queryParams.get('q')?.toLowerCase() || '';
 
+  // 🔁 Sayfa değiştiğinde veri çek
   useEffect(() => {
-    api.get('/listing/')
-      .then(res => setCarData(res.data.listings || []))
-      .catch(err => console.error("Araç verisi alınamadı:", err));
+    fetchFilteredData(activeFilters, currentPage);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [currentPage]);
+
+  // 🚀 Başlangıçta tüm araçları getir
+  useEffect(() => {
+    fetchFilteredData({}, 1);
   }, []);
 
-  const handlePageChange = (e, page) => {
-    setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  // 🔄 Filtrelenmiş veya sıralanmış veri al
+  const fetchFilteredData = (filters = {}, page = 1) => {
+    const params = {
+      ...filters,
+      page,
+      limit: ITEMS_PER_PAGE,
+      ...(sorting && { sort: 'price', order: sorting === 'price_asc' ? 'asc' : 'desc' }),
+    };
+
+    api.get('/listing/', { params })
+      .then(res => {
+        setCarData(res.data.listings || []);
+        setTotalCount(res.data.total || 0);
+        setActiveFilters(filters);
+      })
+      .catch(err => console.error("Araç verisi alınamadı:", err));
   };
 
+  // Filtrelerden gelenler
   const handleBrandSelect = brandId => {
     setCurrentPage(1);
-    api.get('/listing/', { params: { brand_id: brandId } })
-      .then(res => setCarData(res.data.listings || []))
-      .catch(err => console.error("Filtreli araç verisi alınamadı:", err));
+    fetchFilteredData({ ...activeFilters, brand_id: String(brandId) }, 1);
   };
 
   const handleSeriesSelect = seriesId => {
     setCurrentPage(1);
-    api.get('/listing/', { params: { series_id: seriesId } })
-      .then(res => setCarData(res.data.listings || []))
-      .catch(err => console.error("Seri filtresi ile veri alınamadı:", err));
+    fetchFilteredData({ ...activeFilters, series_id: String(seriesId) }, 1);
   };
 
   const handleSubmit = selectedFilters => {
     setCurrentPage(1);
-    api.get('/listing/', { params: selectedFilters })
-      .then(res => setCarData(res.data.listings || []))
-      .catch(err => console.error("Filtreli araç verisi alınamadı:", err));
+    fetchFilteredData(selectedFilters, 1);
   };
 
-  const sortedCars = [...carData].sort((a, b) => {
-    if (sorting === 'price_asc') return a.price - b.price;
-    if (sorting === 'price_desc') return b.price - a.price;
-    return 0;
-  });
+  const handlePageChange = (e, page) => {
+    setCurrentPage(page);
+  };
 
-  const filteredItems = sortedCars.filter(item =>
-    item.title?.toLowerCase().includes(searchQuery) ||
-    item.id?.toString().includes(searchQuery)
-  );
+  // Arama kutusu üzerinden gelen filtreleme
+  const filteredItems = searchQuery
+    ? carData.filter(item =>
+        item.title?.toLowerCase().includes(searchQuery) ||
+        item.id?.toString().includes(searchQuery)
+      )
+    : carData;
 
-  const totalPages = Math.ceil(filteredItems.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const currentCars = filteredItems.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
+  const currentCars = filteredItems;
 
   return (
     <Box className="flex h-full w-[75%] mx-auto gap-10 mb-20 mt-5 justify-between">
@@ -97,14 +112,19 @@ export default function SearchCar() {
               labelId="sorting-label"
               label="Sıralama Türü"
               value={sorting}
-              onChange={e => setSorting(e.target.value)}
+              onChange={e => {
+                setSorting(e.target.value);
+                setCurrentPage(1);
+                fetchFilteredData(activeFilters, 1);
+              }}
             >
               <MenuItem value="">Varsayılan</MenuItem>
-              <MenuItem value="price_asc">Ucuzdan Pahalıya</MenuItem>
-              <MenuItem value="price_desc">Pahalıdan Ucuza</MenuItem>
+              <MenuItem value="price_desc">Ucuzdan Pahalıya</MenuItem>
+              <MenuItem value="price_asc">Pahalıdan Ucuza</MenuItem>
             </Select>
           </FormControl>
         </Box>
+
         {currentCars.length > 0 ? (
           <>
             <Box className="flex flex-col gap-y-4">

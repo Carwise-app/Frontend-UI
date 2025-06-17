@@ -5,6 +5,7 @@ import GridViewIcon from '@mui/icons-material/GridView';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
+import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';  
 import PanelPhoto from '../assets/ControlPanelPhoto.jpg'
 import { NavLink, Outlet } from 'react-router-dom';
 import React from 'react'
@@ -56,6 +57,9 @@ export default function Kokpit({onLogout}) {
               </NavLink>
               <NavLink to="/kokpit/mesajlarim" className={({isActive}) => `flex items-center gap-x-1 hover:text-[#dc143c] cursor-pointer ${isActive ? `text-[#dc143c]` : `text-white`}`}>
                 <MailOutlineIcon />Mesajlarım
+              </NavLink>
+              <NavLink to="/kokpit/bildirimlerim" className={({isActive}) => `flex items-center gap-x-1 hover:text-[#dc143c] cursor-pointer ${isActive ? `text-[#dc143c]` : `text-white`}`}>
+                <NotificationsNoneIcon />Bildirimlerim
               </NavLink>
               <NavLink to="/kokpit/profil-ve-ayarlar" className={({isActive}) => `flex items-center gap-x-1 hover:text-[#dc143c] cursor-pointer ${isActive ? `text-[#dc143c]` : `text-white`}`}>
                 <SettingsIcon />Profil & Ayarlar
