@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import api from '../api/axios';
 import CheckIcon from '@mui/icons-material/Check';
 import MarkEmailUnreadIcon from '@mui/icons-material/MarkEmailUnread';
-import { Pagination } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import { Pagination, IconButton, Tooltip } from '@mui/material';
 
 export default function Notifications() {
   const [notifications, setNotifications] = useState([]);
@@ -14,13 +15,9 @@ export default function Notifications() {
     try {
       const res = await api.get(`/notification?page=${currentPage}&limit=${limit}`);
       setNotifications(res.data.notifications);
-
-      // total_pages backend'den geliyorsa doğrudan al
       if (res.data.total_pages) {
         setTotalPages(res.data.total_pages);
-      } 
-      // Eğer total_count varsa onunla hesapla
-      else if (res.data.total_count) {
+      } else if (res.data.total_count) {
         setTotalPages(Math.ceil(res.data.total_count / limit));
       }
     } catch (err) {
@@ -38,6 +35,15 @@ export default function Notifications() {
       fetchNotifications();
     } catch (err) {
       console.error('Bildirim okunamadı:', err);
+    }
+  };
+
+  const deleteNotification = async (id) => {
+    try {
+      await api.delete(`/notification/${id}`);
+      fetchNotifications();
+    } catch (err) {
+      console.error('Bildirim silinemedi:', err);
     }
   };
 
@@ -66,12 +72,21 @@ export default function Notifications() {
                     {new Date(notif.created_at * 1000).toLocaleString()}
                   </p>
                 </div>
-                <div className="ml-4 mt-1">
+
+                <div className="flex flex-col items-end ml-4 mt-1">
                   {notif.read ? (
                     <CheckIcon className="text-green-500" />
                   ) : (
                     <MarkEmailUnreadIcon className="text-red-500" />
                   )}
+                  <Tooltip title="Sil">
+                    <IconButton size="small" onClick={(e) => {
+                      e.stopPropagation(); // tıklama bildirim okuma işlevini tetiklemesin
+                      deleteNotification(notif.id);
+                    }}>
+                      <CloseIcon className="text-red-500" fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
                 </div>
               </div>
             ))
@@ -79,7 +94,6 @@ export default function Notifications() {
         </div>
       </div>
 
-      {/* Sayfa numarası en altta ve ortalanmış şekilde */}
       <div className="flex justify-center mt-8">
         <Pagination
           count={totalPages}
