@@ -1,7 +1,6 @@
 import { Box, TextField } from '@mui/material'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import DamageStepCard from './DamageStepCard';
-
 
 export default function DamageStep({stepLabel, onClick}) {
     const [tramer, setTramer] = useState('');
@@ -16,18 +15,56 @@ export default function DamageStep({stepLabel, onClick}) {
     ]
     
     const [selectedChips, setSelectedChips] = useState(() => {
-    const init = {};
-    categories.forEach(cat => {
-      init[cat] = "Belirtilmemiş";
+        const savedDamage = localStorage.getItem('selectedDamage');
+        if (savedDamage) {
+            const parsed = JSON.parse(savedDamage);
+            return parsed.chips || {};
+        }
+        
+        const init = {};
+        categories.forEach(cat => {
+            init[cat] = "Belirtilmemiş";
+        });
+        return init;
     });
-    return init;
-  });
+
+    // Sayfa yüklendiğinde localStorage'dan tramer değerini al
+    useEffect(() => {
+        const savedDamage = localStorage.getItem('selectedDamage');
+        if (savedDamage) {
+            const parsed = JSON.parse(savedDamage);
+            if (parsed.tramer) {
+                setTramer(parsed.tramer);
+            }
+        }
+    }, []);
   
     const handleChipChange = (category, value) => {
-    setSelectedChips(prev => ({
-        ...prev,
-        [category]: value
-    }));
+        const newSelectedChips = {
+            ...selectedChips,
+            [category]: value
+        };
+        setSelectedChips(newSelectedChips);
+        
+        // Hasar bilgilerini localStorage'a kaydet
+        const damageData = {
+            chips: newSelectedChips,
+            tramer: tramer
+        };
+        localStorage.setItem('selectedDamage', JSON.stringify(damageData));
+        console.log("Hasar bilgileri kaydedildi:", damageData);
+    };
+
+    const handleTramerChange = (value) => {
+        setTramer(value);
+        
+        // Tramer değerini localStorage'a kaydet
+        const damageData = {
+            chips: selectedChips,
+            tramer: value
+        };
+        localStorage.setItem('selectedDamage', JSON.stringify(damageData));
+        console.log("Tramer kaydedildi:", value);
     };
     
   return (
@@ -52,10 +89,11 @@ export default function DamageStep({stepLabel, onClick}) {
                     sx={{width:"90%"}}
                     label="Tramer Bilgisi"
                     value={tramer}
-                    onChange={(e) => setTramer(e.target.value)}
+                    onChange={(e) => handleTramerChange(e.target.value)}
                     placeholder="Örn: 1200"
-                    type="text"
+                    type="number"
                     variant="outlined"
+                    inputProps={{ min: 0, step: 1 }}
                 />                      
             </Box>
         </Box>

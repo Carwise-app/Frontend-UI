@@ -1,9 +1,25 @@
 import { Box, Button, TextField } from '@mui/material'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import CustomizedSteppers from './CustomizedSteppers'
 
 export default function LearnKmMainPage({activeStep,onHandleBack,stepLabel,onHandleNext,title,desc,allSteps}) {
     const [kmValue, setKmValue] = useState('');
+
+    // Sayfa yüklendiğinde localStorage'dan kilometre değerini al
+    useEffect(() => {
+        const savedKm = localStorage.getItem('selectedKm');
+        if (savedKm) {
+            setKmValue(savedKm);
+        }
+    }, []);
+
+    const handleContinue = () => {
+        // Kilometre değerini localStorage'a kaydet
+        localStorage.setItem('selectedKm', kmValue);
+        console.log("Kilometre kaydedildi:", kmValue);
+        onHandleNext();
+    };
+
   return (
     <Box className='bg-[#f7f7f7] w-[70%] pt-5 pb-15 my-5 mx-auto rounded-sm min-h-160'>
         <Box className="bg-white w-[70%] mx-auto py-5 px-10 rounded-md flex flex-col shadow-xs border-1 border-gray-100">
@@ -28,11 +44,12 @@ export default function LearnKmMainPage({activeStep,onHandleBack,stepLabel,onHan
             value={kmValue}
             onChange={(e) => setKmValue(e.target.value)}
             placeholder="Örn: 120000"
-            type="text"
+            type="number"
             variant="outlined"
+            inputProps={{ min: 0, step: 1 }}
           />
           <Button
-            onClick={onHandleNext}
+            onClick={handleContinue}
             variant='contained'
             color='error'
             className='flex w-[30%]'

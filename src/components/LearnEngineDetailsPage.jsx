@@ -10,7 +10,15 @@ export default function LearnEngineDetailsPage({activeStep,onHandleBack,stepLabe
       engineSizeValue !== "" &&
       enginePowerValue !== "" ;
 
-  
+  const handleContinue = () => {
+    // Motor değerlerini localStorage'a kaydet
+    localStorage.setItem('selectedMotorGucu', enginePowerValue);
+    localStorage.setItem('selectedMotorHacmi', engineSizeValue);
+    console.log("Motor gücü kaydedildi:", enginePowerValue);
+    console.log("Motor hacmi kaydedildi:", engineSizeValue);
+    onHandleNext();
+  };
+
   return (
     <Box className='bg-[#f7f7f7] w-[70%] pt-5 pb-15 my-5 mx-auto rounded-sm min-h-160'>
         <Box className="bg-white w-[70%] mx-auto py-5 px-10 rounded-md flex flex-col shadow-xs border-1 border-gray-100">
@@ -64,7 +72,7 @@ export default function LearnEngineDetailsPage({activeStep,onHandleBack,stepLabe
                 variant='outlined'
               />
               <Box className="flex justify-end">
-                <Button variant='outlined' color='error' disabled={!isFormValid}  onClick={onHandleNext}>
+                <Button variant='outlined' color='error' disabled={!isFormValid}  onClick={handleContinue}>
                   Devam Et
                 </Button>
               </Box>

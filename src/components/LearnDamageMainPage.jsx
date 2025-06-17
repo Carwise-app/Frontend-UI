@@ -1,10 +1,147 @@
 import { Box, Button } from '@mui/material'
-import React from 'react'
+import React, { useState } from 'react'
 import CustomizedSteppers from './CustomizedSteppers'
 import DamageStep from './DamageStep'
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import api from '../api/axios';
 
 export default function LearnDamageMainPage({activeStep,onHandleBack,stepLabel,onHandleNext,title,desc,allSteps}) {
+  const [loading, setLoading] = useState(false);
+
+  // Debug fonksiyonu - localStorage değerlerini kontrol et
+  const debugLocalStorage = () => {
+    console.log("=== LOCALSTORAGE DEBUG ===");
+    console.log("selectedBrand:", localStorage.getItem("selectedBrand"));
+    console.log("selectedSeries:", localStorage.getItem("selectedSeries"));
+    console.log("selectedModel:", localStorage.getItem("selectedModel"));
+    console.log("selectedYear:", localStorage.getItem("selectedYear"));
+    console.log("selectedBodyType:", localStorage.getItem("selectedBodyType"));
+    console.log("selectedFuelType:", localStorage.getItem("selectedFuelType"));
+    console.log("selectedTransmission:", localStorage.getItem("selectedTransmission"));
+    console.log("selectedColor:", localStorage.getItem("selectedColor"));
+    console.log("selectedMotorGucu:", localStorage.getItem("selectedMotorGucu"));
+    console.log("selectedMotorHacmi:", localStorage.getItem("selectedMotorHacmi"));
+    console.log("selectedKm:", localStorage.getItem("selectedKm"));
+    console.log("selectedDamage:", localStorage.getItem("selectedDamage"));
+  };
+
+  // API çağrısı fonksiyonu
+  const sendPredictionRequest = async () => {
+    try {
+      setLoading(true);
+      console.log("=== TAHMİN İSTEĞİ BAŞLADI ===");
+      
+      // Debug: localStorage değerlerini kontrol et
+      debugLocalStorage();
+      
+      // localStorage'dan tüm seçimleri al
+      const selectedBrand = JSON.parse(localStorage.getItem("selectedBrand") || "{}");
+      const selectedSeries = JSON.parse(localStorage.getItem("selectedSeries") || "{}");
+      const selectedModel = JSON.parse(localStorage.getItem("selectedModel") || "{}");
+      const selectedYear = localStorage.getItem("selectedYear") || "";
+      const selectedBodyType = localStorage.getItem("selectedBodyType") || "";
+      const selectedFuelType = localStorage.getItem("selectedFuelType") || "";
+      const selectedTransmission = localStorage.getItem("selectedTransmission") || "";
+      const selectedColor = localStorage.getItem("selectedColor") || "";
+      const selectedMotorGucu = localStorage.getItem("selectedMotorGucu") || "";
+      const selectedMotorHacmi = localStorage.getItem("selectedMotorHacmi") || "";
+      const selectedKm = localStorage.getItem("selectedKm") || "";
+      const selectedDamage = JSON.parse(localStorage.getItem("selectedDamage") || "{}");
+
+      console.log("LocalStorage'dan alınan veriler:");
+      console.log("- Marka:", selectedBrand);
+      console.log("- Seri:", selectedSeries);
+      console.log("- Model:", selectedModel);
+      console.log("- Yıl:", selectedYear);
+      console.log("- Gövde Tipi:", selectedBodyType);
+      console.log("- Yakıt Tipi:", selectedFuelType);
+      console.log("- Vites Tipi:", selectedTransmission);
+      console.log("- Renk:", selectedColor);
+      console.log("- Motor Gücü:", selectedMotorGucu);
+      console.log("- Motor Hacmi:", selectedMotorHacmi);
+      console.log("- Kilometre:", selectedKm);
+      console.log("- Hasar:", selectedDamage);
+      console.log("- Tramer:", selectedDamage.tramer);
+
+      // Hasar verilerini işle
+      const chips = selectedDamage.chips || {};
+      let orjinalSayisi = 0;
+      let boyaliSayisi = 0;
+      let degisenSayisi = 0;
+
+      console.log("Hasar chips:", chips);
+      console.log("Chips değerleri:", Object.values(chips));
+
+      Object.values(chips).forEach(value => {
+        if (value === "Orjinal") orjinalSayisi++;
+        else if (value === "Boyalı" || value === "Lokal Boyalı") boyaliSayisi++;
+        else if (value === "Değişen") degisenSayisi++;
+      });
+
+      console.log("Hasar sayıları:", { orjinalSayisi, boyaliSayisi, degisenSayisi });
+
+      // API'ye gönderilecek veri objesi
+      const predictionData = {
+        "Boyalı_sayısı": boyaliSayisi,
+        "Değişen_sayısı": degisenSayisi,
+        "Kasa_Tipi": selectedBodyType,
+        "Kilometre": parseInt(selectedKm) || 0,
+        "Marka": selectedBrand.name || "",
+        "Model": selectedModel.name || "",
+        "Motor_Gücü": parseInt(selectedMotorGucu) || 0,
+        "Motor_Hacmi": parseInt(selectedMotorHacmi) || 0, // cc cinsinden
+        "Orjinal_sayısı": orjinalSayisi,
+        "Renk": selectedColor,
+        "Seri": selectedSeries.name || "",
+        "Tramer": parseInt(selectedDamage.tramer) || 0,
+        "Vites_Tipi": selectedTransmission,
+        "Yakıt_Tipi": selectedFuelType,
+        "Yıl": parseInt(selectedYear) || 0
+      };
+
+      console.log("=== API'YE GÖNDERİLECEK VERİ ===");
+      console.log(JSON.stringify(predictionData, null, 2));
+
+      const token = localStorage.getItem("access_token");
+      console.log("Token:", token ? "Mevcut" : "Yok");
+
+      const response = await api.post("/predict/", predictionData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      console.log("=== API YANITI ===");
+      console.log("Status:", response.status);
+      console.log("Data:", response.data);
+      
+      // Tahmin sonucunu localStorage'a kaydet
+      localStorage.setItem("predictionResult", JSON.stringify(response.data));
+      console.log("Tahmin sonucu localStorage'a kaydedildi");
+      
+      // Başarılı olduğunda sonraki sayfaya geç
+      onHandleNext();
+      
+    } catch (error) {
+      console.error("=== TAHMİN HATASI ===");
+      console.error("Error:", error);
+      console.error("Error Message:", error.message);
+      console.error("Error Response:", error.response?.data);
+      console.error("Error Status:", error.response?.status);
+      
+      if (error.response?.status === 401) {
+        alert("Oturum süreniz dolmuş. Lütfen tekrar giriş yapın.");
+      } else if (error.response?.status === 400) {
+        alert("Gönderilen veriler hatalı. Lütfen tüm alanları doldurun.");
+      } else {
+        alert("Tahmin yapılırken bir hata oluştu. Lütfen tekrar deneyin.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
    <Box className='bg-[#f7f7f7] w-[70%] pt-5 pb-15 my-5 mx-auto rounded-sm min-h-160 shadow-xs border-1 border-gray-100'>
         <Box className="bg-white w-[70%] mx-auto py-5 px-10 rounded-md flex flex-col shadow-md ">
@@ -21,9 +158,13 @@ export default function LearnDamageMainPage({activeStep,onHandleBack,stepLabel,o
           <DamageStep onClick={onHandleNext} onNext={() => console.log('Hasar bilgisi tamamlandı')} stepLabel={stepLabel} />
             <Box>
                 <Box className="flex items-center justify-center h-full">
-                    <button className='bg-[#dc143c] py-2 px-6 text-white rounded-2xl cursor-pointer' onClick={onHandleNext}>
-                        <span>Aracının Fiyatını Öğren</span>
-                        <NavigateNextIcon/>
+                    <button 
+                      className='bg-[#dc143c] py-2 px-6 text-white rounded-2xl cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed' 
+                      onClick={sendPredictionRequest}
+                      disabled={loading}
+                    >
+                        <span>{loading ? 'Tahmin Yapılıyor...' : 'Aracının Fiyatını Öğren'}</span>
+                        {!loading && <NavigateNextIcon/>}
                     </button>   
                 </Box>
             </Box>

@@ -203,6 +203,31 @@ export default function LearnMainPage() {
       localStorage.setItem("selectedModel", JSON.stringify(value));
     }
 
+    // Yıl seçildiğinde yıl bilgisini kaydet
+    if (currentStep.path === "yil") {
+      localStorage.setItem("selectedYear", value);
+    }
+
+    // Gövde tipi seçildiğinde gövde tipi bilgisini kaydet
+    if (currentStep.path === "govde-tipi") {
+      localStorage.setItem("selectedBodyType", value);
+    }
+
+    // Yakıt tipi seçildiğinde yakıt tipi bilgisini kaydet
+    if (currentStep.path === "yakit-tipi") {
+      localStorage.setItem("selectedFuelType", value);
+    }
+
+    // Vites tipi seçildiğinde vites tipi bilgisini kaydet
+    if (currentStep.path === "vites-tipi") {
+      localStorage.setItem("selectedTransmission", value);
+    }
+
+    // Renk seçildiğinde renk bilgisini kaydet
+    if (currentStep.path === "renk") {
+      localStorage.setItem("selectedColor", value);
+    }
+
     if (currentStep.next) {
       navigate(`/fiyat-ogren/${currentStep.next}`);
       setSearchValue("");
