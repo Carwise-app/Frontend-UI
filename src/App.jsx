@@ -170,6 +170,7 @@ export default function App() {
             <Route path="fiyat-ve-baslik" element={<CreateAdverts />} />
             <Route path="aciklama" element={<CreateAdverts />} />
             <Route path="konum-bilgisi" element={<CreateAdverts />} />
+            <Route path="fotograf-yukle" element={<CreateAdverts />} />
           </Route>
         </Routes>
       </AnimatePresence>

@@ -20,6 +20,14 @@ export default function CreateAdvertsLocation({title, desc, allSteps, stepLabel,
     setSelectedNeighborhood('');
   };
 
+  const handleNeighborhoodChange = (e) => {
+    setSelectedNeighborhood(e.target.value)
+  }
+
+  const isFormValid = 
+      selectedCity !== "" &&
+      selectedDistrict !== "" && 
+      selectedNeighborhood !== "";
 
   return (
     <Box className='bg-[#f7f7f7] w-[70%] pt-5 pb-15 my-5 mx-auto rounded-sm min-h-160'>
@@ -40,36 +48,44 @@ export default function CreateAdvertsLocation({title, desc, allSteps, stepLabel,
                 </Box>
               </Box>
               <Box >
-                <form className='grid grid-cols-3 gap-x-4' >  
-                  <FormControl fullWidth size='medium'>
-                    <InputLabel id="demo-simple-select-label">İl</InputLabel>
-                    <Select
-                      value={selectedCity}
-                      label="İl"
-                      onChange={handleCityChange}
-                    >
-                        <MenuItem value="naber">naber</MenuItem>
-                    </Select>
-                  </FormControl>
-                  <FormControl fullWidth size='medium' disabled={!selectedCity}>
-                    <InputLabel id="demo-simple-select-label">İlçe</InputLabel>
-                    <Select
-                     value={selectedDistrict}
-                      label="İlçe"
-                      onChange={handleDistrictChange}
-                    >
-                        <MenuItem value="naber">naber</MenuItem>
-                    </Select>
-                  </FormControl> 
-                  <FormControl fullWidth size='medium' disabled={!selectedDistrict}>
-                    <InputLabel id="demo-simple-select-label">Mahalle</InputLabel>
-                    <Select
-                      value={selectedNeighborhood}
-                      label="Mahalle"
-                    >
-                        <MenuItem value="naber">naber</MenuItem>
-                    </Select>
-                  </FormControl>     
+                <form>
+                    <Box className='grid grid-cols-3 gap-x-4'>
+                        <FormControl fullWidth size='medium'>
+                            <InputLabel id="demo-simple-select-label">İl</InputLabel>
+                            <Select
+                            value={selectedCity}
+                            label="İl"
+                            onChange={handleCityChange}
+                            >
+                                <MenuItem value="naber">naber</MenuItem>
+                            </Select>
+                        </FormControl>
+                        <FormControl fullWidth size='medium' disabled={!selectedCity}>
+                            <InputLabel id="demo-simple-select-label">İlçe</InputLabel>
+                            <Select
+                            value={selectedDistrict}
+                            label="İlçe"
+                            onChange={handleDistrictChange}
+                            >
+                                <MenuItem value="naber">naber</MenuItem>
+                            </Select>
+                        </FormControl> 
+                        <FormControl fullWidth size='medium' disabled={!selectedDistrict}>
+                            <InputLabel id="demo-simple-select-label">Mahalle</InputLabel>
+                            <Select
+                            value={selectedNeighborhood}
+                            label="Mahalle"
+                            onChange={handleNeighborhoodChange}
+                            >
+                                <MenuItem value="naber">naber</MenuItem>
+                            </Select>
+                        </FormControl>  
+                    </Box>  
+                  <Box className="flex justify-end mt-4">
+                        <Button variant='outlined' color='error' disabled={!isFormValid}  onClick={onHandleNext}>
+                            Devam Et
+                        </Button>
+                    </Box> 
                 </form>
               </Box>
             </Box>

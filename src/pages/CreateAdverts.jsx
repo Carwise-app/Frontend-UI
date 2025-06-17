@@ -10,6 +10,7 @@ import LearnResultsMainPage from '../components/LearnResultsMainPage';
 import CreateAdvertsPrice from '../components/CreateAdvertsPrice';
 import CreateAdvertsDescription from '../components/CreateAdvertsDescription';
 import CreateAdvertsLocation from '../components/CreateAdvertsLocation';
+import CreateAdvertsPhoto from '../components/CreateAdvertsPhoto';
 
 const steps = [
   { path: 'marka', label: 'Marka Seçiniz', placeholder: 'Aracınızın markasını arayın', options: ['BMW', 'Audi', 'Toyota'], next: 'seri' },
@@ -24,8 +25,8 @@ const steps = [
   { path: 'hasar', label: 'Hasar Bilgilerinizi Doldurun', options: [], next: 'fiyat-ve-baslik' },
   { path: 'fiyat-ve-baslik', label: 'İlanınız İçin Fiyat ve Başlık Belirleyin', options: [], next: 'aciklama' },
   { path: 'aciklama', label: 'İlan İçin Açıklama Yazınız', options: [], next: 'konum-bilgisi' },
-  { path: 'konum-bilgisi', label: 'Konum Bilgisi Giriniz', options: [], next: 'fotoğraf-yükle' },
-  { path: 'fotoğraf-yükle', label: 'Aracınızın Fotoğraflarını yükleyiniz', options:[], next:null}
+  { path: 'konum-bilgisi', label: 'Konum Bilgisi Giriniz', options: [], next: 'fotograf-yukle' },
+  { path: 'fotograf-yukle', label: 'Aracınızın Fotoğraflarını yükleyiniz', options:[], next:null}
 ];
 
 const allSteps = [
@@ -155,6 +156,21 @@ export default function CreateAdverts() {
           stepLabel={currentStep.label}
           allSteps={allSteps}
         />
+      )
+    }
+
+    if(currentStep.path === "fotograf-yukle"){
+      return(
+        <CreateAdvertsPhoto
+          title="İlan Oluştur"
+          desc="Araç bilgilerinizi doldurarak aracınızın ilanını oluşturun." 
+          onHandleBack={handleBack} 
+          onHandleNext={handleNext} 
+          activeStep={currentStepIndex} 
+          stepLabel={currentStep.label}
+          allSteps={allSteps}
+        />
+        
       )
     }
 
