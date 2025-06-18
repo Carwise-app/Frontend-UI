@@ -40,6 +40,37 @@ export default function ChatDetail() {
   const messagesBoxRef = useRef(null);
   const accessToken = localStorage.getItem('access_token');
 
+  // Ses efekti için AudioContext
+  const audioContextRef = useRef(null);
+
+  // Hafif beep sesi oluştur
+  const playNotificationSound = () => {
+    try {
+      if (!audioContextRef.current) {
+        audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      
+      const oscillator = audioContextRef.current.createOscillator();
+      const gainNode = audioContextRef.current.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContextRef.current.destination);
+      
+      // Ses ayarları - hafif ve kısa
+      oscillator.frequency.setValueAtTime(800, audioContextRef.current.currentTime); // 800Hz
+      oscillator.type = 'sine';
+      
+      // Ses seviyesi - çok düşük
+      gainNode.gain.setValueAtTime(0.1, audioContextRef.current.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContextRef.current.currentTime + 0.1);
+      
+      oscillator.start(audioContextRef.current.currentTime);
+      oscillator.stop(audioContextRef.current.currentTime + 0.1); // 100ms
+    } catch (e) {
+      console.log('Ses çalınamadı:', e);
+    }
+  };
+
   useEffect(() => {
     if (!receiver_id) return;
     api.get(`/user/${receiver_id}`)
@@ -123,6 +154,10 @@ export default function ChatDetail() {
       try {
         const data = JSON.parse(event.data);
         if (data.message) {
+          // Karşı kullanıcıdan gelen mesajsa ses çal
+          if (data.sender?.id !== myId) {
+            playNotificationSound();
+          }
           setMessages(prev => [...prev, data]);
           scrollToBottom();
         }
@@ -200,6 +235,15 @@ export default function ChatDetail() {
         console.error("Listing bilgileri alınamadı:", err);
       });
   }, [listing_id]);
+
+  // Component unmount olduğunda AudioContext'i temizle
+  useEffect(() => {
+    return () => {
+      if (audioContextRef.current) {
+        audioContextRef.current.close();
+      }
+    };
+  }, []);
 
   return (
     <Box className="p-2 sm:p-4 max-w-2xl mx-auto flex flex-col h-[90vh]">
