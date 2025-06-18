@@ -14,7 +14,7 @@ export default function ShowcaseCard({ listing }) {
     : "";
 
   return (
-    <Card sx={{ maxWidth: 320,borderRadius: 3 }}>
+    <Card sx={{ width: '100%', maxWidth: '100%', borderRadius: 3 }}>
       <Box
         sx={{
           height: 180,
@@ -29,8 +29,6 @@ export default function ShowcaseCard({ listing }) {
           src={imageUrl}
           alt={listing.title}
           style={{
-            minWidth: "320px",
-            maxWidth: "320px",
             width: "100%",
             height: "100%",
             objectFit: "cover",

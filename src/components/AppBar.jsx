@@ -42,6 +42,7 @@ export default function AppBar({
     location.pathname.startsWith("/kokpit") ||
     location.pathname.startsWith("/fiyat-ogren");
   const [user, setUser] = useState(null);
+  const [token, setToken] = useState(localStorage.getItem("access_token"));
 
   const handleSearch = () => {
     if (searchValue.trim() !== "") {
@@ -66,7 +67,21 @@ export default function AppBar({
     setMobileMenuOpen(false);
   };
 
-  const token = localStorage.getItem("access_token");
+  useEffect(() => {
+    const currentToken = localStorage.getItem("access_token");
+    setToken(currentToken);
+    
+    if (currentToken && isLoggedIn) {
+      const decodedToken = parseJwt(currentToken);
+      if (decodedToken) {
+        setUser(decodedToken);
+      }
+    } else {
+      setUser(null);
+    }
+  }, [isLoggedIn]);
+
+  // Listen for storage changes
   useEffect(() => {
     const fetchUser = async () => {
       try {

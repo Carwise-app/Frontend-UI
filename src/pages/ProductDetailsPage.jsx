@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { Box, CircularProgress, Tab, Tabs, Avatar, Button, Typography, Paper, IconButton, Tooltip, TextField } from '@mui/material';
 import { ArrowBackIos, ArrowForwardIos, Phone, Chat, Map, InfoOutlined, Search } from '@mui/icons-material';
 import axios from 'axios';
+import SafeShoppingDialog from '../components/SafeShoppingDialog';
 
 const TABS = [
   { label: 'Açıklama', value: 'description' },
@@ -22,6 +23,10 @@ export default function ProductDetailsPage() {
   const [error, setError] = useState(null);
   const [mainImgIdx, setMainImgIdx] = useState(0);
   const [plate, setPlate] = useState('');
+  const [openSafeShopping, setOpenSafeShopping] = useState(false);
+
+  const handleOpenSafeShopping = () => setOpenSafeShopping(true);
+  const handleCloseSafeShopping = () => setOpenSafeShopping(false);
 
   useEffect(() => {
     setLoading(true);
@@ -54,7 +59,20 @@ export default function ProductDetailsPage() {
   // Satıcı
   const seller = data.created_by || {};
   const sellerName = seller.first_name ? seller.first_name + (seller.last_name ? ' ' + seller.last_name[0] + '.' : '') : 'Satıcı';
-  const sellerPhone = seller.country_code && seller.phone_number ? `${seller.country_code} ${seller.phone_number}` : '';
+  // Telefonu 0 (5xx) xxx xx xx formatında göster
+  let sellerPhone = '';
+  if (seller.phone_number && seller.phone_number.length === 10) {
+    // Eğer başında 0 yoksa ekle
+    const num = seller.phone_number;
+    const countryCode = seller.country_code || '+90';
+    sellerPhone = `${countryCode} (${num.slice(0,3)}) ${num.slice(3,6)} ${num.slice(6,8)} ${num.slice(8,10)}`;
+  } else if (seller.phone_number && seller.phone_number.length === 11 && seller.phone_number.startsWith('0')) {
+    const num = seller.phone_number.slice(1);
+    const countryCode = seller.country_code || '+90';
+    sellerPhone = `${countryCode} (${num.slice(0,3)}) ${num.slice(3,6)} ${num.slice(6,8)} ${num.slice(8,10)}`;
+  } else if (seller.country_code && seller.phone_number) {
+    sellerPhone = `${seller.country_code} ${seller.phone_number}`;
+  }
 
   // Konum
   const location = [data.city, data.district, data.neighborhood].filter(Boolean).join(', ');
@@ -73,12 +91,7 @@ export default function ProductDetailsPage() {
     { label: 'Motor Hacmi', value: data.detail?.engine_volume ? data.detail.engine_volume + ' cc' : '-' },
     { label: 'Motor Gücü', value: data.detail?.engine_power ? data.detail.engine_power + ' hp' : '-' },
     { label: 'Çekiş', value: data.detail?.drive_type || '-' },
-    { label: 'Araç Durumu', value: data.status === 1 ? 'İkinci El' : 'Sıfır' },
-    { label: 'Ort. Yakıt Tüketimi', value: data.detail?.average_fuel || '-' },
-    { label: 'Yakıt Deposu', value: data.detail?.fuel_tank || '-' },
-    { label: 'Boya-değişen', value: data.detail?.paint_status || '-' },
-    { label: 'Takasa Uygun', value: data.detail?.swap ? 'Takasa Uygun' : 'Uygun Değil' },
-    { label: 'Kimden', value: data.detail?.from || '-' },
+    { label: 'Araç Durumu', value: data.status === 1 ? 'İkinci El' : 'Sıfır' }, 
   ];
 
   // Açıklama (HTML)
@@ -111,21 +124,18 @@ export default function ProductDetailsPage() {
   const handleNext = () => setMainImgIdx(idx => (idx === gallery.length - 1 ? 0 : idx + 1));
   const handleThumbClick = idx => setMainImgIdx(idx);
 
+  const handlePhoneClick = () => {
+    if (sellerPhone) {
+      // Telefonla arama yap
+      const cleanPhone = sellerPhone.replace(/\s/g, '').replace(/[()]/g, '');
+      window.open(`tel:${cleanPhone}`);
+    }
+  };
+
   return (
     <Box className="bg-[#f7f7f7] min-h-screen flex flex-col items-center py-6 px-2 md:px-0">
-      {/* Breadcrumb */}
-      <Box className="flex items-center w-full max-w-5xl gap-1 px-4 py-2 text-xs text-gray-500">
-        <span className="cursor-pointer hover:underline">Vasita</span>
-        <span>{'>'}</span>
-        <span className="cursor-pointer hover:underline">Otomobil</span>
-        <span>{'>'}</span>
-        <span className="cursor-pointer hover:underline">{brand}</span>
-        <span>{'>'}</span>
-        <span className="cursor-pointer hover:underline">{series}</span>
-        <span>{'>'}</span>
-        <span className="font-semibold text-black">{model}</span>
-      </Box>
-
+      
+      
       {/* Ana Grid */}
       <Box className="flex flex-col w-full max-w-5xl gap-4 md:flex-row">
         {/* Sol ana panel */}
@@ -209,9 +219,8 @@ export default function ProductDetailsPage() {
           {/* Satıcı Kartı */}
           <Box className="flex flex-col items-center gap-2 p-4 bg-white border border-gray-100 shadow rounded-2xl">
             <Avatar sx={{ width: 56, height: 56 }}>{seller.first_name ? seller.first_name[0] : 'S'}</Avatar>
-            <Typography className="mt-1 text-base font-semibold">{sellerName}</Typography>
-            <Typography className="text-xs text-gray-500">Platinum Üye <span className="ml-1">3. YIL</span></Typography>
-            <Button variant="outlined" color="error" size="small" fullWidth startIcon={<Phone />}>Telefonu Göster</Button>
+            <Typography className="mt-1 text-base font-semibold">{sellerName}</Typography>  
+            <Button variant="outlined" color="error" size="small" fullWidth startIcon={<Phone />} onClick={handlePhoneClick}>{sellerPhone}</Button>
             <Button variant="contained" color="error" size="small" fullWidth startIcon={<Chat />}>Mesaj Gönder</Button>
           </Box>
 
@@ -236,9 +245,13 @@ export default function ProductDetailsPage() {
               <InfoOutlined color="info" fontSize="small" />
               <Typography className="text-xs text-gray-700">Güvenliğiniz için kapora göndermeyin ya da benzeri hiçbir ön ödeme yapmayın.</Typography>
             </Box>
-            <Button variant="text" color="primary" size="small" className="self-end px-0">Detaylı bilgi</Button>
+            <Button onClick={handleOpenSafeShopping} variant="text" color="primary" size="small" className="self-end px-0">Detaylı bilgi</Button>
           </Box>          
         </Box>
+        <SafeShoppingDialog 
+                open={openSafeShopping}
+                onClose={handleCloseSafeShopping}
+            />
       </Box>
     </Box>
   );
