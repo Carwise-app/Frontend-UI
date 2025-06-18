@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import api from '../api/axios';
+import CheckIcon from '@mui/icons-material/Check';
 import MarkEmailUnreadIcon from '@mui/icons-material/MarkEmailUnread';
-import DraftsIcon from '@mui/icons-material/Drafts';
 import CloseIcon from '@mui/icons-material/Close';
-import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
-import DoneAllIcon from '@mui/icons-material/DoneAll';
-import DeleteIcon from '@mui/icons-material/Delete';
 import { Pagination, IconButton, Tooltip, Box } from '@mui/material';
 import ControlPanelHeader from './ControlPanelHeader';
+import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone'; 
 
 export default function Notifications() {
   const [notifications, setNotifications] = useState([]);
@@ -19,9 +17,10 @@ export default function Notifications() {
     try {
       const res = await api.get(`/notification?page=${currentPage}&limit=${limit}`);
       setNotifications(res.data.notifications);
-
-      if (res.data.total) {
-        setTotalPages(Math.ceil(res.data.total / limit));
+      if (res.data.total_pages) {
+        setTotalPages(res.data.total_pages);
+      } else if (res.data.total_count) {
+        setTotalPages(Math.ceil(res.data.total_count / limit));
       }
     } catch (err) {
       console.error('Bildirimler alınamadı:', err);
@@ -41,15 +40,6 @@ export default function Notifications() {
     }
   };
 
-  const markAllAsRead = async () => {
-    try {
-      await api.put('/notification/mark-all-read');
-      fetchNotifications();
-    } catch (err) {
-      console.error('Tüm bildirimler okunamadı:', err);
-    }
-  };
-
   const deleteNotification = async (id) => {
     try {
       await api.delete(`/notification/${id}`);
@@ -59,39 +49,14 @@ export default function Notifications() {
     }
   };
 
-  const deleteAllNotifications = async () => {
-    try {
-      await api.delete('/notification/delete-all');
-      fetchNotifications();
-    } catch (err) {
-      console.error('Tüm bildirimler silinemedi:', err);
-    }
-  };
-
   return (
     <Box className="flex flex-col gap-y-4">
       <Box>
         <ControlPanelHeader 
           icon={<NotificationsNoneIcon sx={{ fontSize: 115, color: 'black', opacity: 0.1, marginRight: 1 }} />} 
           title="Bildirimlerim" 
-          description="Bu ekrandan bildirimlerinizi görüntüleyebilir, okuyabilir ve silebilirsiniz."
+          description="Bu ekrandan bildirimlerinizi görüntüleyebilir ve okuyabilirsiniz."
         />
-
-        {notifications.length > 0 && (
-          <Box className="flex justify-end items-center gap-x-2 mb-4">
-            <Tooltip title="Tümünü okundu yap">
-              <IconButton onClick={markAllAsRead}>
-                <DoneAllIcon className="text-red-500" />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Tümünü sil">
-              <IconButton onClick={deleteAllNotifications}>
-                <DeleteIcon className="text-red-600" />
-              </IconButton>
-            </Tooltip>
-          </Box>
-        )}
-
         <Box className="space-y-4">
           {notifications.length === 0 ? (
             <p className="text-gray-500">Henüz bir bildiriminiz yok.</p>
@@ -116,13 +81,13 @@ export default function Notifications() {
 
                 <Box className="flex flex-col items-end mt-1 ml-4">
                   {notif.read ? (
-                    <DraftsIcon className="text-red-500" />
+                    <CheckIcon className="text-green-500" />
                   ) : (
                     <MarkEmailUnreadIcon className="text-red-500" />
                   )}
                   <Tooltip title="Sil">
                     <IconButton size="small" onClick={(e) => {
-                      e.stopPropagation();
+                      e.stopPropagation(); // tıklama bildirim okuma işlevini tetiklemesin
                       deleteNotification(notif.id);
                     }}>
                       <CloseIcon className="text-red-500" fontSize="small" />
@@ -134,17 +99,16 @@ export default function Notifications() {
           )}
         </Box>
       </Box>
-
-      {notifications.length > 0 && (
-        <Box className="flex justify-center mt-8">
-          <Pagination
-            count={totalPages}
-            page={currentPage}
-            onChange={(e, value) => setCurrentPage(value)}
-            color="primary"
-          />
-        </Box>
-      )}
+        {notifications > 0 ? (   
+          <Box className="flex justify-center">
+            <Pagination
+              count={totalPages}
+              page={currentPage}
+              onChange={(e, value) => setCurrentPage(value)}
+              color="primary"
+            />
+          </Box>
+        ):("")}
     </Box>
   );
 }
