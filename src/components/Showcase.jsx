@@ -40,14 +40,14 @@ export default function ShowcaseArea() {
   const visibleListings = showAll ? [...firstFour, ...randomExtras] : firstFour;
 
   return (
-    <Box className="m-4 sm:m-6 md:m-8 lg:m-10">
+    <Box className="w-full max-w-[500px] mx-auto sm:m-6 md:m-8 lg:m-10">
       {/* Başlık */}
       <Typography variant="h3" className="flex justify-center pb-6 text-2xl sm:pb-8 md:pb-10 sm:text-3xl md:text-4xl lg:text-5xl">
         Vitrin
       </Typography>
 
       {/* Kartlar */}
-      <Box className="grid grid-cols-1 gap-3 px-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 sm:gap-4 md:gap-5 sm:px-3 md:px-4 lg:px-5">
+      <Box className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 sm:gap-4 md:gap-5 sm:px-3 md:px-4 lg:px-5">
         {visibleListings.map((listing, index) => (
           <Box key={index} onClick={() => navigate(`/arac-detay/${listing.slug}`)} className="cursor-pointer">
             <ShowcaseCard listing={listing} />

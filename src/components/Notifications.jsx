@@ -3,7 +3,9 @@ import api from '../api/axios';
 import CheckIcon from '@mui/icons-material/Check';
 import MarkEmailUnreadIcon from '@mui/icons-material/MarkEmailUnread';
 import CloseIcon from '@mui/icons-material/Close';
-import { Pagination, IconButton, Tooltip } from '@mui/material';
+import { Pagination, IconButton, Tooltip, Box } from '@mui/material';
+import ControlPanelHeader from './ControlPanelHeader';
+import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone'; 
 
 export default function Notifications() {
   const [notifications, setNotifications] = useState([]);
@@ -48,15 +50,19 @@ export default function Notifications() {
   };
 
   return (
-    <div className="p-6 min-h-[calc(100vh-100px)] flex flex-col justify-between">
-      <div>
-        <h2 className="text-xl font-bold mb-4">Bildirimlerim</h2>
-        <div className="space-y-4">
+    <Box className="flex flex-col gap-y-4">
+      <Box>
+        <ControlPanelHeader 
+          icon={<NotificationsNoneIcon sx={{ fontSize: 115, color: 'black', opacity: 0.1, marginRight: 1 }} />} 
+          title="Bildirimlerim" 
+          description="Bu ekrandan bildirimlerinizi görüntüleyebilir ve okuyabilirsiniz."
+        />
+        <Box className="space-y-4">
           {notifications.length === 0 ? (
             <p className="text-gray-500">Henüz bir bildiriminiz yok.</p>
           ) : (
             notifications.map((notif, idx) => (
-              <div
+              <Box
                 key={idx}
                 onClick={() => !notif.read && markAsRead(notif.id)}
                 className={`p-4 rounded shadow transition-all duration-300 cursor-pointer flex justify-between items-start ${
@@ -65,15 +71,15 @@ export default function Notifications() {
                     : "bg-red-50 border-l-4 border-red-400"
                 }`}
               >
-                <div>
+                <Box>
                   <p className="font-semibold">{notif.title}</p>
                   <p className="text-sm text-gray-600">{notif.message}</p>
-                  <p className="text-xs text-gray-400 mt-1">
+                  <p className="mt-1 text-xs text-gray-400">
                     {new Date(notif.created_at * 1000).toLocaleString()}
                   </p>
-                </div>
+                </Box>
 
-                <div className="flex flex-col items-end ml-4 mt-1">
+                <Box className="flex flex-col items-end mt-1 ml-4">
                   {notif.read ? (
                     <CheckIcon className="text-green-500" />
                   ) : (
@@ -87,21 +93,22 @@ export default function Notifications() {
                       <CloseIcon className="text-red-500" fontSize="small" />
                     </IconButton>
                   </Tooltip>
-                </div>
-              </div>
+                </Box>
+              </Box>
             ))
           )}
-        </div>
-      </div>
-
-      <div className="flex justify-center mt-8">
-        <Pagination
-          count={totalPages}
-          page={currentPage}
-          onChange={(e, value) => setCurrentPage(value)}
-          color="primary"
-        />
-      </div>
-    </div>
+        </Box>
+      </Box>
+        {notifications > 0 ? (   
+          <Box className="flex justify-center">
+            <Pagination
+              count={totalPages}
+              page={currentPage}
+              onChange={(e, value) => setCurrentPage(value)}
+              color="primary"
+            />
+          </Box>
+        ):("")}
+    </Box>
   );
 }

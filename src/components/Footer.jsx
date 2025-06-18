@@ -57,9 +57,9 @@ export default function Footer(){
 
                 <Box className="flex flex-col gap-y-2">
                     <span className="text-2xl">Hizmetlerimiz</span>
-                    <span className="text-sm text-gray-700" onClick={() => navigate('/fiyat-ogren')}>Arabamın Fiyatı Ne Kadar?</span>
-                    <span className="text-sm text-gray-700" onClick={() => navigate('/arac-satin-al')}>Araç Al</span>
-                    <span className="text-sm text-gray-700" onClick={() => navigate('/ilan-olustur/marka')}>İlan Ver</span>
+                    <span className="text-sm text-gray-700 cursor-pointer" onClick={() => navigate('/fiyat-ogren')}>Arabamın Fiyatı Ne Kadar?</span>
+                    <span className="text-sm text-gray-700 cursor-pointer" onClick={() => navigate('/arac-satin-al')}>Araç Al</span>
+                    <span className="text-sm text-gray-700 cursor-pointer" onClick={() => navigate('/ilan-olustur/marka')}>İlan Ver</span>
                 </Box>
 
                 <Box className="flex flex-col gap-y-2">
