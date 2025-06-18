@@ -429,7 +429,7 @@ export default function CreateAdverts() {
             <SearchIcon sx={{ fontSize: 40 }} className="text-[#dc143c]" />
           </button>
         </Box>
-        <Box className="flex w-[70%] mx-auto mt-5 flex-wrap justify-start gap-x-3 gap-y-3">
+        <Box className="grid grid-cols-4 w-[70%] mx-auto mt-5  justify-start gap-x-[11px] gap-y-3">
           {loading ? (
             <Box className="w-full py-8 text-center">
               <span className="text-gray-600">Yükleniyor...</span>
