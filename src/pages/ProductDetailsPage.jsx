@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Box, CircularProgress, Tab, Tabs, Avatar, Button, Typography, Paper, IconButton, Tooltip, TextField } from '@mui/material';
 import { ArrowBackIos, ArrowForwardIos, Phone, Chat, Map, InfoOutlined, Search } from '@mui/icons-material';
 import axios from 'axios';
@@ -17,6 +17,7 @@ const IMAGE_BASE = 'https://carwisegw.yusuftalhaklc.com/';
 
 export default function ProductDetailsPage() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState('description');
@@ -27,6 +28,37 @@ export default function ProductDetailsPage() {
 
   const handleOpenSafeShopping = () => setOpenSafeShopping(true);
   const handleCloseSafeShopping = () => setOpenSafeShopping(false);
+
+  const handleMessageClick = () => {
+    const accessToken = localStorage.getItem('access_token');
+    if (!accessToken) {
+      // Kullanıcı giriş yapmamış, login sayfasına yönlendir
+      navigate('/login');
+      return;
+    }
+    
+    // Kullanıcı giriş yapmış, chat sayfasına yönlendir
+    if (!data?.created_by?.id) {
+      console.error("Satıcı bilgileri bulunamadı");
+      return;
+    }
+    
+    // Kendi ilanına mesaj göndermeye çalışıyorsa engelle
+    try {
+      const tokenPayload = JSON.parse(atob(accessToken.split('.')[1]));
+      const currentUserId = tokenPayload.user_id || tokenPayload.sub || tokenPayload.id;
+      
+      if (currentUserId === data.created_by.id) {
+        alert("Kendi ilanınıza mesaj gönderemezsiniz!");
+        return;
+      }
+    } catch (e) {
+      console.error("Token parse hatası:", e);
+    }
+    
+    // Chat sayfasına yönlendir
+    navigate(`/sohbet/${data.created_by.id}?listing_id=${data.id}`);
+  };
 
   useEffect(() => {
     setLoading(true);
@@ -221,7 +253,7 @@ export default function ProductDetailsPage() {
             <Avatar sx={{ width: 56, height: 56 }}>{seller.first_name ? seller.first_name[0] : 'S'}</Avatar>
             <Typography className="mt-1 text-base font-semibold">{sellerName}</Typography>  
             <Button variant="outlined" color="error" size="small" fullWidth startIcon={<Phone />} onClick={handlePhoneClick}>{sellerPhone}</Button>
-            <Button variant="contained" color="error" size="small" fullWidth startIcon={<Chat />}>Mesaj Gönder</Button>
+            <Button variant="contained" color="error" size="small" fullWidth startIcon={<Chat />} onClick={handleMessageClick}>Mesaj Gönder</Button>
           </Box>
 
           {/* Fiyat kutusu */}

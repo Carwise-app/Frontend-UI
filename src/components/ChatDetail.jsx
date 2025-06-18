@@ -41,6 +41,17 @@ export default function ChatDetail() {
   const accessToken = localStorage.getItem('access_token');
 
   useEffect(() => {
+    if (!receiver_id) return;
+    api.get(`/user/${receiver_id}`)
+      .then(res => {
+        setUserInfo(res.data);
+      })
+      .catch(err => {
+        console.error("Kullanıcı bilgileri alınamadı:", err);
+      });
+  }, [receiver_id]);
+
+  useEffect(() => {
     if (!accessToken) return;
     try {
       const base64Url = accessToken.split('.')[1];
@@ -78,9 +89,6 @@ export default function ChatDetail() {
         const newMsgs = append ? [...msgs.reverse(), ...prev] : msgs.reverse();
         return newMsgs;
       });
-      if (msgs.length > 0 && !userInfo) {
-        setUserInfo(msgs[0].sender.id === receiver_id ? msgs[0].sender : msgs[0].receiver);
-      }
       setTimeout(() => {
         if (append && messagesBoxRef.current && prevScrollHeight !== null && prevScrollTop !== null) {
           const newScrollHeight = messagesBoxRef.current.scrollHeight;
