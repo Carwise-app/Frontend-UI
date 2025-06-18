@@ -164,9 +164,12 @@ export default function SearchCar() {
           </>
         ) : (
           <Box className="p-6 text-center text-gray-600">
-            {searchQuery
-              ? `"${searchQuery}" ile eşleşen bir ilan bulunamadı.`
-              : "Herhangi bir ilan bulunamadı."}
+            <p className="text-lg font-semibold mb-2">Sonuç bulunamadı</p>
+            <p>
+                  {searchQuery
+                       ? `"${searchQuery}" ile eşleşen bir ilan yok.`
+                    : "Aradığınız kriterlere uygun ilan bulunamadı."}
+            </p>
           </Box>
         )}
       </Box>
