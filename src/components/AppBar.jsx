@@ -23,6 +23,31 @@ import {
 } from "@mui/icons-material";
 import api from "../api/axios";
 
+// JWT token'ı decode etmek için güvenli fonksiyon
+const parseJwt = (token) => {
+  try {
+    if (!token) return null;
+    
+    // JWT token'ın payload kısmını al (ikinci kısım)
+    const base64Url = token.split('.')[1];
+    if (!base64Url) return null;
+    
+    // Base64'ten decode et
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+    
+    return JSON.parse(jsonPayload);
+  } catch (error) {
+    console.error('JWT decode hatası:', error);
+    return null;
+  }
+};
+
 export default function AppBar({
   onOpenClick,
   isLoggedIn,
@@ -72,9 +97,17 @@ export default function AppBar({
     setToken(currentToken);
     
     if (currentToken && isLoggedIn) {
-      const decodedToken = parseJwt(currentToken);
-      if (decodedToken) {
-        setUser(decodedToken);
+      try {
+        const decodedToken = parseJwt(currentToken);
+        if (decodedToken) {
+          setUser(decodedToken);
+        } else {
+          console.warn('JWT token decode edilemedi, profil API\'si kullanılacak');
+          setUser(null);
+        }
+      } catch (error) {
+        console.error('JWT decode hatası:', error);
+        setUser(null);
       }
     } else {
       setUser(null);
