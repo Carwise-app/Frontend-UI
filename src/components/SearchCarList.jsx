@@ -38,13 +38,12 @@ export default function SearchCarList({ item, onClick }) {
           <span className="text-sm text-gray-400 truncate w-[400px] block">{title}</span>
         </Stack>
         <Box className="grid w-[70%] grid-cols-3 gap-3 mt-2">    
-          <span className="flex items-center gap-1 text-sm"><CalendarTodayIcon sx={{color: "#4f4f4f"}} /> {item.year}</span>
-          <span className="flex items-center gap-1 text-sm"><SpeedIcon sx={{color: "#4f4f4f"}} /> {item.engine_power} HP</span>
-          <span className="flex items-center gap-1 text-sm"><PaletteIcon sx={{color: "#4f4f4f"}} /> {item.color}</span>
-          <span className="flex items-center gap-1 text-sm"><DirectionsCarIcon sx={{color: "#4f4f4f"}} /> {formattedKm} km</span>
-          <span className="flex items-center gap-1 text-sm"><LocalGasStationIcon sx={{color: "#4f4f4f"}} /> {item.fuel_type}</span>
-          <span className="flex items-center gap-1 text-sm"><SettingsOutlined sx={{color: "#4f4f4f"}} /> {item.engine_volume} cc</span>
-          {/* <span className="flex items-center gap-1"><Verified /> {item.drive_type}</span> */}  
+          <span className="flex gap-1 items-center text-sm"><CalendarTodayIcon sx={{color: "#4f4f4f"}} /> {item.year}</span>
+          <span className="flex gap-1 items-center text-sm"><SpeedIcon sx={{color: "#4f4f4f"}} /> {item.engine_power} HP</span>
+          <span className="flex gap-1 items-center text-sm"><PaletteIcon sx={{color: "#4f4f4f"}} /> {item.color}</span>
+          <span className="flex gap-1 items-center text-sm"><DirectionsCarIcon sx={{color: "#4f4f4f"}} /> {formattedKm} km</span>
+          <span className="flex gap-1 items-center text-sm"><LocalGasStationIcon sx={{color: "#4f4f4f"}} /> {item.fuel_type}</span>
+          <span className="flex gap-1 items-center text-sm"><SettingsOutlined sx={{color: "#4f4f4f"}} /> {item.engine_volume} cc</span>  
         </Box>
         <Box className="flex justify-end">
           <span className="text-2xl font-bold text-[#dc143c]">{price} ₺</span>

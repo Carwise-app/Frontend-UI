@@ -11,9 +11,8 @@ export default function LearnKmMainPage({activeStep,onHandleBack,stepLabel,onHan
     const [gearType, setGearType] = useState(""); 
     const [tractionType, setTractionType] = useState("");
   
-    const gearTypeOptions = ["Manuel", "Otomatik", "Yarı Otomatik"];
-    const tractionTypeOptions = ["Önden Çekiş","Arkadan Çekiş", "4x4"];
-    const colorOptions = ["Sarı", "Gri", "Mor", "Beyaz",  "Siyah", "Lacivert", "Kırmızı"]
+    const tractionTypeOptions = ["Önden Çekiş","Arkadan İtiş", "4x4"];
+  
 
     const handleChange = (e) => {
       setColor(e.target.value);
@@ -23,8 +22,6 @@ export default function LearnKmMainPage({activeStep,onHandleBack,stepLabel,onHan
       kmValue !== "" &&
       engineSizeValue !== "" &&
       enginePowerValue !== "" &&
-      color !== "" &&
-      gearType !== "" &&
       tractionType !== "";
 
     
@@ -41,34 +38,16 @@ export default function LearnKmMainPage({activeStep,onHandleBack,stepLabel,onHan
           <Button onClick={onHandleBack} variant='outlined' color='error'>Geri</Button>
         </Box>
         <Box className="flex flex-col w-[70%] mx-auto mt-4 gap-y-4">
-          <Box className="bg-white rounded-md shadow-xs ">
+          <Box className="bg-white rounded-md shadow-xs">
             <Box className="px-2 py-2">
               <span className='text-lg'>{stepLabel}</span>
             </Box>
           </Box>
           <form className='flex flex-col gap-y-3' >
-            <Box className="grid grid-cols-3 gap-x-1">
-              <DamageStepCard title="Vites Tipi" options={gearTypeOptions} selectedChip={gearType}  setSelectedChip={setGearType}/>
+            <Box className="flex mx-auto">
               <DamageStepCard title="Çekiş Tipi" options={tractionTypeOptions}  selectedChip={tractionType}  setSelectedChip={setTractionType}/>
-              <Box className="bg-white border-gray-100 rounded-md shadow-xs border-1">
-                <Box className="flex flex-col p-2 font-medium gap-y-2">
-                  <span>Renk Seçimi</span>
-                  <FormControl fullWidth size='small'>
-                    <InputLabel id="demo-simple-select-label">Renk</InputLabel>
-                    <Select
-                      value={color}
-                      label="Color"
-                      onChange={handleChange}
-                    >
-                      {colorOptions.map((opt)=> (
-                        <MenuItem value={opt}>{opt}</MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Box>
-              </Box>
             </Box>
-            <Box className="flex flex-col px-4 py-8 bg-white border-gray-100 rounded-md shadow-sm gap-y-4 border-1">
+            <Box className="flex flex-col gap-y-4 px-4 py-8 bg-white rounded-md border-gray-100 shadow-sm border-1">
               <TextField
                 fullWidth
                 label="Kilometre Bilgisi"
