@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { Box, CircularProgress, Tab, Tabs, Avatar, Button, Typography, Paper, IconButton, Tooltip, TextField } from '@mui/material';
 import { ArrowBackIos, ArrowForwardIos, Phone, Chat, Map, InfoOutlined, Search } from '@mui/icons-material';
 import axios from 'axios';
+import SafeShoppingDialog from '../components/SafeShoppingDialog';
 
 const TABS = [
   { label: 'Açıklama', value: 'description' },
@@ -22,6 +23,10 @@ export default function ProductDetailsPage() {
   const [error, setError] = useState(null);
   const [mainImgIdx, setMainImgIdx] = useState(0);
   const [plate, setPlate] = useState('');
+  const [openSafeShopping, setOpenSafeShopping] = useState(false);
+
+  const handleOpenSafeShopping = () => setOpenSafeShopping(true);
+  const handleCloseSafeShopping = () => setOpenSafeShopping(false);
 
   useEffect(() => {
     setLoading(true);
@@ -54,7 +59,20 @@ export default function ProductDetailsPage() {
   // Satıcı
   const seller = data.created_by || {};
   const sellerName = seller.first_name ? seller.first_name + (seller.last_name ? ' ' + seller.last_name[0] + '.' : '') : 'Satıcı';
-  const sellerPhone = seller.country_code && seller.phone_number ? `${seller.country_code} ${seller.phone_number}` : '';
+  // Telefonu 0 (5xx) xxx xx xx formatında göster
+  let sellerPhone = '';
+  if (seller.phone_number && seller.phone_number.length === 10) {
+    // Eğer başında 0 yoksa ekle
+    const num = seller.phone_number;
+    const countryCode = seller.country_code || '+90';
+    sellerPhone = `${countryCode} (${num.slice(0,3)}) ${num.slice(3,6)} ${num.slice(6,8)} ${num.slice(8,10)}`;
+  } else if (seller.phone_number && seller.phone_number.length === 11 && seller.phone_number.startsWith('0')) {
+    const num = seller.phone_number.slice(1);
+    const countryCode = seller.country_code || '+90';
+    sellerPhone = `${countryCode} (${num.slice(0,3)}) ${num.slice(3,6)} ${num.slice(6,8)} ${num.slice(8,10)}`;
+  } else if (seller.country_code && seller.phone_number) {
+    sellerPhone = `${seller.country_code} ${seller.phone_number}`;
+  }
 
   // Konum
   const location = [data.city, data.district, data.neighborhood].filter(Boolean).join(', ');
@@ -73,12 +91,7 @@ export default function ProductDetailsPage() {
     { label: 'Motor Hacmi', value: data.detail?.engine_volume ? data.detail.engine_volume + ' cc' : '-' },
     { label: 'Motor Gücü', value: data.detail?.engine_power ? data.detail.engine_power + ' hp' : '-' },
     { label: 'Çekiş', value: data.detail?.drive_type || '-' },
-    { label: 'Araç Durumu', value: data.status === 1 ? 'İkinci El' : 'Sıfır' },
-    { label: 'Ort. Yakıt Tüketimi', value: data.detail?.average_fuel || '-' },
-    { label: 'Yakıt Deposu', value: data.detail?.fuel_tank || '-' },
-    { label: 'Boya-değişen', value: data.detail?.paint_status || '-' },
-    { label: 'Takasa Uygun', value: data.detail?.swap ? 'Takasa Uygun' : 'Uygun Değil' },
-    { label: 'Kimden', value: data.detail?.from || '-' },
+    { label: 'Araç Durumu', value: data.status === 1 ? 'İkinci El' : 'Sıfır' }, 
   ];
 
   // Açıklama (HTML)
@@ -111,27 +124,24 @@ export default function ProductDetailsPage() {
   const handleNext = () => setMainImgIdx(idx => (idx === gallery.length - 1 ? 0 : idx + 1));
   const handleThumbClick = idx => setMainImgIdx(idx);
 
+  const handlePhoneClick = () => {
+    if (sellerPhone) {
+      // Telefonla arama yap
+      const cleanPhone = sellerPhone.replace(/\s/g, '').replace(/[()]/g, '');
+      window.open(`tel:${cleanPhone}`);
+    }
+  };
+
   return (
     <Box className="bg-[#f7f7f7] min-h-screen flex flex-col items-center py-6 px-2 md:px-0">
-      {/* Breadcrumb */}
-      <Box className="flex items-center w-full max-w-5xl gap-1 px-4 py-2 text-xs text-gray-500">
-        <span className="cursor-pointer hover:underline">Vasita</span>
-        <span>{'>'}</span>
-        <span className="cursor-pointer hover:underline">Otomobil</span>
-        <span>{'>'}</span>
-        <span className="cursor-pointer hover:underline">{brand}</span>
-        <span>{'>'}</span>
-        <span className="cursor-pointer hover:underline">{series}</span>
-        <span>{'>'}</span>
-        <span className="font-semibold text-black">{model}</span>
-      </Box>
-
+      
+      
       {/* Ana Grid */}
-      <Box className="flex flex-col w-full max-w-5xl gap-4 md:flex-row">
+      <Box className="flex flex-col gap-4 w-full max-w-5xl md:flex-row">
         {/* Sol ana panel */}
         <Box className="flex flex-col flex-1 gap-4">
           {/* Başlık ve konum */}
-          <Box className="flex flex-col gap-2 p-4 bg-white shadow rounded-2xl">
+          <Box className="flex flex-col gap-2 p-4 bg-white rounded-2xl shadow">
             <Typography variant="h6" className="font-bold text-black line-clamp-2 max-w-[90vw] md:max-w-[60vw]">{data.title || model}</Typography>
             <Box className="flex items-center gap-2 text-sm text-[#222] font-medium">
               <Map sx={{ fontSize: 18, color: mainRed }} />
@@ -140,14 +150,14 @@ export default function ProductDetailsPage() {
           </Box>
 
           {/* Galeri */}
-          <Box className="flex flex-col items-center gap-2 p-4 bg-white shadow rounded-2xl">
-            <Box className="relative flex items-center justify-center w-full">
+          <Box className="flex flex-col gap-2 items-center p-4 bg-white rounded-2xl shadow">
+            <Box className="flex relative justify-center items-center w-full">
               <IconButton onClick={handlePrev} className="!absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white" size="small"><ArrowBackIos fontSize="small" /></IconButton>
               <img src={gallery[mainImgIdx]} alt="Araba" className="object-contain w-full max-h-[340px] rounded-xl" style={{maxWidth: 480}} />
               <IconButton onClick={handleNext} className="!absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white" size="small"><ArrowForwardIos fontSize="small" /></IconButton>
               <Box className="absolute bottom-2 right-2 bg-black/60 text-white text-xs rounded px-2 py-0.5">{gallery.length ? `${mainImgIdx+1}/${gallery.length}` : ''}</Box>
             </Box>
-            <Box className="flex justify-center w-full gap-1 mt-2 overflow-x-auto">
+            <Box className="flex overflow-x-auto gap-1 justify-center mt-2 w-full">
               {gallery.map((img, i) => (
                 <Box key={i} onClick={() => handleThumbClick(i)} className={`border-2 ${mainImgIdx===i ? 'border-[#dc143c]' : 'border-transparent'} rounded cursor-pointer transition-all`} style={{minWidth: 56, minHeight: 40, maxWidth: 56, maxHeight: 40, overflow: 'hidden'}}>
                   <img src={img} alt="thumb" className="object-cover w-full h-full" />
@@ -157,7 +167,7 @@ export default function ProductDetailsPage() {
           </Box>
 
           {/* Sekmeli alanlar */}
-          <Box className="p-4 mt-2 bg-white shadow rounded-2xl">
+          <Box className="p-4 mt-2 bg-white rounded-2xl shadow">
             <Tabs value={tab} onChange={(_, v) => setTab(v)} indicatorColor="error" textColor="inherit" className="h-8 min-h-0 bg-gray-100 rounded-t">
               {TABS.map(t => <Tab key={t.value} label={t.label} value={t.value} sx={{ minHeight: 0, height: 32, fontSize: 13 }}/>) }
             </Tabs>
@@ -170,7 +180,7 @@ export default function ProductDetailsPage() {
               {tab === 'damage' && (
                 <Box>
                   <Typography className="mb-1 text-sm font-semibold">Hasar Durumu</Typography>
-                  <ul className="pl-3 text-xs text-gray-700 list-disc">
+                  <ul className="pl-3 text-xs list-disc text-gray-700">
                     {damageParts.map((part, i) => (
                       <li key={i}>{part.label}: {part.value}</li>
                     ))}
@@ -180,7 +190,7 @@ export default function ProductDetailsPage() {
               {tab === 'technical' && (
                 <Box>
                   <Typography className="mb-1 text-sm font-semibold">Teknik Bilgiler</Typography>
-                  <ul className="pl-3 text-xs text-gray-700 list-disc">
+                  <ul className="pl-3 text-xs list-disc text-gray-700">
                     <li>Motor Gücü: {technical.engine_power} HP</li>
                     <li>Motor Hacmi: {technical.engine_volume} cm3</li>
                     <li>Çekiş: {technical.drive_type}</li>
@@ -195,7 +205,7 @@ export default function ProductDetailsPage() {
               {tab === 'equipment' && (
                 <Box>
                   <Typography className="mb-1 text-sm font-semibold">Donanım</Typography>
-                  <ul className="pl-3 text-xs text-gray-700 list-disc">
+                  <ul className="pl-3 text-xs list-disc text-gray-700">
                     {equipment.map((item, i) => <li key={i}>{item}</li>)}
                   </ul>
                 </Box>
@@ -207,23 +217,22 @@ export default function ProductDetailsPage() {
         {/* Sağ panel */}
         <Box className="w-full md:w-[340px] flex flex-col gap-4">
           {/* Satıcı Kartı */}
-          <Box className="flex flex-col items-center gap-2 p-4 bg-white border border-gray-100 shadow rounded-2xl">
+          <Box className="flex flex-col gap-2 items-center p-4 bg-white rounded-2xl border border-gray-100 shadow">
             <Avatar sx={{ width: 56, height: 56 }}>{seller.first_name ? seller.first_name[0] : 'S'}</Avatar>
-            <Typography className="mt-1 text-base font-semibold">{sellerName}</Typography>
-            <Typography className="text-xs text-gray-500">Platinum Üye <span className="ml-1">3. YIL</span></Typography>
-            <Button variant="outlined" color="error" size="small" fullWidth startIcon={<Phone />}>Telefonu Göster</Button>
+            <Typography className="mt-1 text-base font-semibold">{sellerName}</Typography>  
+            <Button variant="outlined" color="error" size="small" fullWidth startIcon={<Phone />} onClick={handlePhoneClick}>{sellerPhone}</Button>
             <Button variant="contained" color="error" size="small" fullWidth startIcon={<Chat />}>Mesaj Gönder</Button>
           </Box>
 
           {/* Fiyat kutusu */}
-          <Box className="flex flex-col gap-2 p-4 bg-white border border-gray-100 shadow rounded-2xl">
+          <Box className="flex flex-col gap-2 p-4 bg-white rounded-2xl border border-gray-100 shadow">
             <Typography className="text-right text-[#dc143c] font-bold text-2xl">{price} <span className="text-base">{currency}</span></Typography>
           </Box>
 
           {/* Bilgi kutusu */}
           <Box className="bg-white rounded-2xl shadow p-4 flex flex-col gap-1 border border-gray-100 max-h-[340px] overflow-y-auto">
             {info.map((item, i) => (
-              <Box key={i} className="flex items-center justify-between py-1 text-sm border-b border-gray-100 last:border-b-0">
+              <Box key={i} className="flex justify-between items-center py-1 text-sm border-b border-gray-100 last:border-b-0">
                 <span className="font-medium text-gray-600">{item.label}</span>
                 <span className="font-semibold text-gray-900">{item.value}</span>
               </Box>
@@ -231,14 +240,18 @@ export default function ProductDetailsPage() {
           </Box>
 
           {/* Güvenlik kutusu */}
-          <Box className="flex flex-col gap-2 p-4 bg-white border border-gray-100 shadow rounded-2xl">
-            <Box className="flex items-center gap-2">
-              <InfoOutlined color="info" fontSize="small" />
-              <Typography className="text-xs text-gray-700">Güvenliğiniz için kapora göndermeyin ya da benzeri hiçbir ön ödeme yapmayın.</Typography>
+          <Box className="flex flex-col gap-2 p-4 bg-white rounded-2xl border border-gray-100 shadow">
+            <Box className="flex gap-2 items-center">
+              <InfoOutlined color="info" fontSize="medium" />
+              <Typography className="text-xs text-gray-700">Güvenliğiniz için kapora ve ön ödeme gibi ödemeler yapmayın.</Typography>
             </Box>
-            <Button variant="text" color="primary" size="small" className="self-end px-0">Detaylı bilgi</Button>
+            <Button onClick={handleOpenSafeShopping} variant="text" color="primary" size="small" className="self-end px-0">Detaylı bilgi</Button>
           </Box>          
         </Box>
+        <SafeShoppingDialog 
+                open={openSafeShopping}
+                onClose={handleCloseSafeShopping}
+            />
       </Box>
     </Box>
   );
