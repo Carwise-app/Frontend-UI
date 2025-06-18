@@ -20,25 +20,27 @@ export default function SearchCar() {
   const [currentPage, setCurrentPage] = useState(1);
   const [sorting, setSorting] = useState('');
   const [activeFilters, setActiveFilters] = useState({});
+  const [loading, setLoading] = useState(false);
 
   const location = useLocation();
   const navigate = useNavigate();
   const queryParams = new URLSearchParams(location.search);
-  const searchQuery = queryParams.get('q')?.toLowerCase() || '';
+  const searchQuery = queryParams.get('query')?.toLowerCase() || '';
+
+  // ✅ Arama değişince ilk sayfaya dön
+  useEffect(() => {
+    setCurrentPage(1);
+    fetchFilteredData(activeFilters, 1, sorting, searchQuery);
+  }, [searchQuery]);
 
   useEffect(() => {
-    fetchFilteredData(activeFilters, currentPage);
+    fetchFilteredData(activeFilters, currentPage, sorting, searchQuery);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [currentPage]);
 
-  useEffect(() => {
-    fetchFilteredData({}, 1);
-  }, []);
-
-  // Helper function to parse sorting value and return sort field and order
+  // ✅ Sorting için yardımcı fonksiyon
   const getSortParams = (sortingValue) => {
     if (!sortingValue) return {};
-    
     const sortMap = {
       'price_asc': { sort: 'price', order: 'asc' },
       'price_desc': { sort: 'price', order: 'desc' },
@@ -49,13 +51,13 @@ export default function SearchCar() {
       'created_at_asc': { sort: 'created_at', order: 'asc' },
       'created_at_desc': { sort: 'created_at', order: 'desc' },
     };
-    
     return sortMap[sortingValue] || {};
   };
 
-  const fetchFilteredData = (filters = {}, page = 1, sortingValue = sorting) => {
+  // ✅ Tüm veriyi backend'den getiren fonksiyon
+  const fetchFilteredData = (filters = {}, page = 1, sortingValue = sorting, query = searchQuery) => {
     const sortParams = getSortParams(sortingValue);
-    
+
     const params = {
       ...filters,
       page,
@@ -63,13 +65,19 @@ export default function SearchCar() {
       ...sortParams,
     };
 
+    if (query) {
+      params.query = query; // ✅ query parametresi olarak gönder
+    }
+
+    setLoading(true);
     api.get('/listing/', { params })
       .then(res => {
         setCarData(res.data.listings || []);
         setTotalCount(res.data.total || 0);
         setActiveFilters(filters);
       })
-      .catch(err => console.error("Araç verisi alınamadı:", err));
+      .catch(err => console.error("Araç verisi alınamadı:", err))
+      .finally(() => setLoading(false));
   };
 
   const handleBrandSelect = brandId => {
@@ -98,15 +106,7 @@ export default function SearchCar() {
     fetchFilteredData(activeFilters, 1, newSorting);
   };
 
-  const filteredItems = searchQuery
-    ? carData.filter(item =>
-        item.title?.toLowerCase().includes(searchQuery) ||
-        item.id?.toString().includes(searchQuery)
-      )
-    : carData;
-
   const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
-  const currentCars = filteredItems;
 
   return (
     <Box className="flex h-full w-[75%] mx-auto gap-10 mb-20 mt-5 justify-between">
@@ -120,17 +120,7 @@ export default function SearchCar() {
         <Box className="flex items-center justify-between px-5 py-2 mb-5 bg-white rounded-sm shadow-md">
           <span className="text-xl font-semibold">Satılık Araçlar</span>
           <FormControl sx={{ minWidth: 200 }} size="small">
-            <InputLabel
-              id="sorting-label"
-              sx={{
-                color: 'text.primary',
-                '&.Mui-focused': {
-                  color: 'text.primary',
-                },
-              }}
-            >
-              Sıralama Türü
-            </InputLabel>
+            <InputLabel id="sorting-label">Sıralama Türü</InputLabel>
             <Select
               labelId="sorting-label"
               label="Sıralama Türü"
@@ -150,11 +140,17 @@ export default function SearchCar() {
           </FormControl>
         </Box>
 
-        {currentCars.length > 0 ? (
+        {loading ? (
+          <Box className="text-center py-10 text-gray-500">Yükleniyor...</Box>
+        ) : carData.length > 0 ? (
           <>
-            <Box className="flex flex-col gap-y-4" >
-              {currentCars.map(item => (
-                <SearchCarList key={item.id} item={item} onClick={() => navigate(`/arac-detay/${item.slug}`)} />
+            <Box className="flex flex-col gap-y-4">
+              {carData.map(item => (
+                <SearchCarList
+                  key={item.id}
+                  item={item}
+                  onClick={() => navigate(`/arac-detay/${item.slug}`)}
+                />
               ))}
             </Box>
             <Box className="flex justify-center mt-8">
@@ -168,7 +164,9 @@ export default function SearchCar() {
           </>
         ) : (
           <Box className="p-6 text-center text-gray-600">
-            '{searchQuery.toUpperCase()}' adına ait sonuç bulunamadı.
+            {searchQuery
+              ? `"${searchQuery}" ile eşleşen bir ilan bulunamadı.`
+              : "Herhangi bir ilan bulunamadı."}
           </Box>
         )}
       </Box>

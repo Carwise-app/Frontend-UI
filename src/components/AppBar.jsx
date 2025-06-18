@@ -71,7 +71,7 @@ export default function AppBar({
 
   const handleSearch = () => {
     if (searchValue.trim() !== "") {
-      navigate(`/arac-satin-al?q=${encodeURIComponent(searchValue.trim())}`);
+      navigate(`/arac-satin-al?query=${encodeURIComponent(searchValue.trim())}`);
       setSearchValue("");
       setSearchMenuOpen(false);
     }
