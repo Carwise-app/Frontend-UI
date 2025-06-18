@@ -217,7 +217,7 @@ export default function ProductDetailsPage() {
 
           {/* Fiyat kutusu */}
           <Box className="flex flex-col gap-2 p-4 bg-white border border-gray-100 shadow rounded-2xl">
-            <Typography className="text-right text-[#dc143c] font-bold text-2xl">{price} <span className="text-base">{currency}</span></Typography>
+            <Typography className="text-right text-[#dc143c] !font-bold text-2xl">{price} <span className="text-base font-bold">{currency}</span></Typography>
           </Box>
 
           {/* Bilgi kutusu */}

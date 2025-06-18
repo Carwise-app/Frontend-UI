@@ -3,6 +3,9 @@ import axios from 'axios';
 
 const api = axios.create({
   baseURL: 'https://carwisegw.yusuftalhaklc.com',
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
 api.interceptors.request.use((config) => {
@@ -13,7 +16,8 @@ api.interceptors.request.use((config) => {
     '/auth/login',
     '/auth/register',
     '/auth/forgot-password',
-    '/auth/reset-password'
+    '/auth/reset-password',
+    '/upload'
   ];
 
   // Eğer istek public endpoint'e gidiyorsa token eklenmesin
@@ -23,6 +27,14 @@ api.interceptors.request.use((config) => {
 
   if (token && !isPublic) {
     config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  // Upload endpoint için özel header'lar
+  if (config.url.includes('/upload')) {
+    config.headers['Content-Type'] = 'multipart/form-data';
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
   }
 
   return config;
