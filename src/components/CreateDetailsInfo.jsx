@@ -1,5 +1,5 @@
 import { Box, Button, FormControl, InputAdornment, InputLabel, MenuItem, Select, TextField } from '@mui/material'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import CustomizedSteppers from './CustomizedSteppers'
 import DamageStepCard from './DamageStepCard';
 
@@ -12,7 +12,52 @@ export default function LearnKmMainPage({activeStep,onHandleBack,stepLabel,onHan
     const [tractionType, setTractionType] = useState("");
   
     const tractionTypeOptions = ["Önden Çekiş","Arkadan İtiş", "4x4"];
+
+    // Component yüklendiğinde localStorage'dan verileri yükle
+    useEffect(() => {
+        const savedKm = localStorage.getItem("selectedKm") || '';
+        const savedEngineSize = localStorage.getItem("selectedMotorHacmi") || '';
+        const savedEnginePower = localStorage.getItem("selectedMotorGucu") || '';
+        const savedTractionType = localStorage.getItem("selectedTractionType") || '';
+
+        setKmValue(savedKm);
+        setEngineSizeValue(savedEngineSize);
+        setEnginePowerValue(savedEnginePower);
+        setTractionType(savedTractionType);
+    }, []);
+
+    // State değişikliklerinde localStorage'a kaydet
+    useEffect(() => {
+        if (kmValue !== '') {
+            localStorage.setItem("selectedKm", kmValue);
+        }
+    }, [kmValue]);
+
+    useEffect(() => {
+        if (engineSizeValue !== '') {
+            localStorage.setItem("selectedMotorHacmi", engineSizeValue);
+        }
+    }, [engineSizeValue]);
+
+    useEffect(() => {
+        if (enginePowerValue !== '') {
+            localStorage.setItem("selectedMotorGucu", enginePowerValue);
+        }
+    }, [enginePowerValue]);
+
+    useEffect(() => {
+        if (tractionType !== '') {
+            localStorage.setItem("selectedTractionType", tractionType);
+        }
+    }, [tractionType]);
   
+    // Binlik ayraçlı gösterim için yardımcı fonksiyon
+    const formatNumberWithDots = (value) => {
+      if (!value) return '';
+      // Sadece rakamları al, baştaki sıfırları koru
+      const onlyDigits = value.replace(/\D/g, '');
+      return onlyDigits.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    };
 
     const handleChange = (e) => {
       setColor(e.target.value);
@@ -51,7 +96,7 @@ export default function LearnKmMainPage({activeStep,onHandleBack,stepLabel,onHan
               <TextField
                 fullWidth
                 label="Kilometre Bilgisi"
-                value={kmValue}
+                value={formatNumberWithDots(kmValue)}
                 onChange={(e) => {
                     const onlyDigits = e.target.value.replace(/\D/g, '');
                     if (onlyDigits.length <= 7) {
@@ -68,7 +113,7 @@ export default function LearnKmMainPage({activeStep,onHandleBack,stepLabel,onHan
               <TextField
                 fullWidth
                 label="Motor Hacmi"
-                value={engineSizeValue}
+                value={formatNumberWithDots(engineSizeValue)}
                 onChange={(e) => {
                     const onlyDigits = e.target.value.replace(/\D/g, '');
                     if (onlyDigits.length <= 4) {
@@ -85,7 +130,7 @@ export default function LearnKmMainPage({activeStep,onHandleBack,stepLabel,onHan
               <TextField
                 fullWidth
                 label="Motor Gücü"
-                value={enginePowerValue}
+                value={formatNumberWithDots(enginePowerValue)}
                 onChange={(e) => {
                     const onlyDigits = e.target.value.replace(/\D/g, '');
                     if (onlyDigits.length <= 4) {

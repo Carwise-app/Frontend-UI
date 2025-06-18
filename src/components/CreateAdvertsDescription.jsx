@@ -1,11 +1,24 @@
 import { Box, Button, InputAdornment, TextField, Typography } from '@mui/material';
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import CustomizedSteppers from './CustomizedSteppers';
 import TextareaAutosize from '@mui/material/TextareaAutosize';
 
 export default function CreateAdvertsDescription({title, desc, allSteps, stepLabel, activeStep, onHandleNext, onHandleBack}) {
   const [text, setText] = useState('');
   const maxLength = 2500;
+
+  // Component yüklendiğinde localStorage'dan verileri yükle
+  useEffect(() => {
+    const savedDescription = localStorage.getItem("selectedDescription") || '';
+    setText(savedDescription);
+  }, []);
+
+  // State değişikliklerinde localStorage'a kaydet
+  useEffect(() => {
+    if (text !== '') {
+      localStorage.setItem("selectedDescription", text);
+    }
+  }, [text]);
 
   const handleChange = (e) => {
     if (e.target.value.length <= maxLength) {

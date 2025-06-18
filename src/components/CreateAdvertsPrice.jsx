@@ -1,5 +1,5 @@
 import { Box, Button, FormControl, InputAdornment, InputLabel, MenuItem, Select, TextField } from '@mui/material'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import CustomizedSteppers from './CustomizedSteppers';
 import DamageStepCard from './DamageStepCard';
 
@@ -9,8 +9,30 @@ function formatNumber(value) {
 }
 
 export default function CreateAdvertsPrice({title, desc, allSteps, stepLabel, activeStep, onHandleNext, onHandleBack}) {
-  const [price, setPrice] = useState();
-  const [productTitle, setProductTitle] = useState();
+  const [price, setPrice] = useState('');
+  const [productTitle, setProductTitle] = useState('');
+
+  // Component yüklendiğinde localStorage'dan verileri yükle
+  useEffect(() => {
+    const savedPrice = localStorage.getItem("selectedPrice") || '';
+    const savedTitle = localStorage.getItem("selectedTitle") || '';
+
+    setPrice(savedPrice);
+    setProductTitle(savedTitle);
+  }, []);
+
+  // State değişikliklerinde localStorage'a kaydet
+  useEffect(() => {
+    if (price !== '') {
+      localStorage.setItem("selectedPrice", price);
+    }
+  }, [price]);
+
+  useEffect(() => {
+    if (productTitle !== '') {
+      localStorage.setItem("selectedTitle", productTitle);
+    }
+  }, [productTitle]);
 
   const isFormValid = 
       price !== "" &&
@@ -57,8 +79,8 @@ export default function CreateAdvertsPrice({title, desc, allSteps, stepLabel, ac
               label="İlanınız için başlık yazın"
               value={productTitle}
               onChange={(e) => {
-                if(onlyDigits.length <= 80){
-                  setProductTitle(onlyDigits);
+                if(e.target.value.length <= 80){
+                  setProductTitle(e.target.value);
                 }
               }}
               placeholder='Sahibinden satılık araba'

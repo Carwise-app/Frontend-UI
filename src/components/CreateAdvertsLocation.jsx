@@ -13,6 +13,36 @@ export default function CreateAdvertsLocation({title, desc, allSteps, stepLabel,
   const [districts, setDistricts] = useState([]);
   const [neighborhoods, setNeighborhoods] = useState([]);
 
+  // Component yüklendiğinde localStorage'dan verileri yükle
+  useEffect(() => {
+    const savedCity = localStorage.getItem("selectedCity") || '';
+    const savedDistrict = localStorage.getItem("selectedDistrict") || '';
+    const savedNeighborhood = localStorage.getItem("selectedNeighborhood") || '';
+
+    setSelectedCity(savedCity);
+    setSelectedDistrict(savedDistrict);
+    setSelectedNeighborhood(savedNeighborhood);
+  }, []);
+
+  // State değişikliklerinde localStorage'a kaydet
+  useEffect(() => {
+    if (selectedCity !== '') {
+      localStorage.setItem("selectedCity", selectedCity);
+    }
+  }, [selectedCity]);
+
+  useEffect(() => {
+    if (selectedDistrict !== '') {
+      localStorage.setItem("selectedDistrict", selectedDistrict);
+    }
+  }, [selectedDistrict]);
+
+  useEffect(() => {
+    if (selectedNeighborhood !== '') {
+      localStorage.setItem("selectedNeighborhood", selectedNeighborhood);
+    }
+  }, [selectedNeighborhood]);
+
   // Fetch provinces (cities)
   useEffect(() => {
     fetch('https://turkiyeapi.herokuapp.com/api/v1/provinces')

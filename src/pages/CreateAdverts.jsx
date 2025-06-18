@@ -39,35 +39,37 @@ const steps = [
     path: "yil",
     label: "Yıl Seçiniz",
     placeholder: "Aracınızın yılını arayın",
-    options: ["2020", "2021", "2022"],
+    options: Array.from({ length: 2025 - 1990 + 1 }, (_, i) =>
+      String(1990 + i)
+    ).reverse(),
     next: "govde-tipi",
   },
   {
     path: "govde-tipi",
     label: "Gövde Tipi Seçiniz",
     placeholder: "Aracınızın gövde tipini arayın",
-    options: ["Sedan", "SUV", "Hatchback"],
+    options: ["Sedan", "SUV", "Hatchback", "Coupe", "Station Wagon"],
     next: "yakit-tipi",
   },
   {
     path: "yakit-tipi",
     label: "Yakıt Tipi Seçiniz",
     placeholder: "Aracınızın yakıt tipini arayın",
-    options: ["Benzin", "Dizel", "Elektrik"],
+    options: ["Benzin&LPG", "Dizel", "Elektrik", "Hibrit"],
     next: "vites-tipi",
   },
   {
     path: "vites-tipi",
     label: "Vites Tipi Seçiniz",
     placeholder: "Aracınızın vites tipini arayın",
-    options: ["Manuel", "Otomatik"],
+    options: ["Manuel", "Otomatik","Yarı Otomatik"],
     next: "renk",
   },
   {
     path: "renk",
     label: "Renk Seçiniz",
     placeholder: "Aracınızın rengini arayın",
-    options: ["Siyah", "Beyaz", "Kırmızı"],
+    options: ["Siyah", "Beyaz", "Kırmızı","Mavi","Yeşil","Kahverengi","Sarı","Turuncu","Mor","Bordo","Diğer"],
     next: "detaylar",
   },
   {
@@ -423,7 +425,7 @@ export default function CreateAdverts() {
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
             placeholder={currentStep.placeholder}
-            className="w-full px-4 py-4 text-base text-black bg-transparent border-none outline-none focus:outline-none placeholder:text-base"
+            className="px-4 py-4 w-full text-base text-black bg-transparent border-none outline-none focus:outline-none placeholder:text-base"
           />
           <button className="px-2 py-2 text-white cursor-pointer">
             <SearchIcon sx={{ fontSize: 40 }} className="text-[#dc143c]" />
@@ -431,7 +433,7 @@ export default function CreateAdverts() {
         </Box>
         <Box className="grid grid-cols-4 w-[70%] mx-auto mt-5  justify-start gap-x-[11px] gap-y-3">
           {loading ? (
-            <Box className="w-full py-8 text-center">
+            <Box className="py-8 w-full text-center">
               <span className="text-gray-600">Yükleniyor...</span>
             </Box>
           ) : filteredOptions.length > 0 ? (
@@ -443,7 +445,7 @@ export default function CreateAdverts() {
               />
             ))
           ) : (
-            <Box className="w-full py-8 text-center">
+            <Box className="py-8 w-full text-center">
               <span className="text-gray-600">Sonuç bulunamadı</span>
             </Box>
           )}

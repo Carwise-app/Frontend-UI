@@ -52,14 +52,14 @@ const steps = [
     path: "yakit-tipi",
     label: "Yakıt Tipi Seçiniz",
     placeholder: "Aracınızın yakıt tipini arayın",
-    options: ["Benzin", "Dizel", "Elektrik"],
+    options: ["Benzin&LPG", "Dizel", "Elektrik", "Hibrit"],
     next: "vites-tipi",
   },
   {
     path: "vites-tipi",
     label: "Vites Tipi Seçiniz",
     placeholder: "Aracınızın vites tipini arayın",
-    options: ["Manuel", "Otomatik"],
+    options: ["Manuel", "Otomatik","Yarı Otomatik"],
     next: "renk",
   },
   {
@@ -353,7 +353,7 @@ export default function LearnMainPage() {
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
             placeholder={currentStep.placeholder}
-            className="w-full px-4 py-4 text-base text-black bg-transparent border-none outline-none focus:outline-none placeholder:text-base"
+            className="px-4 py-4 w-full text-base text-black bg-transparent border-none outline-none focus:outline-none placeholder:text-base"
           />
           <button className="px-2 py-2 text-white cursor-pointer">
             <SearchIcon sx={{ fontSize: 40 }} className="text-[#dc143c]" />
