@@ -63,17 +63,6 @@ export default function App() {
     setIsLoggedIn(true);
     setAuthOpen(false);
     showSnackbar("Giriş başarılı!", "success");
-
-    const token = localStorage.getItem("access_token");
-    if (token) {
-      api
-        .get("/profile", {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        .then((res) => {
-          setUser(res.data);
-        });
-    }
   };
 
   const handleLogout = () => {
@@ -109,6 +98,7 @@ export default function App() {
         onOpenClick={handleOpenClick}
         isLoggedIn={isLoggedIn}
         onLogout={handleLogout}
+        setIsLoggedIn={setIsLoggedIn}
       />
       <AnimatePresence mode="wait">
         <Routes>
