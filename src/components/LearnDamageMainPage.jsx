@@ -5,7 +5,7 @@ import DamageStep from './DamageStep'
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import api from '../api/axios';
 
-export default function LearnDamageMainPage({activeStep,onHandleBack,stepLabel,onHandleNext,title,desc,allSteps}) {
+export default function LearnDamageMainPage({activeStep,onHandleBack,stepLabel,onHandleNext,title,desc,allSteps,btnText}) {
   const [loading, setLoading] = useState(false);
 
   const debugLocalStorage = () => {
@@ -156,13 +156,13 @@ export default function LearnDamageMainPage({activeStep,onHandleBack,stepLabel,o
         <Box className="flex flex-col w-[70%] mx-auto mt-4 gap-y-4">
           <DamageStep onClick={onHandleNext} onNext={() => console.log('Hasar bilgisi tamamlandı')} stepLabel={stepLabel} />
             <Box>
-                <Box className="flex items-center justify-center h-full">
+                <Box className="flex justify-center items-center h-full">
                     <button 
                       className='bg-[#dc143c] py-2 px-6 text-white rounded-2xl cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed' 
                       onClick={sendPredictionRequest}
                       disabled={loading}
                     >
-                        <span>{loading ? 'Tahmin Yapılıyor...' : 'Aracının Fiyatını Öğren'}</span>
+                        <span>{loading ? 'Tahmin Yapılıyor...' : btnText}</span>
                         {!loading && <NavigateNextIcon/>}
                     </button>   
                 </Box>

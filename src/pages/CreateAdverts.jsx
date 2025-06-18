@@ -99,6 +99,7 @@ export default function CreateAdverts() {
           activeStep={currentStepIndex} 
           stepLabel={currentStep.label}
           allSteps={allSteps}
+          btnText="Devam Et"
         />
       );
     }
@@ -199,7 +200,7 @@ export default function CreateAdverts() {
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
             placeholder={currentStep.placeholder}
-            className='w-full px-4 py-4 text-base text-black bg-transparent border-none outline-none focus:outline-none placeholder:text-base'
+            className='px-4 py-4 w-full text-base text-black bg-transparent border-none outline-none focus:outline-none placeholder:text-base'
           />
           <button className='px-2 py-2 text-white cursor-pointer'>
             <SearchIcon sx={{ fontSize: 40 }} className='text-[#dc143c]' />
