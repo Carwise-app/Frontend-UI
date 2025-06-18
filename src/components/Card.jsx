@@ -41,11 +41,11 @@ export default function ShowcaseCard({ listing }) {
       </Box>
 
       <CardContent>
-        <Typography gutterBottom variant="h6" component="div">
+        <Typography gutterBottom variant="h6" component="div" className="truncate w-[180px]">
           {listing.brand?.name} {listing.series?.name}
         </Typography>
 
-        <Typography variant="body2" color="text.secondary">
+        <Typography variant="body2" color="text.secondary" className="truncate w-[180px]">
           {listing.model?.name}
         </Typography>
       </CardContent>

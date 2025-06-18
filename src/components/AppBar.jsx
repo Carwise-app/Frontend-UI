@@ -69,27 +69,6 @@ export default function AppBar({onOpenClick, isLoggedIn, onLogout, setIsLoggedIn
           <p className='text-2xl md:text-3xl lg:text-[32px] text-black font-serif font-black cursor-pointer tracking-wide'>CARWISE</p>
         </NavLink>
 
-        {/* Desktop Navigation */}
-        <Box className="hidden gap-6 items-center md:flex lg:gap-8">
-          {!shouldHideFooter && (
-            <>
-              <NavLink to="/arac-satin-al">
-                <span className="relative text-base cursor-pointer group lg:text-lg">
-                  Araç Al
-                  <span className="absolute left-0 bottom-0 h-[2px] w-0 bg-[#dc143c] transition-all duration-300 group-hover:w-full"></span>
-                </span>
-              </NavLink>
-              <span className="relative text-base cursor-pointer group lg:text-lg" onClick={isLoggedIn ? handleGoToIlanVer : () => onOpenClick("login")}>
-                İlan Ver
-                <span className="absolute left-0 bottom-0 h-[2px] w-0 bg-[#dc143c] transition-all duration-300 group-hover:w-full"></span>
-              </span>
-              <span className="relative text-base cursor-pointer group lg:text-lg" onClick={isLoggedIn ? handleGoToFiyatOgren : () => onOpenClick("login")}>
-                Fiyat Öğren
-                <span className="absolute left-0 bottom-0 h-[2px] w-0 bg-[#dc143c] transition-all duration-300 group-hover:w-full"></span>
-              </span>
-            </>
-          )}
-        </Box>
 
         {/* Desktop Search */}
         {!shouldHideFooter && (
@@ -111,6 +90,28 @@ export default function AppBar({onOpenClick, isLoggedIn, onLogout, setIsLoggedIn
             </button>
           </Box>
         )}
+
+        {/* Desktop Navigation */}
+        <Box className="hidden gap-6 items-center md:flex lg:gap-8">
+          {!shouldHideFooter && (
+            <>
+              <NavLink to="/arac-satin-al">
+                <span className="relative text-base cursor-pointer group lg:text-lg">
+                  Araç Al
+                  <span className="absolute left-0 bottom-0 h-[2px] w-0 bg-[#dc143c] transition-all duration-300 group-hover:w-full"></span>
+                </span>
+              </NavLink>
+              <span className="relative text-base cursor-pointer group lg:text-lg" onClick={isLoggedIn ? handleGoToIlanVer : () => onOpenClick("login")}>
+                İlan Ver
+                <span className="absolute left-0 bottom-0 h-[2px] w-0 bg-[#dc143c] transition-all duration-300 group-hover:w-full"></span>
+              </span>
+              <span className="relative text-base cursor-pointer group lg:text-lg" onClick={isLoggedIn ? handleGoToFiyatOgren : () => onOpenClick("login")}>
+                Fiyat Öğren
+                <span className="absolute left-0 bottom-0 h-[2px] w-0 bg-[#dc143c] transition-all duration-300 group-hover:w-full"></span>
+              </span>
+            </>
+          )}
+        </Box>
 
         {/* Desktop Auth */}
         <Box className="hidden gap-4 items-center md:flex">

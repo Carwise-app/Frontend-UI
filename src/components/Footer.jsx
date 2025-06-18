@@ -32,9 +32,9 @@ export default function Footer(){
                 CARWISE
             </Stack>
             
-            {/* Responsive Grid Layout */}
+           
             <Box className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 sm:gap-8 lg:gap-20">
-                {/* Gizlilik ve Kullanım */}
+                
                 <Box className="flex flex-col gap-y-2">
                     <span className="text-lg font-semibold sm:text-xl lg:text-2xl">Gizlilik ve Kullanım</span>
                     <Link 
@@ -55,15 +55,13 @@ export default function Footer(){
                     </Link>                                         
                 </Box>
 
-                {/* Hizmetlerimiz */}
                 <Box className="flex flex-col gap-y-2">
                     <span className="text-2xl">Hizmetlerimiz</span>
-                    <span className="text-sm text-gray-700">Arabamın Fiyatı Ne Kadar?</span>
-                    <span className="text-sm text-gray-700">Araç Al</span>
-                    <span className="text-sm text-gray-700">İlan Ver</span>
+                    <span className="text-sm text-gray-700" onClick={() => navigate('/fiyat-ogren')}>Arabamın Fiyatı Ne Kadar?</span>
+                    <span className="text-sm text-gray-700" onClick={() => navigate('/arac-satin-al')}>Araç Al</span>
+                    <span className="text-sm text-gray-700" onClick={() => navigate('/ilan-olustur/marka')}>İlan Ver</span>
                 </Box>
 
-                {/* Kurumsal */}
                 <Box className="flex flex-col gap-y-2">
                     <span className="text-lg font-semibold sm:text-xl lg:text-2xl">Kurumsal</span>
                     <Link 
@@ -93,13 +91,11 @@ export default function Footer(){
                 </Box>
             </Box>
 
-            {/* Alt Çizgi ve Telif Hakkı */}
             <hr className="mt-6 w-full border-t border-gray-600 sm:mt-8"/>
             <span className="flex justify-center mt-2 text-xs tracking-wide text-gray-600 sm:text-sm">
                 Tüm Haklar CARWİSE Şirketine Aittir.
             </span>
-
-            {/* Dialoglar */}
+            
             <AboutUsDialog 
                 open={openAboutUs}
                 onClose={handleCloseAboutUs}
