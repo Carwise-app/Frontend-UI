@@ -57,7 +57,7 @@ export default function App() {
   useEffect(() => {
     const token = localStorage.getItem("access_token");
     setIsLoggedIn(!!token);
-  }, [location.pathname]);
+  }, []);
 
   const handleLoginSuccess = () => {
     setIsLoggedIn(true);
