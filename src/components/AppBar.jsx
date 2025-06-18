@@ -11,15 +11,24 @@ import {
   ListItemText,
   Divider,
   Typography,
+  Badge,
+  Tooltip,
+  TextField,
+  Button,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import LoginAccount from "./LoginAccount";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
 import {
   Menu as MenuIcon,
   Search as SearchIcon,
   Close as CloseIcon,
+  Notifications as NotificationsIcon,
+  Person as PersonIcon,
+  Home as HomeIcon,
+  DirectionsCar as CarIcon,
+  Add as AddIcon,
+  TrendingUp as TrendingUpIcon,
 } from "@mui/icons-material";
 import api from "../api/axios";
 
@@ -68,6 +77,7 @@ export default function AppBar({
     location.pathname.startsWith("/fiyat-ogren");
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem("access_token"));
+  const [unreadCount, setUnreadCount] = useState(0);
 
   const handleSearch = () => {
     if (searchValue.trim() !== "") {
@@ -89,6 +99,21 @@ export default function AppBar({
 
   const handleGoToAracAl = () => {
     navigate("/arac-satin-al");
+    setMobileMenuOpen(false);
+  };
+
+  const handleGoToKokpit = () => {
+    navigate("/kokpit");
+    setMobileMenuOpen(false);
+  };
+
+  const handleGoToNotifications = () => {
+    navigate("/kokpit/bildirimlerim");
+    setMobileMenuOpen(false);
+  };
+
+  const handleGoToProfile = () => {
+    navigate("/kokpit/profil-ve-ayarlar");
     setMobileMenuOpen(false);
   };
 
@@ -134,6 +159,32 @@ export default function AppBar({
     fetchUser();
   }, []);
 
+  // Bildirim sayısını API'den al
+  useEffect(() => {
+    if (isLoggedIn) {
+      const fetchUnreadCount = async () => {
+        try {
+          const response = await api.get('/notification', {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          setUnreadCount(response.data.unread || 0);
+        } catch (error) {
+          console.error('Bildirim sayısı alınamadı:', error);
+          setUnreadCount(0);
+        }
+      };
+
+      fetchUnreadCount();
+
+      // Her 30 saniyede bir güncelle
+      const interval = setInterval(fetchUnreadCount, 30000);
+
+      return () => clearInterval(interval);
+    }
+  }, [isLoggedIn]);
+
   const toggleMobileMenu = () => setMobileMenuOpen(!mobileMenuOpen);
   const toggleSearchMenu = () => setSearchMenuOpen(!searchMenuOpen);
 
@@ -141,20 +192,22 @@ export default function AppBar({
     <>
       {/* Desktop/Tablet AppBar */}
       <Box
-        className={`bg-[#FDFDFD] w-full shadow-md flex items-center justify-between px-4 md:px-8 lg:px-12 py-3 ${
-          isKokpitOrFiyatOgren ? "justify-between" : "justify-between"
-        }`}
+        className={`w-full flex items-center justify-between px-6 md:px-10 lg:px-16 py-4 ${
+          isKokpitOrFiyatOgren 
+            ? "bg-white/95 backdrop-blur-sm shadow-sm" 
+            : "bg-white/95 backdrop-blur-sm shadow-md"
+        } border-b border-gray-100`}
       >
         {/* Logo */}
-        <NavLink to="/" className="flex-shrink-0">
-          <p className="text-2xl md:text-3xl lg:text-[32px] text-black font-serif font-black cursor-pointer tracking-wide">
+        <NavLink to="/" className="flex-shrink-0 group">
+          <p className="text-2xl md:text-3xl lg:text-4xl text-gray-900 font-serif font-black cursor-pointer tracking-wide transition-all duration-300 group-hover:text-[#dc143c] group-hover:scale-105">
             CARWISE
           </p>
         </NavLink>
 
         {/* Desktop Search */}
         {!shouldHideFooter && (
-          <Box className="hidden bg-gray-200 rounded-lg w-80 lg:flex">
+          <Box className="hidden bg-gray-50 border border-gray-200 rounded-2xl w-80 lg:flex shadow-sm hover:shadow-md transition-all duration-300 focus-within:shadow-lg focus-within:border-[#dc143c]">
             <input
               type="search"
               id="search"
@@ -165,10 +218,10 @@ export default function AppBar({
                 if (e.key === "Enter") handleSearch();
               }}
               placeholder="Kelime, ilan numarası veya satıcı adı ara"
-              className="w-full px-4 py-2 text-sm text-black bg-transparent border-none rounded-l-lg outline-none focus:outline-none"
+              className="w-full px-4 py-3 text-sm text-gray-700 bg-transparent border-none rounded-l-2xl outline-none focus:outline-none placeholder-gray-500"
             />
             <button
-              className="rounded-r-lg bg-[#dc143c] px-6 py-2 text-white cursor-pointer hover:bg-[#b01030] transition-colors"
+              className="rounded-r-2xl bg-[#dc143c] px-6 py-3 text-white cursor-pointer hover:bg-[#b01030] transition-all duration-300 font-medium text-sm"
               onClick={handleSearch}
             >
               Ara
@@ -177,53 +230,81 @@ export default function AppBar({
         )}
 
         {/* Desktop Navigation */}
-        <Box className="items-center hidden gap-6 md:flex lg:gap-8">
+        <Box className="items-center hidden gap-5 md:flex lg:gap-7">
           {!shouldHideFooter && (
             <>
-              <NavLink to="/arac-satin-al">
-                <span className="relative text-base cursor-pointer group lg:text-lg">
-                  Araç Al
-                  <span className="absolute left-0 bottom-0 h-[2px] w-0 bg-[#dc143c] transition-all duration-300 group-hover:w-full"></span>
-                </span>
-              </NavLink>
-              <span
-                className="relative text-base cursor-pointer group lg:text-lg"
-                onClick={
-                  isLoggedIn ? handleGoToIlanVer : () => onOpenClick("login")
-                }
-              >
-                İlan Ver
-                <span className="absolute left-0 bottom-0 h-[2px] w-0 bg-[#dc143c] transition-all duration-300 group-hover:w-full"></span>
-              </span>
-              <span
-                className="relative text-base cursor-pointer group lg:text-lg"
-                onClick={
-                  isLoggedIn ? handleGoToFiyatOgren : () => onOpenClick("login")
-                }
-              >
-                Fiyat Öğren
-                <span className="absolute left-0 bottom-0 h-[2px] w-0 bg-[#dc143c] transition-all duration-300 group-hover:w-full"></span>
-              </span>
+              <Tooltip title="Tüm İlanlar" arrow placement="bottom">
+                <NavLink to="/arac-satin-al" className="group">
+                  <Box className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-all duration-300 group-hover:scale-105">
+                    <CarIcon className="text-gray-600 group-hover:text-[#dc143c]" />
+                    <span className="text-sm font-medium text-gray-700 group-hover:text-[#dc143c] lg:text-base">
+                      Tüm İlanlar
+                    </span>
+                  </Box>
+                </NavLink>
+              </Tooltip>
+              
+              <Tooltip title="İlan Ver" arrow placement="bottom">
+                <Box
+                  className="group cursor-pointer"
+                  onClick={isLoggedIn ? handleGoToIlanVer : () => onOpenClick("login")}
+                >
+                  <Box className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-all duration-300 group-hover:scale-105">
+                    <AddIcon className="text-gray-600 group-hover:text-[#dc143c]" />
+                    <span className="text-sm font-medium text-gray-700 group-hover:text-[#dc143c] lg:text-base">
+                      İlan Ver
+                    </span>
+                  </Box>
+                </Box>
+              </Tooltip>
+              
+              <Tooltip title="Fiyat Öğren" arrow placement="bottom">
+                <Box
+                  className="group cursor-pointer"
+                  onClick={isLoggedIn ? handleGoToFiyatOgren : () => onOpenClick("login")}
+                >
+                  <Box className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-all duration-300 group-hover:scale-105">
+                    <TrendingUpIcon className="text-gray-600 group-hover:text-[#dc143c]" />
+                    <span className="text-sm font-medium text-gray-700 group-hover:text-[#dc143c] lg:text-base">
+                      Fiyat Öğren
+                    </span>
+                  </Box>
+                </Box>
+              </Tooltip>
             </>
           )}
         </Box>
 
         {/* Desktop Auth */}
-        <Box className="items-center hidden gap-4 md:flex">
+        <Box className="items-center hidden gap-3 md:flex">
           {isLoggedIn ? (
-            <LoginAccount
-              onLogout={onLogout}
-              fullName={
-                user
-                  ? `${user?.first_name} ${user?.last_name
-                      .slice(0, 1)
-                      .toUpperCase()}`
-                  : " "
-              }
-            />
+            <>
+              <Tooltip title="Bildirimler" arrow placement="bottom">
+                <IconButton 
+                  onClick={handleGoToNotifications}
+                  className="text-gray-600 hover:text-[#dc143c] hover:bg-red-50 transition-all duration-300"
+                  size="small"
+                >
+                  <Badge badgeContent={unreadCount} color="error">
+                    <NotificationsIcon />
+                  </Badge>
+                </IconButton>
+              </Tooltip>
+              
+              <LoginAccount
+                onLogout={onLogout}
+                fullName={
+                  user
+                    ? `${user?.first_name} ${user?.last_name
+                        .slice(0, 1)
+                        .toUpperCase()}`
+                    : " "
+                }
+              />
+            </>
           ) : (
             <button
-              className="bg-[#dc143c] px-4 py-2 rounded-xl text-white cursor-pointer hover:bg-[#b01030] transition-colors text-sm lg:text-base"
+              className="bg-[#dc143c] px-5 py-2.5 rounded-xl text-white cursor-pointer hover:bg-[#b01030] transition-all duration-300 text-sm lg:text-base font-medium shadow-sm hover:shadow-md transform hover:scale-105"
               onClick={() => onOpenClick("login", "notLogin")}
             >
               Giriş Yap
@@ -234,11 +315,19 @@ export default function AppBar({
         {/* Mobile Menu Button */}
         <Box className="flex items-center gap-2 md:hidden">
           {!shouldHideFooter && (
-            <IconButton onClick={toggleSearchMenu} className="text-gray-600">
+            <IconButton 
+              onClick={toggleSearchMenu} 
+              className="text-gray-600 hover:text-[#dc143c] hover:bg-red-50 transition-all duration-300"
+              size="small"
+            >
               <SearchIcon />
             </IconButton>
           )}
-          <IconButton onClick={toggleMobileMenu} className="text-gray-600">
+          <IconButton 
+            onClick={toggleMobileMenu} 
+            className="text-gray-600 hover:text-[#dc143c] hover:bg-red-50 transition-all duration-300"
+            size="small"
+          >
             <MenuIcon />
           </IconButton>
         </Box>
@@ -252,9 +341,9 @@ export default function AppBar({
           onClose={toggleSearchMenu}
           className="md:hidden"
         >
-          <Box className="p-4 bg-white border-b">
+          <Box className="p-4 bg-gradient-to-r from-gray-50 to-white border-b border-gray-200">
             <Box className="flex items-center gap-2">
-              <Box className="flex flex-1 bg-gray-200 rounded-lg">
+              <Box className="flex flex-1 bg-white border border-gray-200 rounded-2xl shadow-sm">
                 <input
                   type="search"
                   value={searchValue}
@@ -263,16 +352,19 @@ export default function AppBar({
                     if (e.key === "Enter") handleSearch();
                   }}
                   placeholder="Kelime, ilan numarası veya satıcı adı ara"
-                  className="w-full px-4 py-3 text-sm text-black bg-transparent border-none rounded-l-lg outline-none"
+                  className="w-full px-4 py-3 text-sm text-gray-700 bg-transparent border-none rounded-l-2xl outline-none placeholder-gray-400"
                 />
                 <button
-                  className="rounded-r-lg bg-[#dc143c] px-4 py-3 text-white cursor-pointer"
+                  className="rounded-r-2xl bg-gradient-to-r from-[#dc143c] to-[#ef4444] px-4 py-3 text-white cursor-pointer font-medium"
                   onClick={handleSearch}
                 >
                   Ara
                 </button>
               </Box>
-              <IconButton onClick={toggleSearchMenu}>
+              <IconButton 
+                onClick={toggleSearchMenu}
+                className="text-gray-600 hover:text-[#dc143c] hover:bg-red-50 transition-all duration-300"
+              >
                 <CloseIcon />
               </IconButton>
             </Box>
@@ -287,95 +379,100 @@ export default function AppBar({
         onClose={toggleMobileMenu}
         className="md:hidden"
       >
-        <Box className="w-64 p-4">
-          <Box className="flex items-center justify-between mb-4">
-            <p className="text-xl font-bold text-black">CARWISE</p>
-            <IconButton onClick={toggleMobileMenu}>
+        <Box className="w-72 p-6 bg-gradient-to-b from-gray-50 to-white h-full">
+          <Box className="flex items-center justify-between mb-6">
+            <p className="text-2xl font-bold text-gray-800">CARWISE</p>
+            <IconButton 
+              onClick={toggleMobileMenu}
+              className="text-gray-600 hover:text-[#dc143c] hover:bg-red-50 transition-all duration-300"
+            >
               <CloseIcon />
             </IconButton>
           </Box>
 
-          <List>
+          <List className="space-y-2">
             {!shouldHideFooter && (
               <>
-                <ListItem button onClick={handleGoToAracAl}>
-                  <ListItemText primary="Araç Al" className="text-lg" />
+                <ListItem 
+                  button 
+                  onClick={handleGoToAracAl}
+                  className="rounded-xl hover:bg-gray-100 transition-all duration-300 mb-2"
+                >
+                  <Box className="flex items-center gap-3 w-full">
+                    <CarIcon className="text-gray-600" />
+                    <ListItemText primary="Araç Al" className="text-lg font-medium" />
+                  </Box>
                 </ListItem>
                 <ListItem
                   button
-                  onClick={
-                    isLoggedIn ? handleGoToIlanVer : () => onOpenClick("login")
-                  }
+                  onClick={isLoggedIn ? handleGoToIlanVer : () => onOpenClick("login")}
+                  className="rounded-xl hover:bg-gray-100 transition-all duration-300 mb-2"
                 >
-                  <ListItemText primary="İlan Ver" className="text-lg" />
+                  <Box className="flex items-center gap-3 w-full">
+                    <AddIcon className="text-gray-600" />
+                    <ListItemText primary="İlan Ver" className="text-lg font-medium" />
+                  </Box>
                 </ListItem>
                 <ListItem
                   button
-                  onClick={
-                    isLoggedIn
-                      ? handleGoToFiyatOgren
-                      : () => onOpenClick("login")
-                  }
+                  onClick={isLoggedIn ? handleGoToFiyatOgren : () => onOpenClick("login")}
+                  className="rounded-xl hover:bg-gray-100 transition-all duration-300 mb-2"
                 >
-                  <ListItemText primary="Fiyat Öğren" className="text-lg" />
+                  <Box className="flex items-center gap-3 w-full">
+                    <TrendingUpIcon className="text-gray-600" />
+                    <ListItemText primary="Fiyat Öğren" className="text-lg font-medium" />
+                  </Box>
                 </ListItem>
                 {isLoggedIn && (
                   <ListItem
                     button
-                    onClick={() => {
-                      navigate("/kokpit");
-                      setMobileMenuOpen(false);
-                    }}
+                    onClick={handleGoToProfile}
+                    className="rounded-xl hover:bg-gray-100 transition-all duration-300 mb-2"
                   >
-                    <ListItemText primary="Kokpit" className="text-lg" />
+                    <Box className="flex items-center gap-3 w-full">
+                      <PersonIcon className="text-gray-600" />
+                      <ListItemText primary="Profil & Ayarlar" className="text-lg font-medium" />
+                    </Box>
                   </ListItem>
                 )}
                 {isLoggedIn && (
                   <ListItem
                     button
-                    onClick={() => {
-                      navigate("/kokpit/profil-ve-ayarlar");
-                      setMobileMenuOpen(false);
-                    }}
+                    onClick={handleGoToNotifications}
+                    className="rounded-xl hover:bg-gray-100 transition-all duration-300 mb-2"
                   >
-                    <ListItemText primary="Ayarlar" className="text-lg" />
+                    <Box className="flex items-center gap-3 w-full">
+                      <Badge badgeContent={unreadCount} color="error">
+                        <NotificationsIcon className="text-gray-600" />
+                      </Badge>
+                      <ListItemText primary="Bildirimler" className="text-lg font-medium" />
+                    </Box>
                   </ListItem>
                 )}
-                {isLoggedIn && (
-                  <ListItem
-                    button
-                    onClick={() => {
-                      navigate("/kokpit/bildirimlerim");
-                      setMobileMenuOpen(false);
-                    }}
-                  >
-                    <ListItemText primary="Bildirimler" className="text-lg" />
-                  </ListItem>
-                )}
-                <Divider className="my-2" />
+                <Divider className="my-4" />
               </>
             )}
 
-            <ListItem>
+            <ListItem className="mt-4">
               {isLoggedIn ? (
-                <Box className="w-full">
-                  <Box className="flex items-center gap-3 mb-3">
-                    <Avatar>
+                <Box className="w-full space-y-4">
+                  <Box className="flex items-center gap-4 p-3 bg-gray-50 rounded-xl">
+                    <Avatar className="bg-gradient-to-r from-[#dc143c] to-[#ef4444] text-white">
                       {user?.first_name ? user.first_name[0] : "U"}
                     </Avatar>
-                    <Box>
-                      <Typography className="font-semibold">
+                    <Box className="flex-1">
+                      <Typography className="font-semibold text-gray-800">
                         {user
                           ? `${user?.first_name} ${user?.last_name}`
                           : "Kullanıcı"}
                       </Typography>
-                      <Typography className="text-xs text-gray-500">
+                      <Typography className="text-sm text-gray-500">
                         {user?.email}
                       </Typography>
                     </Box>
                   </Box>
                   <button
-                    className="w-full py-2 text-white transition-colors bg-red-600 rounded-lg hover:bg-red-700"
+                    className="w-full py-3 text-white transition-all duration-300 bg-gradient-to-r from-red-600 to-red-700 rounded-xl hover:from-red-700 hover:to-red-800 font-medium shadow-md hover:shadow-lg transform hover:scale-105"
                     onClick={() => {
                       onLogout();
                       toggleMobileMenu();
@@ -386,7 +483,7 @@ export default function AppBar({
                 </Box>
               ) : (
                 <button
-                  className="w-full bg-[#dc143c] text-white py-3 rounded-lg hover:bg-[#b01030] transition-colors text-lg"
+                  className="w-full bg-gradient-to-r from-[#dc143c] to-[#ef4444] text-white py-4 rounded-xl hover:from-[#b01030] hover:to-[#dc2626] transition-all duration-300 text-lg font-medium shadow-md hover:shadow-lg transform hover:scale-105"
                   onClick={() => {
                     onOpenClick("login", "notLogin");
                     toggleMobileMenu();

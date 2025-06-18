@@ -74,16 +74,21 @@ export default function ShowcaseArea() {
   }, []);
 
   return (
-    <Box className="w-full">
+    <Box className="w-full bg-gradient-to-b from-gray-50 to-white py-8 md:py-12 lg:py-16">
       {/* Başlık */}
-      <Typography variant="h3" className="flex justify-center pb-6 text-2xl sm:pb-8 md:pb-10 sm:text-3xl md:text-4xl lg:text-5xl">
-        Vitrin
-      </Typography>
+      <Box className="text-center mb-8 md:mb-12">
+        <Typography 
+          variant="h3" 
+          className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-2"
+        >
+          Vitrin
+        </Typography>
+      </Box>
 
       {/* Kartlar */}
-      <Box className="grid grid-cols-1 gap-x-5 px-2 gap-y-6 mx-auto max-w-[1300px] sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 sm:px-4 md:px-6">
+      <Box className="grid grid-cols-1 gap-6 sm:gap-8 px-4 sm:px-6 md:px-8 gap-y-8 sm:gap-y-10 mx-auto max-w-[1400px] sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {loading ? (
-          <Box className="col-span-full flex justify-center py-8">
+          <Box className="col-span-full flex justify-center py-12">
             <CircularProgress color="error" />
           </Box>
         ) : (
@@ -93,8 +98,8 @@ export default function ShowcaseArea() {
                 <Box 
                   key={listing.id || index} 
                   ref={lastElementRef}
-                  onClick={() => navigate(`/arac-detay/${listing.slug}`)} 
-                  className="cursor-pointer"
+                  onClick={() => navigate(`/arac-detay/${listing.slug}`)}
+                  className="cursor-pointer group transform transition-all duration-300 hover:scale-105 hover:shadow-2xl"
                 >
                   <ShowcaseCard listing={listing} />
                 </Box>
@@ -103,8 +108,8 @@ export default function ShowcaseArea() {
               return (
                 <Box 
                   key={listing.id || index} 
-                  onClick={() => navigate(`/arac-detay/${listing.slug}`)} 
-                  className="cursor-pointer"
+                  onClick={() => navigate(`/arac-detay/${listing.slug}`)}
+                  className="cursor-pointer group transform transition-all duration-300 hover:scale-105 hover:shadow-2xl"
                 >
                   <ShowcaseCard listing={listing} />
                 </Box>
@@ -116,15 +121,17 @@ export default function ShowcaseArea() {
 
       {/* Loading indicator */}
       {loadingMore && (
-        <Box className="flex justify-center py-4">
+        <Box className="flex justify-center py-8">
           <CircularProgress size={32} color="error" />
         </Box>
       )}
 
       {/* Toplam sayı göster */}
       {!loading && listings.length > 0 && (
-        <Box className="text-center py-4 text-gray-600">
-          {listings.length} / {total} araç gösteriliyor
+        <Box className="text-center py-6 md:py-8">
+          <Typography className="text-gray-600 text-sm md:text-base">
+            <span className="font-semibold text-[#dc143c]">{listings.length}</span> / {total} araç gösteriliyor
+          </Typography>
         </Box>
       )}
     </Box>
