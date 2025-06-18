@@ -30,12 +30,12 @@ export default function ShowcaseArea() {
   }, []);
 
   return (
-    <Box className="w-full bg-gradient-to-b from-gray-50 to-white py-8 md:py-12 lg:py-16">
+    <Box className="py-8 w-full bg-gradient-to-b from-gray-50 to-white md:py-12 lg:py-16">
       {/* Başlık */}
-      <Box className="text-center mb-8 md:mb-12">
+      <Box className="mb-8 text-center md:mb-12">
         <Typography 
           variant="h3" 
-          className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-2"
+          className="mb-2 text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gray-800 to-gray-600 sm:text-4xl md:text-5xl lg:text-6xl"
         >
           Vitrin
         </Typography>
@@ -44,7 +44,7 @@ export default function ShowcaseArea() {
       {/* Kartlar */}
       <Box className="grid grid-cols-1 gap-6 sm:gap-8 px-4 sm:px-6 md:px-8 gap-y-8 sm:gap-y-10 mx-auto max-w-[1400px] sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {loading ? (
-          <Box className="col-span-full flex justify-center py-12">
+          <Box className="flex col-span-full justify-center py-12">
             <CircularProgress color="error" />
           </Box>
         ) : (
@@ -52,7 +52,7 @@ export default function ShowcaseArea() {
             <Box 
               key={listing.id || index} 
               onClick={() => navigate(`/arac-detay/${listing.slug}`)}
-              className="cursor-pointer group transform transition-all duration-300 hover:scale-105 hover:shadow-2xl"
+              className="transition-all duration-300 transform cursor-pointer group hover:scale-105"
             >
               <ShowcaseCard listing={listing} />
             </Box>
@@ -62,7 +62,7 @@ export default function ShowcaseArea() {
 
       {/* Tüm İlanlar Butonu */}
       {!loading && listings.length > 0 && (
-        <Box className="text-center py-8 md:py-12">
+        <Box className="py-8 text-center md:py-12">
           <Button
             variant="contained"
             onClick={() => navigate('/arac-satin-al')}

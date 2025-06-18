@@ -194,8 +194,8 @@ export default function AppBar({
       <Box
         className={`w-full flex items-center justify-between px-6 md:px-10 lg:px-16 py-4 ${
           isKokpitOrFiyatOgren 
-            ? "bg-white/95 backdrop-blur-sm shadow-sm" 
-            : "bg-white/95 backdrop-blur-sm shadow-md"
+            ? "shadow-sm backdrop-blur-sm bg-white/95" 
+            : "shadow-md backdrop-blur-sm bg-white/95"
         } border-b border-gray-100`}
       >
         {/* Logo */}
@@ -218,7 +218,7 @@ export default function AppBar({
                 if (e.key === "Enter") handleSearch();
               }}
               placeholder="Kelime, ilan numarası veya satıcı adı ara"
-              className="w-full px-4 py-3 text-sm text-gray-700 bg-transparent border-none rounded-l-2xl outline-none focus:outline-none placeholder-gray-500"
+              className="px-4 py-3 w-full text-sm placeholder-gray-500 text-gray-700 bg-transparent rounded-l-2xl border-none outline-none focus:outline-none"
             />
             <button
               className="rounded-r-2xl bg-[#dc143c] px-6 py-3 text-white cursor-pointer hover:bg-[#b01030] transition-all duration-300 font-medium text-sm"
@@ -230,53 +230,48 @@ export default function AppBar({
         )}
 
         {/* Desktop Navigation */}
-        <Box className="items-center hidden gap-5 md:flex lg:gap-7">
+        <Box className="hidden gap-5 items-center md:flex lg:gap-7">
           {!shouldHideFooter && (
             <>
-              <Tooltip title="Tüm İlanlar" arrow placement="bottom">
+              
                 <NavLink to="/arac-satin-al" className="group">
-                  <Box className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-all duration-300 group-hover:scale-105">
+                  <Box className="flex gap-2 items-center px-3 py-2 rounded-lg transition-all duration-300 hover:bg-gray-100 group-hover:scale-105">
                     <CarIcon className="text-gray-600 group-hover:text-[#dc143c]" />
                     <span className="text-sm font-medium text-gray-700 group-hover:text-[#dc143c] lg:text-base">
                       Tüm İlanlar
                     </span>
                   </Box>
                 </NavLink>
-              </Tooltip>
-              
-              <Tooltip title="İlan Ver" arrow placement="bottom">
+      
                 <Box
-                  className="group cursor-pointer"
+                  className="cursor-pointer group"
                   onClick={isLoggedIn ? handleGoToIlanVer : () => onOpenClick("login")}
                 >
-                  <Box className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-all duration-300 group-hover:scale-105">
+                  <Box className="flex gap-2 items-center px-3 py-2 rounded-lg transition-all duration-300 hover:bg-gray-100 group-hover:scale-105">
                     <AddIcon className="text-gray-600 group-hover:text-[#dc143c]" />
                     <span className="text-sm font-medium text-gray-700 group-hover:text-[#dc143c] lg:text-base">
                       İlan Ver
                     </span>
                   </Box>
                 </Box>
-              </Tooltip>
-              
-              <Tooltip title="Fiyat Öğren" arrow placement="bottom">
+                      
                 <Box
-                  className="group cursor-pointer"
+                  className="cursor-pointer group"
                   onClick={isLoggedIn ? handleGoToFiyatOgren : () => onOpenClick("login")}
                 >
-                  <Box className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-all duration-300 group-hover:scale-105">
+                  <Box className="flex gap-2 items-center px-3 py-2 rounded-lg transition-all duration-300 hover:bg-gray-100 group-hover:scale-105">
                     <TrendingUpIcon className="text-gray-600 group-hover:text-[#dc143c]" />
                     <span className="text-sm font-medium text-gray-700 group-hover:text-[#dc143c] lg:text-base">
                       Fiyat Öğren
                     </span>
                   </Box>
                 </Box>
-              </Tooltip>
             </>
           )}
         </Box>
 
         {/* Desktop Auth */}
-        <Box className="items-center hidden gap-3 md:flex">
+        <Box className="hidden gap-3 items-center md:flex">
           {isLoggedIn ? (
             <>
               <Tooltip title="Bildirimler" arrow placement="bottom">
@@ -313,7 +308,7 @@ export default function AppBar({
         </Box>
 
         {/* Mobile Menu Button */}
-        <Box className="flex items-center gap-2 md:hidden">
+        <Box className="flex gap-2 items-center md:hidden">
           {!shouldHideFooter && (
             <IconButton 
               onClick={toggleSearchMenu} 
@@ -342,8 +337,8 @@ export default function AppBar({
           className="md:hidden"
         >
           <Box className="p-4 bg-gradient-to-r from-gray-50 to-white border-b border-gray-200">
-            <Box className="flex items-center gap-2">
-              <Box className="flex flex-1 bg-white border border-gray-200 rounded-2xl shadow-sm">
+            <Box className="flex gap-2 items-center">
+              <Box className="flex flex-1 bg-white rounded-2xl border border-gray-200 shadow-sm">
                 <input
                   type="search"
                   value={searchValue}
@@ -352,7 +347,7 @@ export default function AppBar({
                     if (e.key === "Enter") handleSearch();
                   }}
                   placeholder="Kelime, ilan numarası veya satıcı adı ara"
-                  className="w-full px-4 py-3 text-sm text-gray-700 bg-transparent border-none rounded-l-2xl outline-none placeholder-gray-400"
+                  className="px-4 py-3 w-full text-sm placeholder-gray-400 text-gray-700 bg-transparent rounded-l-2xl border-none outline-none"
                 />
                 <button
                   className="rounded-r-2xl bg-gradient-to-r from-[#dc143c] to-[#ef4444] px-4 py-3 text-white cursor-pointer font-medium"
@@ -379,8 +374,8 @@ export default function AppBar({
         onClose={toggleMobileMenu}
         className="md:hidden"
       >
-        <Box className="w-72 p-6 bg-gradient-to-b from-gray-50 to-white h-full">
-          <Box className="flex items-center justify-between mb-6">
+        <Box className="p-6 w-72 h-full bg-gradient-to-b from-gray-50 to-white">
+          <Box className="flex justify-between items-center mb-6">
             <p className="text-2xl font-bold text-gray-800">CARWISE</p>
             <IconButton 
               onClick={toggleMobileMenu}
@@ -396,9 +391,9 @@ export default function AppBar({
                 <ListItem 
                   button 
                   onClick={handleGoToAracAl}
-                  className="rounded-xl hover:bg-gray-100 transition-all duration-300 mb-2"
+                  className="mb-2 rounded-xl transition-all duration-300 hover:bg-gray-100"
                 >
-                  <Box className="flex items-center gap-3 w-full">
+                  <Box className="flex gap-3 items-center w-full">
                     <CarIcon className="text-gray-600" />
                     <ListItemText primary="Araç Al" className="text-lg font-medium" />
                   </Box>
@@ -406,9 +401,9 @@ export default function AppBar({
                 <ListItem
                   button
                   onClick={isLoggedIn ? handleGoToIlanVer : () => onOpenClick("login")}
-                  className="rounded-xl hover:bg-gray-100 transition-all duration-300 mb-2"
+                  className="mb-2 rounded-xl transition-all duration-300 hover:bg-gray-100"
                 >
-                  <Box className="flex items-center gap-3 w-full">
+                  <Box className="flex gap-3 items-center w-full">
                     <AddIcon className="text-gray-600" />
                     <ListItemText primary="İlan Ver" className="text-lg font-medium" />
                   </Box>
@@ -416,9 +411,9 @@ export default function AppBar({
                 <ListItem
                   button
                   onClick={isLoggedIn ? handleGoToFiyatOgren : () => onOpenClick("login")}
-                  className="rounded-xl hover:bg-gray-100 transition-all duration-300 mb-2"
+                  className="mb-2 rounded-xl transition-all duration-300 hover:bg-gray-100"
                 >
-                  <Box className="flex items-center gap-3 w-full">
+                  <Box className="flex gap-3 items-center w-full">
                     <TrendingUpIcon className="text-gray-600" />
                     <ListItemText primary="Fiyat Öğren" className="text-lg font-medium" />
                   </Box>
@@ -427,9 +422,9 @@ export default function AppBar({
                   <ListItem
                     button
                     onClick={handleGoToProfile}
-                    className="rounded-xl hover:bg-gray-100 transition-all duration-300 mb-2"
+                    className="mb-2 rounded-xl transition-all duration-300 hover:bg-gray-100"
                   >
-                    <Box className="flex items-center gap-3 w-full">
+                    <Box className="flex gap-3 items-center w-full">
                       <PersonIcon className="text-gray-600" />
                       <ListItemText primary="Profil & Ayarlar" className="text-lg font-medium" />
                     </Box>
@@ -439,9 +434,9 @@ export default function AppBar({
                   <ListItem
                     button
                     onClick={handleGoToNotifications}
-                    className="rounded-xl hover:bg-gray-100 transition-all duration-300 mb-2"
+                    className="mb-2 rounded-xl transition-all duration-300 hover:bg-gray-100"
                   >
-                    <Box className="flex items-center gap-3 w-full">
+                    <Box className="flex gap-3 items-center w-full">
                       <Badge badgeContent={unreadCount} color="error">
                         <NotificationsIcon className="text-gray-600" />
                       </Badge>
@@ -455,8 +450,8 @@ export default function AppBar({
 
             <ListItem className="mt-4">
               {isLoggedIn ? (
-                <Box className="w-full space-y-4">
-                  <Box className="flex items-center gap-4 p-3 bg-gray-50 rounded-xl">
+                <Box className="space-y-4 w-full">
+                  <Box className="flex gap-4 items-center p-3 bg-gray-50 rounded-xl">
                     <Avatar className="bg-gradient-to-r from-[#dc143c] to-[#ef4444] text-white">
                       {user?.first_name ? user.first_name[0] : "U"}
                     </Avatar>
@@ -472,7 +467,7 @@ export default function AppBar({
                     </Box>
                   </Box>
                   <button
-                    className="w-full py-3 text-white transition-all duration-300 bg-gradient-to-r from-red-600 to-red-700 rounded-xl hover:from-red-700 hover:to-red-800 font-medium shadow-md hover:shadow-lg transform hover:scale-105"
+                    className="py-3 w-full font-medium text-white bg-gradient-to-r from-red-600 to-red-700 rounded-xl shadow-md transition-all duration-300 transform hover:from-red-700 hover:to-red-800 hover:shadow-lg hover:scale-105"
                     onClick={() => {
                       onLogout();
                       toggleMobileMenu();
