@@ -1,43 +1,77 @@
-import { Box, Link, Typography } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import { Box, Link, Typography, CircularProgress } from "@mui/material";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import ShowcaseCard from "./Card";
 import api from "../api/axios";
 import { useNavigate } from "react-router-dom";
 
 export default function ShowcaseArea() {
-  const [showAll, setShowAll] = useState(false);
   const [listings, setListings] = useState([]);
-  const [randomExtras, setRandomExtras] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [total, setTotal] = useState(0);
   const navigate = useNavigate();
+  const observerRef = useRef();
+  const loadingRef = useRef();
+
+  // Intersection Observer callback
+  const lastElementRef = useCallback(node => {
+    if (loading) return;
+    if (observerRef.current) observerRef.current.disconnect();
+    observerRef.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && hasMore && !loadingMore) {
+        loadMore();
+      }
+    });
+    if (node) observerRef.current.observe(node);
+  }, [loading, hasMore, loadingMore]);
+
+  const loadMore = () => {
+    if (loadingMore || !hasMore) return;
+    setLoadingMore(true);
+    const nextPage = page + 1;
+    setPage(nextPage);
+    
+    api.get("/listing/", {
+      params: {
+        page: nextPage,
+        limit: 10,
+      },
+    })
+    .then((res) => {
+      const newListings = res.data.listings || [];
+      setListings(prev => [...prev, ...newListings]);
+      setHasMore(newListings.length > 0 && listings.length + newListings.length < total);
+      setLoadingMore(false);
+    })
+    .catch((err) => {
+      console.error("Daha fazla veri alınamadı:", err);
+      setLoadingMore(false);
+    });
+  };
 
   useEffect(() => {
+    setLoading(true);
     api
       .get("/listing/", {
         params: {
           page: 1,
-          limit: 100,
+          limit: 10,
         },
       })
       .then((res) => {
-        setListings(res.data.listings || []);
+        const initialListings = res.data.listings || [];
+        setListings(initialListings);
+        setTotal(res.data.total || 0);
+        setHasMore(initialListings.length > 0 && initialListings.length < (res.data.total || 0));
+        setLoading(false);
       })
       .catch((err) => {
         console.error("Vitrin verileri alınamadı:", err);
+        setLoading(false);
       });
   }, []);
-
-  const handleShowMore = () => {
-    // İlk 4'ü dışarıda tut, geri kalanlar içinden rastgele 8 tanesini seç
-    const remaining = listings.slice(4);
-    const shuffled = [...remaining].sort(() => 0.5 - Math.random());
-    const selectedExtras = shuffled.slice(0, 8);
-    setRandomExtras(selectedExtras);
-    setShowAll(prev => !prev);
-  };
-
-  // Gösterilecek veriler:
-  const firstFour = listings.slice(0, 4);
-  const visibleListings = showAll ? [...firstFour, ...randomExtras] : firstFour;
 
   return (
     <Box className="w-full">
@@ -48,22 +82,49 @@ export default function ShowcaseArea() {
 
       {/* Kartlar */}
       <Box className="grid grid-cols-1 gap-x-5 px-2 gap-y-6 mx-auto max-w-[1300px] sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 sm:px-4 md:px-6">
-        {visibleListings.map((listing, index) => (
-          <Box key={index} onClick={() => navigate(`/arac-detay/${listing.slug}`)} className="cursor-pointer">
-            <ShowcaseCard listing={listing} />
+        {loading ? (
+          <Box className="col-span-full flex justify-center py-8">
+            <CircularProgress color="error" />
           </Box>
-        ))}
+        ) : (
+          listings.map((listing, index) => {
+            if (listings.length === index + 1) {
+              return (
+                <Box 
+                  key={listing.id || index} 
+                  ref={lastElementRef}
+                  onClick={() => navigate(`/arac-detay/${listing.slug}`)} 
+                  className="cursor-pointer"
+                >
+                  <ShowcaseCard listing={listing} />
+                </Box>
+              );
+            } else {
+              return (
+                <Box 
+                  key={listing.id || index} 
+                  onClick={() => navigate(`/arac-detay/${listing.slug}`)} 
+                  className="cursor-pointer"
+                >
+                  <ShowcaseCard listing={listing} />
+                </Box>
+              );
+            }
+          })
+        )}
       </Box>
 
-      {listings.length > 12 &&  (
-        <Box className="flex justify-center mt-3 mb-5 sm:mt-4 md:mt-5">
-          <button
-            onClick={handleShowMore}
-            className="text-base sm:text-lg md:text-xl rounded-full px-6 sm:px-8 py-2 cursor-pointer mt-3
-              border-2 border-gray-400 text-gray-400 hover:bg-[#dc143c] hover:border-[#dc143c] hover:text-white transition-colors duration-300"
-          >
-            {!showAll ? "Daha Fazlası" : "Gizle"}
-          </button>
+      {/* Loading indicator */}
+      {loadingMore && (
+        <Box className="flex justify-center py-4">
+          <CircularProgress size={32} color="error" />
+        </Box>
+      )}
+
+      {/* Toplam sayı göster */}
+      {!loading && listings.length > 0 && (
+        <Box className="text-center py-4 text-gray-600">
+          {listings.length} / {total} araç gösteriliyor
         </Box>
       )}
     </Box>
