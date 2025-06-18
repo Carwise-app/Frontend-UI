@@ -4,21 +4,7 @@ import LoginAccount from './LoginAccount';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { Menu as MenuIcon, Search as SearchIcon, Close as CloseIcon } from '@mui/icons-material';
-
-// JWT token parsing utility function
-const parseJwt = (token) => {
-  try {
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-    }).join(''));
-    return JSON.parse(jsonPayload);
-  } catch (error) {
-    console.error('JWT token parsing error:', error);
-    return null;
-  }
-};
+import api from '../api/axios';
 
 export default function AppBar({onOpenClick, isLoggedIn, onLogout, setIsLoggedIn}) {
   const navigate = useNavigate();
@@ -30,7 +16,6 @@ export default function AppBar({onOpenClick, isLoggedIn, onLogout, setIsLoggedIn
   const shouldHideFooter = hideFooterRoutes.some(path => location.pathname.startsWith(path));
   const isKokpitOrFiyatOgren = location.pathname.startsWith('/kokpit') || location.pathname.startsWith('/fiyat-ogren');
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem("access_token"));
 
   const handleSearch = () => {
     if (searchValue.trim() !== '') {
@@ -55,39 +40,22 @@ export default function AppBar({onOpenClick, isLoggedIn, onLogout, setIsLoggedIn
     setMobileMenuOpen(false);
   };
 
+  const token = localStorage.getItem("access_token");
   useEffect(() => {
-    const currentToken = localStorage.getItem("access_token");
-    setToken(currentToken);
-    
-    if (currentToken && isLoggedIn) {
-      const decodedToken = parseJwt(currentToken);
-      if (decodedToken) {
-        setUser(decodedToken);
-      }
-    } else {
-      setUser(null);
-    }
-  }, [isLoggedIn]);
-
-  // Listen for storage changes
-  useEffect(() => {
-    const handleStorageChange = () => {
-      const currentToken = localStorage.getItem("access_token");
-      setToken(currentToken);
-      
-      if (currentToken && isLoggedIn) {
-        const decodedToken = parseJwt(currentToken);
-        if (decodedToken) {
-          setUser(decodedToken);
-        }
-      } else {
-        setUser(null);
+    const fetchUser = async () => {
+      try {
+        const response = await api.get("/profile/", {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        setUser(response.data);
+      } catch (error) {
+        console.error("Profil verisi alınamadı:", error.response?.data || error.message);
       }
     };
-
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, [isLoggedIn]);
+    fetchUser();
+  }, []);
 
   const toggleMobileMenu = () => setMobileMenuOpen(!mobileMenuOpen);
   const toggleSearchMenu = () => setSearchMenuOpen(!searchMenuOpen);
@@ -148,7 +116,7 @@ export default function AppBar({onOpenClick, isLoggedIn, onLogout, setIsLoggedIn
         {/* Desktop Auth */}
         <Box className="hidden gap-4 items-center md:flex">
           {isLoggedIn ? (
-            <LoginAccount onLogout={onLogout} fullName={user ? `${user?.first_name || ''} ${user?.last_name ? user.last_name.slice(0,1).toUpperCase() : ''}` : " "}/>
+            <LoginAccount onLogout={onLogout} fullName={user ? `${user?.first_name} ${user?.last_name.slice(0,1).toUpperCase()}` : " "}/>
           ) : (
             <button className='bg-[#dc143c] px-4 py-2 rounded-xl text-white cursor-pointer hover:bg-[#b01030] transition-colors text-sm lg:text-base' onClick={() => onOpenClick("login","notLogin")}>
               Giriş Yap
@@ -239,7 +207,7 @@ export default function AppBar({onOpenClick, isLoggedIn, onLogout, setIsLoggedIn
                   <Box className="flex gap-3 items-center mb-3">
                     <Avatar>{user?.first_name ? user.first_name[0] : 'U'}</Avatar>
                     <Box>
-                      <Typography className="font-semibold">{user ? `${user?.first_name || ''} ${user?.last_name || ''}` : 'Kullanıcı'}</Typography>
+                      <Typography className="font-semibold">{user ? `${user?.first_name} ${user?.last_name}` : 'Kullanıcı'}</Typography>
                       <Typography className="text-xs text-gray-500">{user?.email}</Typography>
                     </Box>
                   </Box>

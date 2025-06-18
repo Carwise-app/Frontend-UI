@@ -18,9 +18,8 @@ export default function LoginFormDialog({ onSwitch, onForgotPassword, onLoginSuc
     try {
       const response = await api.post("/auth/login", { email, password });
       localStorage.setItem("access_token", response.data.access_token);
-      console.log(response);
-      // Call onLoginSuccess after successful login
-      onLoginSuccess();
+      // window.location.reload();
+      console.log(response)
     } catch (error) {
       const errMsg = (error.response?.data?.error?.[0] || "").toLowerCase();
       let newErrors = {};
@@ -65,6 +64,7 @@ export default function LoginFormDialog({ onSwitch, onForgotPassword, onLoginSuc
       {errors.form && <span className="ml-1 text-xs text-red-600">{errors.form}</span>}
 
       <button
+      onClick={onLoginSuccess}
         type="submit"
         className="cursor-pointer bg-[#dc143c] py-2 w-[45%] flex justify-center mx-auto rounded-md"
       >
