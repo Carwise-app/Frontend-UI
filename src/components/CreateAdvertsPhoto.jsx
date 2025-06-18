@@ -205,6 +205,9 @@ export default function CreateAdvertsPhoto({title, desc, allSteps, stepLabel, ac
       console.log("Status:", response.status);
       console.log("Data:", response.data);
       
+      // İlan başarıyla oluşturulduktan sonra localStorage'ı temizle
+      clearListingDataFromLocalStorage();
+      
       // Başarılı olduğunda ana sayfaya yönlendir
       showSnackbar("İlanınız başarıyla oluşturuldu.", "success");
       navigate("/");
@@ -230,6 +233,40 @@ export default function CreateAdvertsPhoto({title, desc, allSteps, stepLabel, ac
     } finally {
       setLoading(false);
     }
+  };
+
+  // localStorage'dan ilan verilerini temizle
+  const clearListingDataFromLocalStorage = () => {
+    console.log("=== LOCALSTORAGE TEMİZLENİYOR ===");
+    
+    const keysToRemove = [
+      "selectedBrand",
+      "selectedSeries", 
+      "selectedModel",
+      "selectedYear",
+      "selectedBodyType",
+      "selectedFuelType",
+      "selectedTransmission",
+      "selectedColor",
+      "selectedKm",
+      "selectedMotorGucu",
+      "selectedMotorHacmi",
+      "selectedDamage",
+      "selectedPrice",
+      "selectedTitle",
+      "selectedDescription",
+      "selectedCity",
+      "selectedDistrict",
+      "selectedNeighborhood",
+      "selectedTractionType"
+    ];
+
+    keysToRemove.forEach(key => {
+      localStorage.removeItem(key);
+      console.log(`✅ ${key} temizlendi`);
+    });
+
+    console.log("=== LOCALSTORAGE TEMİZLİĞİ TAMAMLANDI ===");
   };
 
   const handleSucces = () => {
