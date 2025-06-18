@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Box, CircularProgress, Tab, Tabs, Avatar, Button, Typography, Paper, IconButton, Tooltip, TextField } from '@mui/material';
-import { ArrowBackIos, ArrowForwardIos, Phone, Chat, Map, InfoOutlined, Search } from '@mui/icons-material';
+import { ArrowBackIos, ArrowForwardIos, Phone, Chat, Map, InfoOutlined, Search, Favorite, FavoriteBorder } from '@mui/icons-material';
 import axios from 'axios';
 import SafeShoppingDialog from '../components/SafeShoppingDialog';
+import api from '../api/axios';
 
 const TABS = [
   { label: 'Açıklama', value: 'description' },
@@ -15,7 +16,7 @@ const TABS = [
 const mainRed = '#dc143c';
 const IMAGE_BASE = 'https://carwisegw.yusuftalhaklc.com/';
 
-export default function ProductDetailsPage() {
+export default function ProductDetailsPage({ onOpenClick }) {
   const { id } = useParams();
   const navigate = useNavigate();
   const [data, setData] = useState(null);
@@ -25,15 +26,45 @@ export default function ProductDetailsPage() {
   const [mainImgIdx, setMainImgIdx] = useState(0);
   const [plate, setPlate] = useState('');
   const [openSafeShopping, setOpenSafeShopping] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [favoriteLoading, setFavoriteLoading] = useState(false);
 
   const handleOpenSafeShopping = () => setOpenSafeShopping(true);
   const handleCloseSafeShopping = () => setOpenSafeShopping(false);
 
+  const handleFavoriteToggle = async () => {
+    const accessToken = localStorage.getItem('access_token');
+    if (!accessToken) {
+      // Kullanıcı giriş yapmamış, login popup'ı aç
+      onOpenClick('login', 'notLogin');
+      return;
+    }
+
+    setFavoriteLoading(true);
+    try {
+      if (isFavorite) {
+        // Favorilerden çıkar
+        await api.delete(`/favorite/${data.id}`);
+        setIsFavorite(false);
+      } else {
+        // Favorilere ekle
+        await api.post(`/favorite/${data.id}`);
+        setIsFavorite(true);
+      }
+    } catch (error) {
+      console.error('Favori işlemi başarısız:', error);
+      // Hata durumunda kullanıcıya bilgi ver
+      alert(isFavorite ? 'Favorilerden çıkarılamadı!' : 'Favorilere eklenemedi!');
+    } finally {
+      setFavoriteLoading(false);
+    }
+  };
+
   const handleMessageClick = () => {
     const accessToken = localStorage.getItem('access_token');
     if (!accessToken) {
-      // Kullanıcı giriş yapmamış, login sayfasına yönlendir
-      navigate('/login');
+      // Kullanıcı giriş yapmamış, login popup'ı aç
+      onOpenClick('login', 'notLogin');
       return;
     }
     
@@ -62,9 +93,17 @@ export default function ProductDetailsPage() {
 
   useEffect(() => {
     setLoading(true);
-    axios.get(`https://carwisegw.yusuftalhaklc.com/listing/${id}`)
+    const accessToken = localStorage.getItem('access_token');
+    const config = accessToken ? {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    } : {};
+    
+    axios.get(`https://carwisegw.yusuftalhaklc.com/listing/${id}`, config)
       .then(res => {
         setData(res.data);
+        setIsFavorite(res.data.is_favorite || false);
         setLoading(false);
         setMainImgIdx(0);
       })
@@ -257,8 +296,40 @@ export default function ProductDetailsPage() {
           </Box>
 
           {/* Fiyat kutusu */}
+          <Box className="flex items-center justify-between p-6 bg-white border border-gray-200 shadow-lg rounded-2xl">
+            <Typography className="text-gray-600 text-lg font-medium">
+              Fiyat
+            </Typography>
+            <Box className="flex items-baseline">
+              <Typography className="text-[#dc143c] !font-black text-5xl md:text-6xl lg:text-7xl tracking-tight">
+                {price}
+              </Typography>
+              <Typography className="text-[#dc143c] !font-bold text-2xl md:text-3xl ml-3">
+                {currency}
+              </Typography>
+            </Box>
+          </Box>
+
+          {/* Favori Butonu */}
           <Box className="flex flex-col gap-2 p-4 bg-white border border-gray-100 shadow rounded-2xl">
-            <Typography className="text-right text-[#dc143c] !font-bold text-2xl">{price} <span className="text-base font-bold">{currency}</span></Typography>
+            <Button
+              variant={isFavorite ? "contained" : "outlined"}
+              color="error"
+              size="large"
+              fullWidth
+              startIcon={isFavorite ? <Favorite /> : <FavoriteBorder />}
+              onClick={handleFavoriteToggle}
+              disabled={favoriteLoading}
+              className={isFavorite ? "bg-[#dc143c] hover:bg-[#b01030]" : "border-[#dc143c] text-[#dc143c] hover:bg-[#dc143c] hover:text-white"}
+            >
+              {favoriteLoading ? (
+                <CircularProgress size={20} color="inherit" />
+              ) : isFavorite ? (
+                "Favorilerden Çıkar"
+              ) : (
+                "Favorilere Ekle"
+              )}
+            </Button>
           </Box>
 
           {/* Bilgi kutusu */}

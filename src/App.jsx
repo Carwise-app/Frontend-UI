@@ -107,7 +107,7 @@ export default function App() {
             <Route index element={<SearchCar />} />
             <Route path=":brand" element={<SearchCar />} />
           </Route>
-          <Route path="/arac-detay/:id" element={<ProductDetailsPage />} />
+          <Route path="/arac-detay/:id" element={<ProductDetailsPage onOpenClick={handleOpenClick} />} />
           <Route
             path="/fiyat-ogren"
             element={<LearnPrice isLoggedIn={isLoggedIn} />}
