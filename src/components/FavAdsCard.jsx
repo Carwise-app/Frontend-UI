@@ -57,12 +57,10 @@ export default function FavAdsCard({ onFavoriteCountChange }) {
     fetchFavorites(value);
   };
 
-  // 1. Yükleme sırasında hiçbir şey gösterme (ilk 1 saniye)
   if (loading && !showShimmer) {
     return null;
   }
 
-  // 2. Yükleme sırasında shimmer göster
   if (loading && showShimmer) {
     return (
       <Box className="flex flex-col gap-2">
@@ -80,7 +78,6 @@ export default function FavAdsCard({ onFavoriteCountChange }) {
     );
   }
 
-  // 3. Yükleme bittikten sonra hiç favori yoksa sadece NoAds göster
   if (!loading && total === 0) {
     return (
       <>
@@ -90,38 +87,10 @@ export default function FavAdsCard({ onFavoriteCountChange }) {
           textBtn="Araçlara Göz Atın"
           onClick={() => navigate('/arac-satin-al')}
         />
-        {/* Pagination her zaman gösterilsin */}
-        <Box className="flex justify-center mt-4">
-          <Pagination
-            count={1}
-            page={1}
-            color="primary"
-            size="large"
-            sx={{
-              '& .MuiPaginationItem-root': {
-                color: '#dc2626',
-                fontSize: '1rem',
-                fontWeight: '500',
-                '&.Mui-selected': {
-                  background: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)',
-                  color: 'white',
-                  fontWeight: 'bold',
-                  '&:hover': {
-                    background: 'linear-gradient(135deg, #b91c1c 0%, #991b1b 100%)',
-                  }
-                },
-                '&:hover': {
-                  backgroundColor: 'rgba(220, 38, 38, 0.08)',
-                }
-              }
-            }}
-          />
-        </Box>
       </>
     );
   }
 
-  // 4. Favoriler varsa ilanları ve pagination'ı göster
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   return (

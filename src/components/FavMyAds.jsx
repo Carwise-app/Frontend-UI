@@ -18,14 +18,6 @@ export default function FavMyAds() {
         description="Beğendiğiniz veya takip etmek istediğiniz ilanları burada görebilirsiniz."
       />
       <Box className="mt-5">
-        {favCount === 0 ? (
-            <NoAds
-              title="Favori İlanınız Yok"
-              desc="Henüz favori ilan eklemediniz."
-              textBtn="Araçlara Göz Atın"
-              onClick={() => navigate('/arac-satin-al')}
-            />
-        ) : null}
         <FavAdsCard onFavoriteCountChange={setFavCount} />
       </Box>
     </>
