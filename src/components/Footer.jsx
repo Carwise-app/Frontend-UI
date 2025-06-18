@@ -5,6 +5,7 @@ import ContactDialog from "./ContactDialog";
 import PrivacyDialog from "./PrivacyDialog";
 import NewsDialog from "./NewsDialog";
 import SafeShoppingDialog from "./SafeShoppingDialog";
+import { useNavigate } from "react-router-dom";
 
 export default function Footer(){
     const [openAboutUs, setOpenAboutUs] = useState(false);
@@ -12,6 +13,7 @@ export default function Footer(){
     const [openPrivacy, setOpenPrivacy] = useState(false);
     const [openNews, setOpenNews] = useState(false);
     const [openSafeShopping, setOpenSafeShopping] = useState(false);
+    const navigate = useNavigate();
 
     const handleOpenAboutUs = () => setOpenAboutUs(true);
     const handleCloseAboutUs = () => setOpenAboutUs(false);
@@ -55,10 +57,10 @@ export default function Footer(){
 
                 {/* Hizmetlerimiz */}
                 <Box className="flex flex-col gap-y-2">
-                    <span className="text-lg font-semibold sm:text-xl lg:text-2xl">Hizmetlerimiz</span>
-                    <span className="text-sm text-gray-700 sm:text-base">Arabamın Fiyatı Ne Kadar?</span>
-                    <span className="text-sm text-gray-700 sm:text-base">Araç Al</span>
-                    <span className="text-sm text-gray-700 sm:text-base">İlan Ver</span>
+                    <span className="text-2xl">Hizmetlerimiz</span>
+                    <span className="text-sm text-gray-700">Arabamın Fiyatı Ne Kadar?</span>
+                    <span className="text-sm text-gray-700">Araç Al</span>
+                    <span className="text-sm text-gray-700">İlan Ver</span>
                 </Box>
 
                 {/* Kurumsal */}
