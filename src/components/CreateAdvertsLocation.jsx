@@ -1,5 +1,5 @@
 import { Box, Button, FormControl, InputAdornment, InputLabel, MenuItem, Select, TextField, Typography } from '@mui/material';
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import CustomizedSteppers from './CustomizedSteppers';
 import TextareaAutosize from '@mui/material/TextareaAutosize';
 
@@ -8,6 +8,46 @@ export default function CreateAdvertsLocation({title, desc, allSteps, stepLabel,
   const [selectedDistrict, setSelectedDistrict] = useState('');
   const [selectedNeighborhood, setSelectedNeighborhood] = useState('');
 
+  // API data states
+  const [provinces, setProvinces] = useState([]);
+  const [districts, setDistricts] = useState([]);
+  const [neighborhoods, setNeighborhoods] = useState([]);
+
+  // Fetch provinces (cities)
+  useEffect(() => {
+    fetch('https://turkiyeapi.herokuapp.com/api/v1/provinces')
+      .then(r => r.json())
+      .then(d => setProvinces(d.data))
+      .catch(console.error);
+  }, []);
+
+  // Fetch districts when city changes
+  useEffect(() => {
+    if (selectedCity) {
+      fetch(`https://turkiyeapi.herokuapp.com/api/v1/provinces?name=${selectedCity}`)
+        .then(r => r.json())
+        .then(d => setDistricts(d.data[0]?.districts || []))
+        .catch(console.error);
+    } else {
+      setDistricts([]);
+    }
+  }, [selectedCity]);
+
+  // Fetch neighborhoods when district changes
+  useEffect(() => {
+    if (selectedDistrict) {
+      // Find the selected district's ID from districts
+      const selectedDistrictData = districts.find(d => d.name === selectedDistrict);
+      if (selectedDistrictData) {
+        fetch(`https://turkiyeapi.dev/api/v1/districts/${selectedDistrictData.id}`)
+          .then(r => r.json())
+          .then(d => setNeighborhoods(d.data.neighborhoods || []))
+          .catch(console.error);
+      }
+    } else {
+      setNeighborhoods([]);
+    }
+  }, [selectedDistrict, districts]);
 
   const handleCityChange = (e) => {
     setSelectedCity(e.target.value);
@@ -42,7 +82,7 @@ export default function CreateAdvertsLocation({title, desc, allSteps, stepLabel,
               <Button onClick={onHandleBack} variant='outlined' color='error'>Geri</Button>
             </Box>
             <Box className="flex flex-col w-[70%] mx-auto mt-4 gap-y-4">
-              <Box className="bg-white rounded-md shadow-xs ">
+              <Box className="bg-white rounded-md shadow-xs">
                 <Box className="px-2 py-2">
                   <span className='text-lg'>{stepLabel}</span>
                 </Box>
@@ -57,7 +97,12 @@ export default function CreateAdvertsLocation({title, desc, allSteps, stepLabel,
                             label="İl"
                             onChange={handleCityChange}
                             >
-                                <MenuItem value="naber">naber</MenuItem>
+                                <MenuItem value="">Seçim yapma</MenuItem>
+                                {provinces.map((province) => (
+                                    <MenuItem key={province.name} value={province.name}>
+                                        {province.name}
+                                    </MenuItem>
+                                ))}
                             </Select>
                         </FormControl>
                         <FormControl fullWidth size='medium' disabled={!selectedCity}>
@@ -67,7 +112,12 @@ export default function CreateAdvertsLocation({title, desc, allSteps, stepLabel,
                             label="İlçe"
                             onChange={handleDistrictChange}
                             >
-                                <MenuItem value="naber">naber</MenuItem>
+                                <MenuItem value="">Seçim yapma</MenuItem>
+                                {districts.map((district) => (
+                                    <MenuItem key={district.name} value={district.name}>
+                                        {district.name}
+                                    </MenuItem>
+                                ))}
                             </Select>
                         </FormControl> 
                         <FormControl fullWidth size='medium' disabled={!selectedDistrict}>
@@ -77,7 +127,12 @@ export default function CreateAdvertsLocation({title, desc, allSteps, stepLabel,
                             label="Mahalle"
                             onChange={handleNeighborhoodChange}
                             >
-                                <MenuItem value="naber">naber</MenuItem>
+                                <MenuItem value="">Seçim yapma</MenuItem>
+                                {neighborhoods.map((neighborhood) => (
+                                    <MenuItem key={neighborhood.name} value={neighborhood.name}>
+                                        {neighborhood.name}
+                                    </MenuItem>
+                                ))}
                             </Select>
                         </FormControl>  
                     </Box>  

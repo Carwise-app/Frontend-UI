@@ -249,7 +249,7 @@ export default function CreateAdvertsPhoto({title, desc, allSteps, stepLabel, ac
               <Button onClick={onHandleBack} variant='outlined' color='error'>Geri</Button>
             </Box>
             <Box className="flex flex-col w-[70%] mx-auto mt-4 gap-y-4">
-              <Box className="bg-white rounded-md shadow-xs ">
+              <Box className="bg-white rounded-md shadow-xs">
                 <Box className="px-2 py-2">
                   <span className='text-lg'>{stepLabel}</span>
                 </Box>  
@@ -257,7 +257,7 @@ export default function CreateAdvertsPhoto({title, desc, allSteps, stepLabel, ac
               <Box >
                     <Box
                         onClick={() => fileInputRef.current.click()}
-                        className="p-4 text-center border border-gray-400 border-dashed rounded-lg cursor-pointer hover:bg-gray-100"
+                        className="p-4 text-center rounded-lg border border-gray-400 border-dashed cursor-pointer hover:bg-gray-100"
                     >
                         <p className="text-sm text-gray-600">Fotoğraflarınızı yüklemek için tıklayın veya sürükleyin</p>
                         <input
@@ -274,30 +274,31 @@ export default function CreateAdvertsPhoto({title, desc, allSteps, stepLabel, ac
                      <ReactSortable
                         list={files}
                         setList={setFiles}
-                        className="grid grid-cols-5 gap-4 p-5 mt-5 bg-white border-gray-100 rounded-md shadow-sx border-1"
+                        className="grid grid-cols-2 gap-4 p-5 mt-5 bg-white rounded-md border-gray-100 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 shadow-sx border-1"
                     >
                         {files.map((fileObj, index) => (
                         <Box
                             key={fileObj.id}
-                            className="relative w-32 h-32 overflow-hidden border rounded shadow"
+                            className="overflow-hidden relative w-full bg-gray-50 rounded-xl shadow-md transition-transform duration-200 aspect-square group hover:scale-105"
                         >
                             <img
                             src={fileObj.preview}
                             alt={`Fotoğraf ${index + 1}`}
-                            className="object-cover w-full h-full"
+                            className="object-cover w-full h-full transition-transform duration-200 group-hover:scale-110"
                             />
                             {index === 0 && (
-                            <span className="absolute top-0 left-0 px-2 py-1 text-xs text-white bg-blue-600 rounded-br">
+                            <span className="absolute top-2 left-2 px-2 py-1 text-xs font-bold text-white bg-gradient-to-r from-[#dc143c] to-pink-500 rounded shadow-lg z-10">
                                 Kapak
                             </span>
                             )}
                             <Tooltip title="Fotoğrafı sil" arrow placement="right">
-                                <button
+                                <IconButton
                                 onClick={() => handleDelete(index)}
-                                className="absolute flex items-center justify-center w-4 h-4 text-sm text-white bg-gray-500 rounded-full top-1 right-1 hover:bg-gray-700"
+                                className="!absolute top-2 right-2 bg-white/80 hover:bg-[#dc143c] hover:text-white text-[#dc143c] shadow transition-all z-20"
+                                size="small"
                                 >
-                                    -
-                                </button>
+                                    <DeleteIcon fontSize="small" />
+                                </IconButton>
                             </Tooltip>
                         </Box>
                         ))}
