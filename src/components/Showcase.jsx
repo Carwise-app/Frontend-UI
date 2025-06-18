@@ -1,5 +1,5 @@
-import { Box, Link, Typography, CircularProgress } from "@mui/material";
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import { Box, Link, Typography, CircularProgress, Button } from "@mui/material";
+import React, { useEffect, useState } from "react";
 import ShowcaseCard from "./Card";
 import api from "../api/axios";
 import { useNavigate } from "react-router-dom";
@@ -7,49 +7,7 @@ import { useNavigate } from "react-router-dom";
 export default function ShowcaseArea() {
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
-  const [total, setTotal] = useState(0);
   const navigate = useNavigate();
-  const observerRef = useRef();
-  const loadingRef = useRef();
-
-  // Intersection Observer callback
-  const lastElementRef = useCallback(node => {
-    if (loading) return;
-    if (observerRef.current) observerRef.current.disconnect();
-    observerRef.current = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting && hasMore && !loadingMore) {
-        loadMore();
-      }
-    });
-    if (node) observerRef.current.observe(node);
-  }, [loading, hasMore, loadingMore]);
-
-  const loadMore = () => {
-    if (loadingMore || !hasMore) return;
-    setLoadingMore(true);
-    const nextPage = page + 1;
-    setPage(nextPage);
-    
-    api.get("/listing/", {
-      params: {
-        page: nextPage,
-        limit: 10,
-      },
-    })
-    .then((res) => {
-      const newListings = res.data.listings || [];
-      setListings(prev => [...prev, ...newListings]);
-      setHasMore(newListings.length > 0 && listings.length + newListings.length < total);
-      setLoadingMore(false);
-    })
-    .catch((err) => {
-      console.error("Daha fazla veri alınamadı:", err);
-      setLoadingMore(false);
-    });
-  };
 
   useEffect(() => {
     setLoading(true);
@@ -57,14 +15,12 @@ export default function ShowcaseArea() {
       .get("/listing/", {
         params: {
           page: 1,
-          limit: 10,
+          limit: 12,
         },
       })
       .then((res) => {
         const initialListings = res.data.listings || [];
         setListings(initialListings);
-        setTotal(res.data.total || 0);
-        setHasMore(initialListings.length > 0 && initialListings.length < (res.data.total || 0));
         setLoading(false);
       })
       .catch((err) => {
@@ -92,46 +48,34 @@ export default function ShowcaseArea() {
             <CircularProgress color="error" />
           </Box>
         ) : (
-          listings.map((listing, index) => {
-            if (listings.length === index + 1) {
-              return (
-                <Box 
-                  key={listing.id || index} 
-                  ref={lastElementRef}
-                  onClick={() => navigate(`/arac-detay/${listing.slug}`)}
-                  className="cursor-pointer group transform transition-all duration-300 hover:scale-105 hover:shadow-2xl"
-                >
-                  <ShowcaseCard listing={listing} />
-                </Box>
-              );
-            } else {
-              return (
-                <Box 
-                  key={listing.id || index} 
-                  onClick={() => navigate(`/arac-detay/${listing.slug}`)}
-                  className="cursor-pointer group transform transition-all duration-300 hover:scale-105 hover:shadow-2xl"
-                >
-                  <ShowcaseCard listing={listing} />
-                </Box>
-              );
-            }
-          })
+          listings.map((listing, index) => (
+            <Box 
+              key={listing.id || index} 
+              onClick={() => navigate(`/arac-detay/${listing.slug}`)}
+              className="cursor-pointer group transform transition-all duration-300 hover:scale-105 hover:shadow-2xl"
+            >
+              <ShowcaseCard listing={listing} />
+            </Box>
+          ))
         )}
       </Box>
 
-      {/* Loading indicator */}
-      {loadingMore && (
-        <Box className="flex justify-center py-8">
-          <CircularProgress size={32} color="error" />
-        </Box>
-      )}
-
-      {/* Toplam sayı göster */}
+      {/* Tüm İlanlar Butonu */}
       {!loading && listings.length > 0 && (
-        <Box className="text-center py-6 md:py-8">
-          <Typography className="text-gray-600 text-sm md:text-base">
-            <span className="font-semibold text-[#dc143c]">{listings.length}</span> / {total} araç gösteriliyor
-          </Typography>
+        <Box className="text-center py-8 md:py-12">
+          <Button
+            variant="contained"
+            onClick={() => navigate('/arac-satin-al')}
+            className="bg-[#dc143c] hover:bg-[#b01030] text-white px-8 py-3 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+            sx={{
+              background: 'linear-gradient(135deg, #dc143c 0%, #b01030 100%)',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #b01030 0%, #8a0d25 100%)',
+              }
+            }}
+          >
+            Tüm İlanlar
+          </Button>
         </Box>
       )}
     </Box>

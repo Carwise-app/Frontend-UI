@@ -1,21 +1,9 @@
 // src/components/Banner.jsx
-import { Box, Typography, Button } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import BannerPhone from "../assets/BannerPhone.svg"
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ArrowForward, TrendingUp, DirectionsCar } from '@mui/icons-material';
 
 export default function MainPageBanner(){
-  const navigate = useNavigate();
-
-  const handleGetStarted = () => {
-    navigate('/arac-satin-al');
-  };
-
-  const handleLearnMore = () => {
-    navigate('/fiyat-ogren');
-  };
-
   return (
     <Box
       className="relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-red-50 px-4 sm:px-8 md:px-16 lg:px-32 py-12 sm:py-16 md:py-20 lg:py-28 flex flex-col md:flex-row items-center justify-between select-none gap-8 md:gap-12"
@@ -42,27 +30,6 @@ export default function MainPageBanner(){
           <Typography className='pb-6'>
             <span className='text-5xl font-black lg:text-7xl xl:text-8xl bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent'>yanında</span>
           </Typography>
-          
-          {/* Desktop Buttons */}
-          <Box className="flex flex-col sm:flex-row gap-4 pt-4">
-            <Button
-              variant="contained"
-              onClick={handleGetStarted}
-              className="bg-gradient-to-r from-[#dc143c] to-[#ef4444] hover:from-[#b01030] hover:to-[#dc2626] text-white px-8 py-3 rounded-2xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-              startIcon={<DirectionsCar />}
-              endIcon={<ArrowForward />}
-            >
-              Tüm İlanlar
-            </Button>
-            <Button
-              variant="outlined"
-              onClick={handleLearnMore}
-              className="border-2 border-[#dc143c] text-[#dc143c] hover:bg-[#dc143c] hover:text-white px-8 py-3 rounded-2xl font-semibold text-lg transition-all duration-300 transform hover:scale-105"
-              startIcon={<TrendingUp />}
-            >
-              Fiyat Öğren
-            </Button>
-          </Box>
         </Box>
 
         {/* Mobil Yazılar */}
@@ -76,27 +43,6 @@ export default function MainPageBanner(){
           <Typography className='pb-4'>
             <span className='text-3xl font-black sm:text-4xl bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent'>yanında</span>
           </Typography>
-          
-          {/* Mobile Buttons */}
-          <Box className="flex flex-col gap-3 pt-4">
-            <Button
-              variant="contained"
-              onClick={handleGetStarted}
-              className="bg-gradient-to-r from-[#dc143c] to-[#ef4444] hover:from-[#b01030] hover:to-[#dc2626] text-white px-6 py-3 rounded-2xl font-semibold text-base shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-              startIcon={<DirectionsCar />}
-              endIcon={<ArrowForward />}
-            >
-              Tüm İlanlar
-            </Button>
-            <Button
-              variant="outlined"
-              onClick={handleLearnMore}
-              className="border-2 border-[#dc143c] text-[#dc143c] hover:bg-[#dc143c] hover:text-white px-6 py-3 rounded-2xl font-semibold text-base transition-all duration-300 transform hover:scale-105"
-              startIcon={<TrendingUp />}
-            >
-              Fiyat Öğren
-            </Button>
-          </Box>
         </Box>
       </Box>
 
