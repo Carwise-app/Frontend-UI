@@ -7,6 +7,7 @@ import StarBorderIcon from '@mui/icons-material/StarBorder';
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';  
 import PanelPhoto from '../assets/ControlPanelPhoto.jpg'
+import SpaceDashboardIcon from '@mui/icons-material/SpaceDashboard';
 import { NavLink, Outlet } from 'react-router-dom';
 import React from 'react'
 import { useEffect, useState } from 'react';
@@ -40,12 +41,12 @@ export default function Kokpit({onLogout}) {
         <Box className="w-[25%] flex flex-col bg-neutral-800">
           <Box className="relative px-6 py-12 bg-center bg-cover" sx={{ backgroundImage: `url(${PanelPhoto})` }}>
             <Box className="absolute inset-0 z-0 bg-black/25" />
-            <Box className="relative z-10 flex flex-col">
+            <Box className="flex relative z-10 flex-col">
               <span className='text-xl font-bold text-white'>Merhaba {user ? `${user.first_name.toUpperCase()}` : "Yükleniyor..."}</span>
             </Box>
           </Box>  
           <Box className="flex-grow px-6 py-6 bg-neutral-700">
-            <Box className="flex flex-col font-medium gap-y-8">
+            <Box className="flex flex-col gap-y-8 font-medium">
               <NavLink to="/kokpit" end className={({isActive}) => `flex items-center gap-x-1 hover:text-[#dc143c] cursor-pointer ${isActive ? `text-[#dc143c]` : `text-white`}`}>
                   <GridViewIcon />Hızlı İşlemler
               </NavLink>
@@ -63,6 +64,9 @@ export default function Kokpit({onLogout}) {
               </NavLink>
               <NavLink to="/kokpit/profil-ve-ayarlar" className={({isActive}) => `flex items-center gap-x-1 hover:text-[#dc143c] cursor-pointer ${isActive ? `text-[#dc143c]` : `text-white`}`}>
                 <SettingsIcon />Profil & Ayarlar
+              </NavLink>
+              <NavLink to="/kokpit/dashboard" className={({isActive}) => `flex items-center gap-x-1 hover:text-[#dc143c] cursor-pointer ${isActive ? `text-[#dc143c]` : `text-white`}`}>
+                <SpaceDashboardIcon />Dashboard
               </NavLink>
             </Box>
           </Box>

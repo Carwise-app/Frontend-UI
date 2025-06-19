@@ -27,6 +27,9 @@ import { useSnackbar } from "./context/SnackbarContext";
 import ResetPasswordKokpit from "./pages/ResetPasswordKokpit";
 import CreateAdverts from "./pages/CreateAdverts";
 import ProductDetailsPage from "./pages/ProductDetailsPage";
+import DashboardKokpit from "./components/DashboardKokpit";
+import DashboardUsersKokpit from "./components/DashboardUsersKokpit";
+import DashboardBrandsKokpit from "./components/DashboardBrandsKokpit";
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -128,6 +131,10 @@ export default function App() {
           </Route>
           <Route path="/kokpit" element={<Kokpit onLogout={handleLogout} />}>
             <Route index element={<QuickTransactions />} />
+            <Route path="dashboard" element={<DashboardKokpit />}>
+              <Route index element={<DashboardUsersKokpit />} />
+              <Route path="marka" element={<DashboardBrandsKokpit />} />
+            </Route>
             <Route path="ilanlarim" element={<MyAds />}>
               <Route index element={<YayindaOlanlar />} />
               <Route
