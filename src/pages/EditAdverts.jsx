@@ -373,6 +373,63 @@ export default function EditAdverts() {
     return () => clearTimeout(timer);
   }, [listingData, id]);
 
+  // localStorage'dan araç verilerini temizle
+  const clearListingDataFromLocalStorage = () => {
+    console.log("=== LOCALSTORAGE TEMİZLENİYOR ===");
+    
+    const keysToRemove = [
+      "selectedBrand",
+      "selectedSeries", 
+      "selectedModel",
+      "selectedYear",
+      "selectedBodyType",
+      "selectedFuelType",
+      "selectedTransmission",
+      "selectedColor",
+      "selectedKm",
+      "selectedMotorGucu",
+      "selectedMotorHacmi",
+      "selectedDamage",
+      "selectedPrice",
+      "selectedTitle",
+      "selectedDescription",
+      "selectedCity",
+      "selectedDistrict",
+      "selectedNeighborhood",
+      "selectedTractionType",
+      "enginePower",
+      "engineVolume",
+      "kilometers",
+      "driveType",
+      "heavyDamage",
+      "frontHood",
+      "frontBumper",
+      "frontLeftDoor",
+      "frontRightDoor",
+      "frontLeftMudguard",
+      "rearBumper",
+      "rearLeftDoor",
+      "rearRightDoor",
+      "rearLeftMudguard",
+      "roof",
+      "price",
+      "title",
+      "currency",
+      "description",
+      "city",
+      "district",
+      "neighborhood",
+      "uploadedImages"
+    ];
+
+    keysToRemove.forEach(key => {
+      localStorage.removeItem(key);
+      console.log(`✅ ${key} temizlendi`);
+    });
+
+    console.log("=== LOCALSTORAGE TEMİZLİĞİ TAMAMLANDI ===");
+  };
+
   // İlanı güncelle
   const updateListing = async (formData) => {
     try {
@@ -418,6 +475,10 @@ export default function EditAdverts() {
             
             console.log(`${method.toUpperCase()} ${endpoint} başarılı:`, response.data);
             showSnackbar("İlan başarıyla güncellendi!", "success");
+            
+            // localStorage'dan araç verilerini temizle
+            clearListingDataFromLocalStorage();
+            
             navigate("/kokpit/ilanlarim");
             return response;
           } catch (testError) {
@@ -436,6 +497,10 @@ export default function EditAdverts() {
                 const redirectResponse = await api[method](testError.response.headers.location, formData, config);
                 console.log("Redirect başarılı:", redirectResponse.data);
                 showSnackbar("İlan başarıyla güncellendi!", "success");
+                
+                // localStorage'dan araç verilerini temizle
+                clearListingDataFromLocalStorage();
+                
                 navigate("/kokpit/ilanlarim");
                 return redirectResponse;
               } catch (redirectError) {
@@ -463,6 +528,10 @@ export default function EditAdverts() {
         
         console.log("POST /update/ başarılı:", postResponse.data);
         showSnackbar("İlan başarıyla güncellendi!", "success");
+        
+        // localStorage'dan araç verilerini temizle
+        clearListingDataFromLocalStorage();
+        
         navigate("/kokpit/ilanlarim");
         return postResponse;
       } catch (postError) {
@@ -484,6 +553,10 @@ export default function EditAdverts() {
       
       console.log("Son çare PUT başarılı:", response.data);
       showSnackbar("İlan başarıyla güncellendi!", "success");
+      
+      // localStorage'dan araç verilerini temizle
+      clearListingDataFromLocalStorage();
+      
       navigate("/kokpit/ilanlarim");
       return response;
       
