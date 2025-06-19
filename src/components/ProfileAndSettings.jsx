@@ -7,10 +7,12 @@ import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { Box, Button, IconButton, Tooltip } from '@mui/material';
 import api from '../api/axios';
+import { useSnackbar } from '../context/SnackbarContext';
 
 export default function ProfileAndSettings({ onOpenClick }) {
   const [user, setUser] = useState(null);
   const token = localStorage.getItem("access_token");
+  const { showSnackbar } = useSnackbar();
 
   const formatDate = (timestamp) => {
   const date = new Date(timestamp * 1000);
@@ -37,6 +39,19 @@ export default function ProfileAndSettings({ onOpenClick }) {
     };
     fetchUser();
   }, []);
+
+  const handlePasswordReset = async () => {
+    if (!user?.email) {
+      showSnackbar("E-posta adresiniz bulunamadı.", "error");
+      return;
+    }
+    try {
+      await api.post("/auth/reset-password", { email: user.email });
+      showSnackbar("Şifre sıfırlama maili gönderildi.", "success");
+    } catch (error) {
+      showSnackbar("Şifre sıfırlama maili gönderilemedi.", "error");
+    }
+  };
 
   return (
     <Box className="flex flex-col gap-y-4">
@@ -136,7 +151,7 @@ export default function ProfileAndSettings({ onOpenClick }) {
             variant="outlined"
             color="info"
             sx={{ textTransform: 'none', fontSize: 15 }}
-            onClick={() => goToNewTab("/sifre-yenile")}
+            onClick={handlePasswordReset}
           >
             Şifreyi Güncelle
           </Button>

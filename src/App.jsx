@@ -24,7 +24,7 @@ import ProfileAndSettings from "./components/ProfileAndSettings";
 import YayindaOlanlar from "./components/YayindaOlanlar";
 import YayindaOlmayanlar from "./components/YayindaOlmayanlar";
 import { useSnackbar } from "./context/SnackbarContext";
-import ResetPassword from "./pages/ResetPassword";
+import ResetPasswordKokpit from "./pages/ResetPasswordKokpit";
 import CreateAdverts from "./pages/CreateAdverts";
 import ProductDetailsPage from "./pages/ProductDetailsPage";
 
@@ -38,7 +38,7 @@ export default function App() {
   const hideFooterRoutes = [
     "/kokpit",
     "/fiyat-ogren",
-    "/sifre-yenile",
+    "/kokpit/reset-password",
     "/ilan-olustur",
   ];
   const shouldHideFooter = hideFooterRoutes.some((path) =>
@@ -144,7 +144,7 @@ export default function App() {
             />
           </Route>
           <Route path="/sohbet/:receiver_id" element={<ChatDetail />} />
-          <Route path="/sifre-yenile" element={<ResetPassword />} />
+          <Route path="/kokpit/reset-password" element={<ResetPasswordKokpit />} />
           <Route
             path="/ilan-olustur"
             element={<CreateAdverts isLoggedIn={isLoggedIn} />}
