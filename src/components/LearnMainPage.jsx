@@ -171,7 +171,6 @@ export default function LearnMainPage() {
             })),
           })) || [];
         setBrands(brandData);
-        console.log("Marka verisi:", data);
       } catch (error) {
         console.error("Markalar alınamadı:", error);
       }
@@ -183,47 +182,37 @@ export default function LearnMainPage() {
   }, [currentStep.path]);
 
   const handleOptionClick = (value) => {
-    console.log(`Seçilen ${currentStep.path}:`, value);
-
-    // Marka seçildiğinde brand bilgisini kaydet
     if (currentStep.path === "marka") {
       setSelectedBrand(value);
-      setSelectedSeries(null); // Seri seçimini sıfırla
+      setSelectedSeries(null);
       localStorage.setItem("selectedBrand", JSON.stringify(value));
     }
 
-    // Seri seçildiğinde seri bilgisini kaydet
     if (currentStep.path === "seri") {
       setSelectedSeries(value);
       localStorage.setItem("selectedSeries", JSON.stringify(value));
     }
 
-    // Model seçildiğinde model bilgisini kaydet
     if (currentStep.path === "model") {
       localStorage.setItem("selectedModel", JSON.stringify(value));
     }
 
-    // Yıl seçildiğinde yıl bilgisini kaydet
     if (currentStep.path === "yil") {
       localStorage.setItem("selectedYear", value);
     }
 
-    // Gövde tipi seçildiğinde gövde tipi bilgisini kaydet
     if (currentStep.path === "govde-tipi") {
       localStorage.setItem("selectedBodyType", value);
     }
 
-    // Yakıt tipi seçildiğinde yakıt tipi bilgisini kaydet
     if (currentStep.path === "yakit-tipi") {
       localStorage.setItem("selectedFuelType", value);
     }
 
-    // Vites tipi seçildiğinde vites tipi bilgisini kaydet
     if (currentStep.path === "vites-tipi") {
       localStorage.setItem("selectedTransmission", value);
     }
 
-    // Renk seçildiğinde renk bilgisini kaydet
     if (currentStep.path === "renk") {
       localStorage.setItem("selectedColor", value);
     }
@@ -231,12 +220,9 @@ export default function LearnMainPage() {
     if (currentStep.next) {
       navigate(`/fiyat-ogren/${currentStep.next}`);
       setSearchValue("");
-    } else {
-      console.log("Tüm adımlar tamamlandı.");
     }
   };
 
-  // Sayfa yüklendiğinde localStorage'dan seçimleri al
   useEffect(() => {
     const savedBrand = localStorage.getItem("selectedBrand");
     const savedSeries = localStorage.getItem("selectedSeries");

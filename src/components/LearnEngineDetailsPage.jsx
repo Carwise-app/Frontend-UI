@@ -11,11 +11,8 @@ export default function LearnEngineDetailsPage({activeStep,onHandleBack,stepLabe
       enginePowerValue !== "" ;
 
   const handleContinue = () => {
-    // Motor değerlerini localStorage'a kaydet
     localStorage.setItem('selectedMotorGucu', enginePowerValue);
     localStorage.setItem('selectedMotorHacmi', engineSizeValue);
-    console.log("Motor gücü kaydedildi:", enginePowerValue);
-    console.log("Motor hacmi kaydedildi:", engineSizeValue);
     onHandleNext();
   };
 

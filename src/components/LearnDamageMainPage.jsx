@@ -11,26 +11,11 @@ export default function LearnDamageMainPage({activeStep,onHandleBack,stepLabel,o
   const { showSnackbar } = useSnackbar();
 
   const debugLocalStorage = () => {
-    console.log("=== LOCALSTORAGE DEBUG ===");
-    console.log("selectedBrand:", localStorage.getItem("selectedBrand"));
-    console.log("selectedSeries:", localStorage.getItem("selectedSeries"));
-    console.log("selectedModel:", localStorage.getItem("selectedModel"));
-    console.log("selectedYear:", localStorage.getItem("selectedYear"));
-    console.log("selectedBodyType:", localStorage.getItem("selectedBodyType"));
-    console.log("selectedFuelType:", localStorage.getItem("selectedFuelType"));
-    console.log("selectedTransmission:", localStorage.getItem("selectedTransmission"));
-    console.log("selectedColor:", localStorage.getItem("selectedColor"));
-    console.log("selectedMotorGucu:", localStorage.getItem("selectedMotorGucu"));
-    console.log("selectedMotorHacmi:", localStorage.getItem("selectedMotorHacmi"));
-    console.log("selectedKm:", localStorage.getItem("selectedKm"));
-    console.log("selectedDamage:", localStorage.getItem("selectedDamage"));
   };
 
-  // Fiyat tahmini yapma fonksiyonu
   const sendPredictionRequest = async () => {
     try {
       setLoading(true);
-      console.log("=== TAHMİN İSTEĞİ BAŞLADI ===");
       
       debugLocalStorage();
       
@@ -47,36 +32,16 @@ export default function LearnDamageMainPage({activeStep,onHandleBack,stepLabel,o
       const selectedKm = localStorage.getItem("selectedKm") || "";
       const selectedDamage = JSON.parse(localStorage.getItem("selectedDamage") || "{}");
 
-      console.log("LocalStorage'dan alınan veriler:");
-      console.log("- Marka:", selectedBrand);
-      console.log("- Seri:", selectedSeries);
-      console.log("- Model:", selectedModel);
-      console.log("- Yıl:", selectedYear);
-      console.log("- Gövde Tipi:", selectedBodyType);
-      console.log("- Yakıt Tipi:", selectedFuelType);
-      console.log("- Vites Tipi:", selectedTransmission);
-      console.log("- Renk:", selectedColor);
-      console.log("- Motor Gücü:", selectedMotorGucu);
-      console.log("- Motor Hacmi:", selectedMotorHacmi);
-      console.log("- Kilometre:", selectedKm);
-      console.log("- Hasar:", selectedDamage);
-      console.log("- Tramer:", selectedDamage.tramer);
-
       const chips = selectedDamage.chips || {};
       let orjinalSayisi = 0;
       let boyaliSayisi = 0;
       let degisenSayisi = 0;
-
-      console.log("Hasar chips:", chips);
-      console.log("Chips değerleri:", Object.values(chips));
 
       Object.values(chips).forEach(value => {
         if (value === "Orjinal") orjinalSayisi++;
         else if (value === "Boyalı" || value === "Lokal Boyalı") boyaliSayisi++;
         else if (value === "Değişen") degisenSayisi++;
       });
-
-      console.log("Hasar sayıları:", { orjinalSayisi, boyaliSayisi, degisenSayisi });
 
       const predictionData = {
         "Boyalı_sayısı": boyaliSayisi,
@@ -96,11 +61,7 @@ export default function LearnDamageMainPage({activeStep,onHandleBack,stepLabel,o
         "Yıl": parseInt(selectedYear) || 0
       };
 
-      console.log("=== API'YE GÖNDERİLECEK VERİ ===");
-      console.log(JSON.stringify(predictionData, null, 2));
-
       const token = localStorage.getItem("access_token");
-      console.log("Token:", token ? "Mevcut" : "Yok");
 
       const response = await api.post("/predict/", predictionData, {
         headers: {
@@ -108,13 +69,8 @@ export default function LearnDamageMainPage({activeStep,onHandleBack,stepLabel,o
           "Content-Type": "application/json",
         },
       });
-
-      console.log("=== API YANITI ===");
-      console.log("Status:", response.status);
-      console.log("Data:", response.data);
       
       localStorage.setItem("predictionResult", JSON.stringify(response.data));
-      console.log("Tahmin sonucu localStorage'a kaydedildi");
       
       onHandleNext();
       
@@ -137,14 +93,11 @@ export default function LearnDamageMainPage({activeStep,onHandleBack,stepLabel,o
     }
   };
 
-  // İlan oluşturma modunda sadece bir sonraki adıma geçiş
   const handleNextStep = async () => {
     try {
       setLoading(true);
-      console.log("=== BİR SONRAKİ ADIMA GEÇİŞ ===");
       
       debugLocalStorage();
-      console.log("İlan oluşturma modu - tahmin yapılmadan bir sonraki adıma geçiliyor...");
       
       onHandleNext();
       
@@ -157,18 +110,14 @@ export default function LearnDamageMainPage({activeStep,onHandleBack,stepLabel,o
     }
   };
 
-  // Mode'a göre hangi fonksiyonu çağıracağımızı belirle
   const handleButtonClick = () => {
     if (mode === 'prediction') {
-      // Fiyat tahmini modu - tahmin yap
       sendPredictionRequest();
     } else {
-      // İlan oluşturma modu - sadece geçiş yap
       handleNextStep();
     }
   };
 
-  // Mode'a göre loading text'ini belirle
   const getLoadingText = () => {
     if (mode === 'prediction') {
       return loading ? 'Tahmin Yapılıyor...' : btnText;
@@ -190,7 +139,7 @@ export default function LearnDamageMainPage({activeStep,onHandleBack,stepLabel,o
           <Button onClick={onHandleBack} variant='outlined' color='error'>Geri</Button>
         </Box>
         <Box className="flex flex-col w-[70%] mx-auto mt-4 gap-y-4">
-          <DamageStep onClick={onHandleNext} onNext={() => console.log('Hasar bilgisi tamamlandı')} stepLabel={stepLabel} />
+          <DamageStep onClick={onHandleNext} onNext={() => {}} stepLabel={stepLabel} />
             <Box>
                 <Box className="flex justify-center items-center h-full">
                     <button 

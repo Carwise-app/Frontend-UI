@@ -16,7 +16,6 @@ export default function LearnKmMainPage({activeStep,onHandleBack,stepLabel,onHan
     const handleContinue = () => {
         // Kilometre değerini localStorage'a kaydet
         localStorage.setItem('selectedKm', kmValue);
-        console.log("Kilometre kaydedildi:", kmValue);
         onHandleNext();
     };
 

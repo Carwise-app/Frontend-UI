@@ -51,12 +51,7 @@ export default function DashboardBrandsKokpit() {
     try {
       setLoading(true);
       const response = await api.get('/brand/');
-      console.log('API Response:', response.data); // Debug için
-      console.log('Response type:', typeof response.data);
-      console.log('Is Array:', Array.isArray(response.data));
-      console.log('Response keys:', Object.keys(response.data || {}));
       
-      // API response yapısını kontrol et
       let brandsData = [];
       
       if (Array.isArray(response.data)) {
@@ -68,12 +63,8 @@ export default function DashboardBrandsKokpit() {
       } else if (response.data?.results && Array.isArray(response.data.results)) {
         brandsData = response.data.results;
       } else {
-        console.log('Unexpected response structure:', response.data);
         brandsData = [];
       }
-      
-      console.log('All brands data:', brandsData);
-      console.log('Total brands count:', brandsData.length);
       
       setAllBrands(brandsData);
       setTotalBrands(brandsData.length);

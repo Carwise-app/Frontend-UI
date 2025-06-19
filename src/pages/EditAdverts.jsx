@@ -150,10 +150,7 @@ export default function EditAdverts() {
   const fetchListingData = async () => {
     try {
       setIsLoadingListing(true);
-      console.log("İlan verileri yükleniyor, ID:", id);
       
-      // Önce localStorage'ı temizle (eski araç verilerini önlemek için)
-      console.log("=== ESKİ ARAÇ VERİLERİ TEMİZLENİYOR ===");
       const keysToRemove = [
         "selectedBrand",
         "selectedSeries", 
@@ -202,9 +199,7 @@ export default function EditAdverts() {
       keysToRemove.forEach(key => {
         localStorage.removeItem(key);
       });
-      console.log("=== ESKİ ARAÇ VERİLERİ TEMİZLENDİ ===");
       
-      // Farklı endpoint'leri dene
       const endpoints = [
         `/listing/${id}/`,
         `/listing/${id}`,
@@ -217,20 +212,17 @@ export default function EditAdverts() {
       
       for (const endpoint of endpoints) {
         try {
-          console.log(`GET ${endpoint} deneniyor...`);
           const response = await api.get(endpoint, {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("access_token")}`,
             },
-            timeout: 10000, // 10 saniye timeout
+            timeout: 10000,
           });
           
           data = response.data;
           successEndpoint = endpoint;
-          console.log(`GET ${endpoint} başarılı:`, data);
           break;
         } catch (endpointError) {
-          console.log(`GET ${endpoint} başarısız:`, endpointError.response?.status || endpointError.message);
           continue;
         }
       }
@@ -241,7 +233,6 @@ export default function EditAdverts() {
       
       setListingData(data);
       
-      // localStorage'a mevcut verileri kaydet
       if (data.brand_id) {
         localStorage.setItem("selectedBrand", JSON.stringify({ id: data.brand_id }));
       }
@@ -267,7 +258,6 @@ export default function EditAdverts() {
         localStorage.setItem("selectedColor", data.detail.color);
       }
       
-      // Detay bilgileri - component'lerin beklediği key'lerle eşleştir
       if (data.detail) {
         localStorage.setItem("selectedMotorGucu", data.detail.engine_power?.toString() || "");
         localStorage.setItem("selectedMotorHacmi", data.detail.engine_volume?.toString() || "");
@@ -275,7 +265,6 @@ export default function EditAdverts() {
         localStorage.setItem("selectedTractionType", data.detail.drive_type || "");
       }
       
-      // Hasar bilgileri - component'lerin beklediği format ile eşleştir
       if (data.detail) {
         const damageData = {
           tramer: data.detail.heavy_damage ? 1 : 0,
@@ -295,27 +284,18 @@ export default function EditAdverts() {
         localStorage.setItem("selectedDamage", JSON.stringify(damageData));
       }
       
-      // Fiyat ve başlık - component'lerin beklediği key'lerle eşleştir
       localStorage.setItem("selectedPrice", data.price?.toString() || "");
       localStorage.setItem("selectedTitle", data.title || "");
       
-      // Açıklama - component'lerin beklediği key ile eşleştir
       localStorage.setItem("selectedDescription", data.description || "");
       
-      // Konum bilgileri - component'lerin beklediği key'lerle eşleştir
       localStorage.setItem("selectedCity", data.city || "");
       localStorage.setItem("selectedDistrict", data.district || "");
       localStorage.setItem("selectedNeighborhood", data.neighborhood || "");
       
-      // Fotoğraflar
       if (data.images && data.images.length > 0) {
-        console.log("API'den gelen fotoğraflar:", data.images);
         localStorage.setItem("uploadedImages", JSON.stringify(data.images));
-        console.log("Fotoğraflar localStorage'a kaydedildi");
       }
-      
-      console.log("İlan verileri başarıyla yüklendi ve localStorage'a kaydedildi");
-      console.log("Kullanılan endpoint:", successEndpoint);
       
     } catch (error) {
       console.error("İlan verileri yüklenirken hata:", error);
@@ -345,7 +325,6 @@ export default function EditAdverts() {
   const fetchBrands = async () => {
     try {
       setLoading(true);
-      console.log("Markalar yükleniyor...");
       
       const response = await api.get("/brand/", {
         headers: {
@@ -366,7 +345,6 @@ export default function EditAdverts() {
           })),
         })) || [];
       setBrands(brandData);
-      console.log("Marka verisi başarıyla yüklendi:", brandData.length, "marka");
     } catch (error) {
       console.error("Markalar yüklenirken hata:", error);
       console.error("Error details:", {
@@ -411,28 +389,22 @@ export default function EditAdverts() {
 
   // localStorage'dan mevcut verileri kontrol et ve kullan
   useEffect(() => {
-    // Eğer API'den veri yüklenemezse localStorage'dan mevcut verileri kullan
     const checkExistingData = () => {
       const hasExistingData = localStorage.getItem("selectedBrand") && 
                              localStorage.getItem("selectedSeries") && 
                              localStorage.getItem("selectedModel");
       
       if (hasExistingData && !listingData) {
-        console.log("API verisi yüklenemedi, localStorage'dan mevcut veriler kullanılıyor");
-        // Mevcut veriler varsa sayfayı çalışır hale getir
-        setListingData({ id: id }); // Minimal data
+        setListingData({ id: id });
       }
     };
 
-    // 5 saniye sonra kontrol et
     const timer = setTimeout(checkExistingData, 5000);
     return () => clearTimeout(timer);
   }, [listingData, id]);
 
   // localStorage'dan araç verilerini temizle
   const clearListingDataFromLocalStorage = () => {
-    console.log("=== LOCALSTORAGE TEMİZLENİYOR ===");
-    
     const keysToRemove = [
       "selectedBrand",
       "selectedSeries", 
@@ -480,19 +452,12 @@ export default function EditAdverts() {
 
     keysToRemove.forEach(key => {
       localStorage.removeItem(key);
-      console.log(`✅ ${key} temizlendi`);
     });
-
-    console.log("=== LOCALSTORAGE TEMİZLİĞİ TAMAMLANDI ===");
   };
 
   // İlanı güncelle
   const updateListing = async (formData) => {
     try {
-      console.log("PUT isteği gönderiliyor:", `/listing/${id}/`);
-      console.log("Gönderilen veri:", formData);
-      
-      // Daha kapsamlı endpoint testleri
       const endpoints = [
         `/listing/${id}/`,
         `/listing/${id}`,
@@ -513,14 +478,12 @@ export default function EditAdverts() {
       for (const method of methods) {
         for (const endpoint of endpoints) {
           try {
-            console.log(`${method.toUpperCase()} ${endpoint} deneniyor...`);
-            
             const config = {
               headers: {
                 Authorization: `Bearer ${localStorage.getItem("access_token")}`,
                 'Content-Type': 'application/json',
               },
-              maxRedirects: 0, // Redirect'leri takip etme
+              maxRedirects: 0,
               validateStatus: function (status) {
                 return status >= 200 && status < 400;
               },
@@ -529,10 +492,8 @@ export default function EditAdverts() {
             
             const response = await api[method](endpoint, formData, config);
             
-            console.log(`${method.toUpperCase()} ${endpoint} başarılı:`, response.data);
             showSnackbar("İlan başarıyla güncellendi!", "success");
             
-            // localStorage'dan araç verilerini temizle
             clearListingDataFromLocalStorage();
             
             navigate("/kokpit/ilanlarim");
@@ -540,27 +501,17 @@ export default function EditAdverts() {
           } catch (testError) {
             const status = testError.response?.status;
             const message = testError.message;
-            console.log(`${method.toUpperCase()} ${endpoint} başarısız:`, {
-              status: status,
-              message: message,
-              isRedirect: status === 307 || status === 302 || status === 301
-            });
             
-            // 307 redirect durumunda Location header'ını kontrol et
             if (status === 307 && testError.response?.headers?.location) {
-              console.log("Redirect Location:", testError.response.headers.location);
               try {
                 const redirectResponse = await api[method](testError.response.headers.location, formData, config);
-                console.log("Redirect başarılı:", redirectResponse.data);
                 showSnackbar("İlan başarıyla güncellendi!", "success");
                 
-                // localStorage'dan araç verilerini temizle
                 clearListingDataFromLocalStorage();
                 
                 navigate("/kokpit/ilanlarim");
                 return redirectResponse;
               } catch (redirectError) {
-                console.log("Redirect başarısız:", redirectError.response?.status);
               }
             }
             
@@ -569,10 +520,6 @@ export default function EditAdverts() {
         }
       }
       
-      // Hiçbiri çalışmazsa, farklı bir yaklaşım dene
-      console.log("Tüm endpoint'ler başarısız, alternatif yaklaşım deneniyor...");
-      
-      // POST ile güncelleme dene (bazı API'ler PUT yerine POST kullanır)
       try {
         const postResponse = await api.post(`/listing/${id}/update/`, formData, {
           headers: {
@@ -582,19 +529,15 @@ export default function EditAdverts() {
           timeout: 15000,
         });
         
-        console.log("POST /update/ başarılı:", postResponse.data);
         showSnackbar("İlan başarıyla güncellendi!", "success");
         
-        // localStorage'dan araç verilerini temizle
         clearListingDataFromLocalStorage();
         
         navigate("/kokpit/ilanlarim");
         return postResponse;
       } catch (postError) {
-        console.log("POST /update/ başarısız:", postError.response?.status);
       }
       
-      // Son çare: Orijinal PUT isteğini dene
       const response = await api.put(`/listing/${id}/`, formData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
@@ -607,10 +550,8 @@ export default function EditAdverts() {
         timeout: 15000,
       });
       
-      console.log("Son çare PUT başarılı:", response.data);
       showSnackbar("İlan başarıyla güncellendi!", "success");
       
-      // localStorage'dan araç verilerini temizle
       clearListingDataFromLocalStorage();
       
       navigate("/kokpit/ilanlarim");
@@ -659,18 +600,15 @@ export default function EditAdverts() {
   // Mevcut adıma göre options'ları belirle
   const getCurrentOptions = () => {
     if (currentStep.path === "marka") {
-      console.log("Marka seçenekleri yükleniyor:", brands.length, "marka");
       return brands;
     } else if (currentStep.path === "seri") {
       const selectedBrand = JSON.parse(localStorage.getItem("selectedBrand") || "{}");
       const seriesData = getSeriesForBrand(selectedBrand.id);
-      console.log("Seri seçenekleri yükleniyor:", seriesData.length, "seri, Marka:", selectedBrand.name);
       return seriesData;
     } else if (currentStep.path === "model") {
       const selectedBrand = JSON.parse(localStorage.getItem("selectedBrand") || "{}");
       const selectedSeries = JSON.parse(localStorage.getItem("selectedSeries") || "{}");
       const modelsData = getModelsForSeries(selectedBrand.id, selectedSeries.id);
-      console.log("Model seçenekleri yükleniyor:", modelsData.length, "model, Seri:", selectedSeries.name);
       return modelsData;
     } else {
       return currentStep.options || [];
@@ -690,8 +628,6 @@ export default function EditAdverts() {
       : [];
 
   const handleOptionClick = (value) => {
-    console.log(`Seçilen ${currentStep.path}:`, value);
-
     // Marka seçildiğinde brand bilgisini kaydet ve sonraki seçimleri temizle
     if (currentStep.path === "marka") {
       localStorage.setItem("selectedBrand", JSON.stringify(value));
@@ -699,7 +635,6 @@ export default function EditAdverts() {
       localStorage.removeItem("selectedModel");
       setSeries([]);
       setModels([]);
-      console.log("✅ Marka seçildi:", value.name, "- Seri ve model seçimleri temizlendi");
     }
 
     // Seri seçildiğinde seri bilgisini kaydet ve sonraki seçimleri temizle
@@ -707,50 +642,42 @@ export default function EditAdverts() {
       localStorage.setItem("selectedSeries", JSON.stringify(value));
       localStorage.removeItem("selectedModel");
       setModels([]);
-      console.log("✅ Seri seçildi:", value.name, "- Model seçimi temizlendi");
     }
 
     // Model seçildiğinde model bilgisini kaydet
     if (currentStep.path === "model") {
       localStorage.setItem("selectedModel", JSON.stringify(value));
-      console.log("✅ Model seçildi:", value.name);
     }
 
     // Yıl seçildiğinde yıl bilgisini kaydet
     if (currentStep.path === "yil") {
       localStorage.setItem("selectedYear", value);
-      console.log("✅ Yıl seçildi:", value);
     }
 
     // Gövde tipi seçildiğinde gövde tipi bilgisini kaydet
     if (currentStep.path === "govde-tipi") {
       localStorage.setItem("selectedBodyType", value);
-      console.log("✅ Gövde tipi seçildi:", value);
     }
 
     // Yakıt tipi seçildiğinde yakıt tipi bilgisini kaydet
     if (currentStep.path === "yakit-tipi") {
       localStorage.setItem("selectedFuelType", value);
-      console.log("✅ Yakıt tipi seçildi:", value);
     }
 
     // Vites tipi seçildiğinde vites tipi bilgisini kaydet
     if (currentStep.path === "vites-tipi") {
       localStorage.setItem("selectedTransmission", value);
-      console.log("✅ Vites tipi seçildi:", value);
     }
 
     // Renk seçildiğinde renk bilgisini kaydet
     if (currentStep.path === "renk") {
       localStorage.setItem("selectedColor", value);
-      console.log("✅ Renk seçildi:", value);
     }
 
     if (currentStep.next) {
       navigate(`/ilan-duzenle/${id}/${currentStep.next}`);
       setSearchValue("");
     } else {
-      console.log("Tüm adımlar tamamlandı.");
     }
   };
 

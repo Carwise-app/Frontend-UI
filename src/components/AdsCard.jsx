@@ -5,7 +5,6 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import DeleteIcon from '@mui/icons-material/Delete';
 import React from 'react'
 
-//BURADA YAPILACAK ŞEY İSE İCONLARA EDİT KISMINDA FİYAT DEĞİŞİKLİĞİ, VİSİBİLİTYDEN DURUM DEĞİŞİKLİĞİ VE İLAN SİLME OLAYLARINI EKLEMEK.
 export default function AdsCard() {
   return (
      <Box className="grid grid-cols-[2fr_4fr_2fr_1fr_1fr] w-full max-h-30 h-30 bg-white rounded-sm shadow-sm gap-x-1 cursor-pointer border-1 border-gray-100 transition-transform duration-300 hover:-translate-y-1">

@@ -23,16 +23,12 @@ export default function CreateAdvertsPhoto({title, desc, allSteps, stepLabel, ac
       if (existingImages) {
         try {
           const images = JSON.parse(existingImages);
-          console.log("Mevcut fotoğraflar yükleniyor:", images);
           
           const existingFiles = images.map((imageItem, index) => {
-            // API'den gelen image objesi mi yoksa string mi kontrol et
             let imageUrl, imageId;
             
             if (typeof imageItem === 'object' && imageItem.path) {
-              // Image objesi formatı: {id: "...", path: "./uploads/..."}
               imageId = imageItem.id;
-              // Relative path'i tam URL'e çevir
               const relativePath = imageItem.path;
               if (relativePath.startsWith('./uploads/')) {
                 imageUrl = `https://carwisegw.yusuftalhaklc.com${relativePath.substring(1)}`;
@@ -40,29 +36,24 @@ export default function CreateAdvertsPhoto({title, desc, allSteps, stepLabel, ac
                 imageUrl = relativePath;
               }
             } else {
-              // String formatı (eski format)
               imageUrl = imageItem;
               imageId = imageItem;
             }
             
             return {
-              file: null, // Dosya objesi yok, sadece URL var
+              file: null,
               preview: imageUrl,
               id: crypto.randomUUID(),
-              isExisting: true, // Mevcut fotoğraf olduğunu belirt
+              isExisting: true,
               originalUrl: imageUrl,
-              imageId: imageId // API'den gelen image ID'si
+              imageId: imageId
             };
           });
           
           setFiles(existingFiles);
-          console.log("Mevcut fotoğraflar başarıyla yüklendi:", existingFiles.length, "fotoğraf");
-          console.log("Dönüştürülen URL'ler:", existingFiles.map(f => f.originalUrl));
         } catch (error) {
           console.error("Mevcut fotoğraflar yüklenirken hata:", error);
         }
-      } else {
-        console.log("localStorage'da mevcut fotoğraf bulunamadı");
       }
     }
   }, [isEditMode]);
@@ -82,30 +73,24 @@ export default function CreateAdvertsPhoto({title, desc, allSteps, stepLabel, ac
 
   const handleDelete = (index) => {
     const fileToDelete = files[index];
-    console.log("Silinecek fotoğraf:", fileToDelete);
     
     const updated = [...files];
     updated.splice(index, 1);
     setFiles(updated);
     
-    // localStorage'ı güncelle (eğer mevcut fotoğraf silindiyse)
     if (fileToDelete.isExisting) {
       const existingImages = localStorage.getItem("uploadedImages");
       if (existingImages) {
         try {
           const images = JSON.parse(existingImages);
-          // Image objesi mi string mi kontrol et
           const updatedImages = images.filter(img => {
             if (typeof img === 'object' && img.id) {
-              // Image objesi formatı
               return img.id !== fileToDelete.imageId;
             } else {
-              // String formatı
               return img !== fileToDelete.originalUrl;
             }
           });
           localStorage.setItem("uploadedImages", JSON.stringify(updatedImages));
-          console.log("localStorage'dan fotoğraf silindi:", fileToDelete.imageId || fileToDelete.originalUrl);
         } catch (error) {
           console.error("localStorage güncellenirken hata:", error);
         }
@@ -117,9 +102,7 @@ export default function CreateAdvertsPhoto({title, desc, allSteps, stepLabel, ac
   const createAdvertisement = async () => {
     try {
       setLoading(true);
-      console.log("=== İLAN " + (isEditMode ? "GÜNCELLEME" : "OLUŞTURMA") + " İSTEĞİ BAŞLADI ===");
       
-      // localStorage'dan tüm seçimleri al
       const selectedBrand = JSON.parse(localStorage.getItem("selectedBrand") || "{}");
       const selectedSeries = JSON.parse(localStorage.getItem("selectedSeries") || "{}");
       const selectedModel = JSON.parse(localStorage.getItem("selectedModel") || "{}");
@@ -139,45 +122,15 @@ export default function CreateAdvertsPhoto({title, desc, allSteps, stepLabel, ac
       const selectedDistrict = localStorage.getItem("selectedDistrict") || "";
       const selectedNeighborhood = localStorage.getItem("selectedNeighborhood") || "";
 
-      console.log("LocalStorage'dan alınan veriler:");
-      console.log("- Marka:", selectedBrand);
-      console.log("- Seri:", selectedSeries);
-      console.log("- Model:", selectedModel);
-      console.log("- Yıl:", selectedYear);
-      console.log("- Gövde Tipi:", selectedBodyType);
-      console.log("- Yakıt Tipi:", selectedFuelType);
-      console.log("- Vites Tipi:", selectedTransmission);
-      console.log("- Renk:", selectedColor);
-      console.log("- Kilometre:", selectedKm);
-      console.log("- Motor Gücü:", selectedMotorGucu);
-      console.log("- Motor Hacmi:", selectedMotorHacmi);
-      console.log("- Hasar:", selectedDamage);
-      console.log("- Fiyat:", selectedPrice);
-      console.log("- Başlık:", selectedTitle);
-      console.log("- Açıklama:", selectedDescription);
-      console.log("- Şehir:", selectedCity);
-      console.log("- İlçe:", selectedDistrict);
-      console.log("- Mahalle:", selectedNeighborhood);
-      console.log("- Fotoğraf sayısı:", files.length);
-
-      // Hasar verilerini işle
       const chips = selectedDamage.chips || {};
       
-      // Fotoğrafları işle
-      console.log("=== FOTOĞRAF İŞLEME BAŞLADI ===");
       let uploadedImageUrls = [];
       
-      // Mevcut fotoğrafları ve yeni yüklenen fotoğrafları ayır
       const existingImages = files.filter(f => f.isExisting).map(f => {
-        // Mevcut fotoğraflar için imageId'yi kullan (API'ye gönderirken)
         return f.imageId;
       });
       const newFiles = files.filter(f => !f.isExisting);
       
-      console.log("Mevcut fotoğraflar (ID'ler):", existingImages.length, existingImages);
-      console.log("Yeni fotoğraflar:", newFiles.length);
-      
-      // Mevcut fotoğrafları hemen ekle
       uploadedImageUrls = [...existingImages];
       
       if (newFiles.length > 0) {
@@ -188,18 +141,15 @@ export default function CreateAdvertsPhoto({title, desc, allSteps, stepLabel, ac
               formData.append('file', fileObj.file);
               
               const token = localStorage.getItem("access_token");
-              console.log(`Yeni fotoğraf ${index + 1} yükleniyor...`);
-              console.log("Token:", token ? "Mevcut" : "Yok");
               
               const uploadResponse = await api.post("/upload", formData, {
                 headers: {
                   Authorization: `Bearer ${token}`,
                   "Content-Type": "multipart/form-data",
                 },
-                timeout: 30000, // 30 saniye timeout
+                timeout: 30000,
               });
               
-              console.log(`Yeni fotoğraf ${index + 1} yüklendi:`, uploadResponse.data);
               return uploadResponse.data.image?.id || uploadResponse.data.image || uploadResponse.data;
             } catch (error) {
               console.error(`Yeni fotoğraf ${index + 1} yüklenirken hata:`, error);
@@ -209,8 +159,6 @@ export default function CreateAdvertsPhoto({title, desc, allSteps, stepLabel, ac
           
           const newUploadedImages = await Promise.all(uploadPromises);
           uploadedImageUrls = [...uploadedImageUrls, ...newUploadedImages];
-          console.log("=== FOTOĞRAF YÜKLEME TAMAMLANDI ===");
-          console.log("Tüm fotoğraf URL'leri:", uploadedImageUrls);
           
         } catch (uploadError) {
           console.warn("Upload endpoint başarısız, base64 yöntemine geçiliyor:", uploadError);
@@ -245,12 +193,12 @@ export default function CreateAdvertsPhoto({title, desc, allSteps, stepLabel, ac
       const listingData = {
         "brand_id": selectedBrand.id || "",
         "city": selectedCity,
+        "color": selectedColor,
         "currency": "TL",
         "description": selectedDescription,
         "detail": {
           "body_type": selectedBodyType,
-          "color": selectedColor,
-          "drive_type": localStorage.getItem("selectedTractionType") || "Önden Çekiş",
+          "drive_type": selectedDamage.tractionType || "",
           "engine_power": parseInt(selectedMotorGucu) || 0,
           "engine_volume": parseInt(selectedMotorHacmi) || 0,
           "front_bumper": chips["Ön Tampon"] || "Orjinal",
@@ -259,7 +207,7 @@ export default function CreateAdvertsPhoto({title, desc, allSteps, stepLabel, ac
           "front_left_mudguard": chips["Sol ön çamurluk"] || "Orjinal",
           "front_right_door": chips["Sağ ön kapı"] || "Orjinal",
           "fuel_type": selectedFuelType,
-          "heavy_damage": selectedDamage.tramer > 0,
+          "heavy_damage": selectedDamage.tramer === 1,
           "kilometers": parseInt(selectedKm) || 0,
           "rear_bumper": chips["Arka Tampon"] || "Orjinal",
           "rear_left_door": chips["Sol arka kapı"] || "Orjinal",
@@ -278,24 +226,17 @@ export default function CreateAdvertsPhoto({title, desc, allSteps, stepLabel, ac
         "title": selectedTitle
       };
 
-      console.log("=== API'YE GÖNDERİLECEK VERİ ===");
-      console.log(JSON.stringify(listingData, null, 2));
-
       const token = localStorage.getItem("access_token");
-      console.log("Token:", token ? "Mevcut" : "Yok");
 
       let response;
       if (isEditMode && onFinalSubmit) {
-        // Edit modunda onFinalSubmit fonksiyonunu çağır
         try {
           response = await onFinalSubmit(listingData);
-          console.log("onFinalSubmit response:", response);
         } catch (submitError) {
           console.error("onFinalSubmit hatası:", submitError);
-          throw submitError; // Hatayı yukarı fırlat
+          throw submitError;
         }
       } else {
-        // Create modunda normal POST isteği
         response = await api.post("/listing/", listingData, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -304,27 +245,19 @@ export default function CreateAdvertsPhoto({title, desc, allSteps, stepLabel, ac
         });
       }
 
-      console.log("=== API YANITI ===");
       if (response) {
-        console.log("Status:", response.status);
-        console.log("Data:", response.data);
       } else {
-        console.log("Response undefined - onFinalSubmit fonksiyonu response döndürmedi");
-        // Response yoksa başarılı kabul et (onFinalSubmit zaten yönlendirme yapmış olabilir)
         if (isEditMode) {
-          return; // Edit modunda response yoksa çık
+          return;
         }
       }
       
-      // İlan başarıyla oluşturulduktan sonra localStorage'ı temizle
       if (!isEditMode) {
         clearListingDataFromLocalStorage();
       }
       
-      // Başarılı olduğunda yönlendir
       if (isEditMode) {
         showSnackbar("İlanınız başarıyla güncellendi.", "success");
-        // Edit modunda onFinalSubmit zaten yönlendirme yapacak
       } else {
         showSnackbar("İlanınız başarıyla oluşturuldu.", "success");
         navigate("/");
@@ -355,8 +288,6 @@ export default function CreateAdvertsPhoto({title, desc, allSteps, stepLabel, ac
 
   // localStorage'dan ilan verilerini temizle
   const clearListingDataFromLocalStorage = () => {
-    console.log("=== LOCALSTORAGE TEMİZLENİYOR ===");
-    
     const keysToRemove = [
       "selectedBrand",
       "selectedSeries", 
@@ -381,10 +312,7 @@ export default function CreateAdvertsPhoto({title, desc, allSteps, stepLabel, ac
 
     keysToRemove.forEach(key => {
       localStorage.removeItem(key);
-      console.log(`✅ ${key} temizlendi`);
     });
-
-    console.log("=== LOCALSTORAGE TEMİZLİĞİ TAMAMLANDI ===");
   };
 
   const handleSucces = () => {
