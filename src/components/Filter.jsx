@@ -19,7 +19,23 @@ export default function FilterBox({ onBrandSelect, onSeriesSelect, onSubmit }) {
   const [gear, setGear] = useState('');
   const [fuel, setFuel] = useState('');
   const [color, setColor] = useState('');
-  const [colorOptions, setColorOptions] = useState([]); // ✅ Dinamik renk listesi
+  const [colorOptions, setColorOptions] = useState([
+    'Beyaz',
+    'Siyah',
+    'Gri',
+    'Kırmızı',
+    'Mavi',
+    'Yeşil',
+    'Sarı',
+    'Kahverengi',
+    'Bordo',
+    'Lacivert',
+    'Gümüş',
+    'Bej',
+    'Turuncu',
+    'Mor',
+    'Diğer'
+  ]);
 
   const [minYear, setMinYear] = useState('');
   const [maxYear, setMaxYear] = useState('');
@@ -41,20 +57,6 @@ export default function FilterBox({ onBrandSelect, onSeriesSelect, onSubmit }) {
         });
         setBrands(brandList.sort((a, b) => a.name.localeCompare(b.name)));
         setSeriesMap(tmpSeriesMap);
-      })
-      .catch(console.error);
-  }, []);
-
-  // ✅ Dinamik renkleri çek
-  useEffect(() => {
-    api.get('/listing/', { params: { limit: 1000 } })
-      .then(res => {
-        const listings = res.data.listings || [];
-        const colorSet = new Set();
-        listings.forEach(item => {
-          if (item.color) colorSet.add(item.color.trim());
-        });
-        setColorOptions(Array.from(colorSet).sort((a, b) => a.localeCompare(b, 'tr')));
       })
       .catch(console.error);
   }, []);

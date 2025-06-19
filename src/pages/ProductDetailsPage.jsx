@@ -5,6 +5,8 @@ import { ArrowBackIos, ArrowForwardIos, Phone, Chat, Map, InfoOutlined, Search, 
 import axios from 'axios';
 import SafeShoppingDialog from '../components/SafeShoppingDialog';
 import api from '../api/axios';
+import PricePredictionDialog from '../components/PricePredictionDialog';
+import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
 
 const TABS = [
   { label: 'Açıklama', value: 'description' },
@@ -28,6 +30,9 @@ export default function ProductDetailsPage({ onOpenClick }) {
   const [openSafeShopping, setOpenSafeShopping] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const [favoriteLoading, setFavoriteLoading] = useState(false);
+  const [openPrediction, setOpenPrediction] = useState(false);
+  const [predictionLoading, setPredictionLoading] = useState(false);
+  const [predictionData, setPredictionData] = useState(null);
 
   const handleOpenSafeShopping = () => setOpenSafeShopping(true);
   const handleCloseSafeShopping = () => setOpenSafeShopping(false);
@@ -89,6 +94,52 @@ export default function ProductDetailsPage({ onOpenClick }) {
     
     // Chat sayfasına yönlendir
     navigate(`/sohbet/${data.created_by.id}?listing_id=${data.id}`);
+  };
+
+  const handlePredictPrice = async () => {
+    const accessToken = localStorage.getItem('access_token');
+    if (!accessToken) {
+      // Kullanıcı giriş yapmamış, login popup'ı aç
+      onOpenClick('login', 'notLogin');
+      return;
+    }
+
+    setPredictionLoading(true);
+    setOpenPrediction(true);
+    
+    try {
+      // Hasar bilgilerini hesapla
+      const damageInfo = {
+        boyali: damageParts.filter(part => part.value === 'Boyalı').length,
+        degisen: damageParts.filter(part => part.value === 'Değişen').length,
+        orjinal: damageParts.filter(part => part.value === 'Orjinal').length,
+      };
+      
+      const requestData = {
+        "Boyalı_sayısı": damageInfo.boyali || 0,
+        "Değişen_sayısı": damageInfo.degisen || 0,
+        "Kasa_Tipi": technical.body_type || "",
+        "Kilometre": technical.kilometers || 0,
+        "Marka": data.brand?.name || "",
+        "Model": data.model?.name || "",
+        "Motor_Gücü": parseInt(technical.engine_power) || 0,
+        "Motor_Hacmi": parseFloat(technical.engine_volume) || 0,
+        "Orjinal_sayısı": damageInfo.orjinal || 0,
+        "Renk": technical.color || "",
+        "Seri": data.series?.name || "",
+        "Tramer": 0, // Varsayılan değer
+        "Vites_Tipi": technical.transmission_type || "",
+        "Yakıt_Tipi": technical.fuel_type || "",
+        "Yıl": technical.year || 0
+      };
+
+      const response = await api.post('/predict/', requestData);
+      setPredictionData(response.data);
+    } catch (error) {
+      console.error('Tahmin hatası:', error);
+    } finally {
+      setPredictionLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -154,6 +205,14 @@ export default function ProductDetailsPage({ onOpenClick }) {
 
   // Info
   const info = [
+    { label: 'Fiyat', value: (
+      <Typography component="span" className="text-xl font-bold text-[#dc143c]">
+        {price} {currency}
+      </Typography>
+    ) },
+    { label: 'Marka', value: brand },
+    { label: 'Seri', value: series },
+    { label: 'Model', value: model },
     { label: 'Kilometre', value: data.detail?.kilometers?.toLocaleString('tr-TR') + ' km' || '-' },
     { label: 'Vites Tipi', value: data.detail?.transmission_type || '-' },
     { label: 'Yakıt Tipi', value: data.detail?.fuel_type || '-' },
@@ -288,30 +347,21 @@ export default function ProductDetailsPage({ onOpenClick }) {
         {/* Sağ panel */}
         <Box className="w-full md:w-[340px] flex flex-col gap-4">
           {/* Satıcı Kartı */}
-          <Box className="flex flex-col items-center gap-2 p-4 bg-white border border-gray-100 shadow rounded-2xl">
-            <Avatar sx={{ width: 56, height: 56 }}>{seller.first_name ? seller.first_name[0] : 'S'}</Avatar>
-            <Typography className="mt-1 text-base font-semibold">{sellerName}</Typography>  
-            <Button variant="outlined" color="error" size="small" fullWidth startIcon={<Phone />} onClick={handlePhoneClick}>{sellerPhone}</Button>
-            <Button variant="contained" color="error" size="small" fullWidth startIcon={<Chat />} onClick={handleMessageClick}>Mesaj Gönder</Button>
-          </Box>
 
-          {/* Fiyat kutusu */}
-          <Box className="flex items-center justify-between p-6 bg-white border border-gray-200 shadow-lg rounded-2xl">
-            <Typography className="text-gray-600 text-lg font-medium">
-              Fiyat
-            </Typography>
-            <Box className="flex items-baseline">
-              <Typography className="text-[#dc143c] !font-black text-5xl md:text-6xl lg:text-7xl tracking-tight">
-                {price}
-              </Typography>
-              <Typography className="text-[#dc143c] !font-bold text-2xl md:text-3xl ml-3">
-                {currency}
-              </Typography>
-            </Box>
-          </Box>
 
           {/* Favori Butonu */}
           <Box className="flex flex-col gap-2 p-4 bg-white border border-gray-100 shadow rounded-2xl">
+            <Button
+              onClick={handlePredictPrice}
+              startIcon={<span className="text-xl">✨</span>}
+              variant="outlined"
+              color="error"
+              fullWidth
+              sx={{ borderRadius: '8px', marginBottom: 1 }}
+            >
+              AI Fiyat Tahmini
+            </Button>
+
             <Button
               variant={isFavorite ? "contained" : "outlined"}
               color="error"
@@ -333,13 +383,19 @@ export default function ProductDetailsPage({ onOpenClick }) {
           </Box>
 
           {/* Bilgi kutusu */}
-          <Box className="bg-white rounded-2xl shadow p-4 flex flex-col gap-1 border border-gray-100 max-h-[340px] overflow-y-auto">
+          <Box className="bg-white rounded-2xl shadow p-4 flex flex-col gap-1 border border-gray-100">
             {info.map((item, i) => (
               <Box key={i} className="flex items-center justify-between py-1 text-sm border-b border-gray-100 last:border-b-0">
                 <span className="font-medium text-gray-600">{item.label}</span>
                 <span className="font-semibold text-gray-900">{item.value}</span>
               </Box>
             ))}
+          </Box>
+          <Box className="flex flex-col items-center gap-2 p-4 bg-white border border-gray-100 shadow rounded-2xl">
+            <Avatar sx={{ width: 56, height: 56 }}>{seller.first_name ? seller.first_name[0] : 'S'}</Avatar>
+            <Typography className="mt-1 text-base font-semibold">{sellerName}</Typography>  
+            <Button variant="outlined" color="error" size="small" fullWidth startIcon={<Phone />} onClick={handlePhoneClick}>{sellerPhone}</Button>
+            <Button variant="contained" color="error" size="small" fullWidth startIcon={<Chat />} onClick={handleMessageClick}>Mesaj Gönder</Button>
           </Box>
 
           {/* Güvenlik kutusu */}
@@ -355,6 +411,12 @@ export default function ProductDetailsPage({ onOpenClick }) {
                 open={openSafeShopping}
                 onClose={handleCloseSafeShopping}
             />
+        <PricePredictionDialog
+          open={openPrediction}
+          onClose={() => setOpenPrediction(false)}
+          loading={predictionLoading}
+          predictionData={predictionData}
+        />
       </Box>
     </Box>
   );
