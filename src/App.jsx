@@ -102,7 +102,7 @@ export default function App() {
       />
       <AnimatePresence mode="wait">
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={<HomePage setIsLoggedIn={setIsLoggedIn} />} />
           <Route path="/arac-satin-al" >
             <Route index element={<SearchCar />} />
             <Route path=":brand" element={<SearchCar />} />
