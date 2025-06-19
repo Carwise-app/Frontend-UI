@@ -64,15 +64,17 @@ export default function ShowcaseArea() {
       {!loading && listings.length > 0 && (
         <Box className="py-8 text-center md:py-12">
           <Button
-            variant="contained"
+            variant="outlined"
             onClick={() => navigate('/arac-satin-al')}
-            className="bg-[#dc143c] hover:bg-[#b01030] text-white px-8 py-3 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+            className="bg-[#dc143c] hover:bg-[#b01030] text-white px-8 py-3 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 "
             sx={{
-              background: 'linear-gradient(135deg, #dc143c 0%, #b01030 100%)',
               '&:hover': {
-                background: 'linear-gradient(135deg, #b01030 0%, #8a0d25 100%)',
+                background: '#dc143c',
+                color: 'white',
+                transition: 'all 0.3s ease-in-out ',
               }
             }}
+            color="error"
           >
             Tüm İlanlar
           </Button>

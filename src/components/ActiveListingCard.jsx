@@ -9,10 +9,10 @@ import {
 export default function ActiveListingCard({ listing, onClick, onEdit, onDelete, onUnpublish }) {
   // CSS-based placeholder component
   const PlaceholderImage = () => (
-    <Box className="flex items-center justify-center w-full h-full bg-gray-200">
+    <Box className="flex justify-center items-center w-full h-full bg-gray-200">
       <Box className="text-center">
-        <Box className="w-12 h-8 mx-auto mb-2 bg-gray-400 rounded"></Box>
-        <Box className="w-8 h-8 mx-auto bg-gray-400 rounded-full"></Box>
+        <Box className="mx-auto mb-2 w-12 h-8 bg-gray-400 rounded"></Box>
+        <Box className="mx-auto w-8 h-8 bg-gray-400 rounded-full"></Box>
       </Box>
     </Box>
   );
@@ -57,7 +57,10 @@ export default function ActiveListingCard({ listing, onClick, onEdit, onDelete, 
 
   return (
     <Box
-      onClick={() => onClick?.(listing)}
+      onClick={() => {
+        window.location.href = `/arac-detay/${listing.slug}`;
+        onClick?.(listing);
+      }}
       className={`flex items-center w-full px-2 py-2 transition border-b border-gray-200 rounded-none cursor-pointer hover:bg-gray-50 md:py-3 md:rounded-xl group ${
         isActive ? 'bg-gray-50' : 'bg-white'
       }`}
@@ -74,7 +77,7 @@ export default function ActiveListingCard({ listing, onClick, onEdit, onDelete, 
               onError={handleImageError}
               loading="lazy"
             />
-            <Box className="absolute inset-0 hidden" style={{ display: 'none' }}>
+            <Box className="hidden absolute inset-0" style={{ display: 'none' }}>
               <PlaceholderImage />
             </Box>
           </>
@@ -84,17 +87,18 @@ export default function ActiveListingCard({ listing, onClick, onEdit, onDelete, 
       </Box>
       
       {/* Model */}
-      <Box className="mr-2 text-sm font-medium text-gray-700 truncate w-[100px] md:text-base md:mr-4">
-        {listing.model?.name || '-'}
-      </Box>
+      <Tooltip title={listing.model?.name || '-'}>
+        <Box className="mr-2 text-sm font-medium text-gray-700 truncate w-[100px] md:text-base md:mr-4">
+          {listing.model?.name || '-'}
+        </Box>
+      </Tooltip>
       
       {/* Title */}
       <Box className="flex-1 min-w-0">
         <Typography
-          component="a"
-          href={`/arac-detay/${listing.slug}`}
+          component="span"
           onClick={e => { e.stopPropagation(); }}
-          className="block text-sm font-semibold text-blue-700 truncate hover:text-blue-900 md:text-base"
+          className="block text-sm font-semibold truncate md:text-base"
           sx={{ cursor: 'pointer' }}
         >
           {listing.title}
@@ -119,9 +123,7 @@ export default function ActiveListingCard({ listing, onClick, onEdit, onDelete, 
           size="small"
           className={`text-xs font-medium ${
             isActive 
-              ? '!bg-gray-500 text-green-800 border border-green-200' 
-              : 'bg-gray-100 text-gray-600 border border-gray-200'
-          }`}
+              ? '!bg-gray-500 text-green-800 border border-green-200':'bg-gray-100 text-gray-600 border border-gray-200'}`}
           sx={{
             '& .MuiChip-label': {
               fontSize: '0.75rem',
@@ -132,7 +134,7 @@ export default function ActiveListingCard({ listing, onClick, onEdit, onDelete, 
       </Box>
       
       {/* Action Buttons */}
-      <Box className="flex items-center gap-1 ml-2">
+      <Box className="flex gap-1 items-center ml-2">
         <Tooltip title="Düzenle" arrow placement="top">
           <IconButton
             onClick={handleEdit}
