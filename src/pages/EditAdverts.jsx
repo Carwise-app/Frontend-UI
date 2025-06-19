@@ -152,6 +152,58 @@ export default function EditAdverts() {
       setIsLoadingListing(true);
       console.log("İlan verileri yükleniyor, ID:", id);
       
+      // Önce localStorage'ı temizle (eski araç verilerini önlemek için)
+      console.log("=== ESKİ ARAÇ VERİLERİ TEMİZLENİYOR ===");
+      const keysToRemove = [
+        "selectedBrand",
+        "selectedSeries", 
+        "selectedModel",
+        "selectedYear",
+        "selectedBodyType",
+        "selectedFuelType",
+        "selectedTransmission",
+        "selectedColor",
+        "selectedKm",
+        "selectedMotorGucu",
+        "selectedMotorHacmi",
+        "selectedDamage",
+        "selectedPrice",
+        "selectedTitle",
+        "selectedDescription",
+        "selectedCity",
+        "selectedDistrict",
+        "selectedNeighborhood",
+        "selectedTractionType",
+        "enginePower",
+        "engineVolume",
+        "kilometers",
+        "driveType",
+        "heavyDamage",
+        "frontHood",
+        "frontBumper",
+        "frontLeftDoor",
+        "frontRightDoor",
+        "frontLeftMudguard",
+        "rearBumper",
+        "rearLeftDoor",
+        "rearRightDoor",
+        "rearLeftMudguard",
+        "roof",
+        "price",
+        "title",
+        "currency",
+        "description",
+        "city",
+        "district",
+        "neighborhood",
+        "uploadedImages"
+      ];
+
+      keysToRemove.forEach(key => {
+        localStorage.removeItem(key);
+      });
+      console.log("=== ESKİ ARAÇ VERİLERİ TEMİZLENDİ ===");
+      
       // Farklı endpoint'leri dene
       const endpoints = [
         `/listing/${id}/`,
@@ -215,41 +267,45 @@ export default function EditAdverts() {
         localStorage.setItem("selectedColor", data.detail.color);
       }
       
-      // Detay bilgileri
+      // Detay bilgileri - component'lerin beklediği key'lerle eşleştir
       if (data.detail) {
-        localStorage.setItem("enginePower", data.detail.engine_power?.toString() || "");
-        localStorage.setItem("engineVolume", data.detail.engine_volume?.toString() || "");
-        localStorage.setItem("kilometers", data.detail.kilometers?.toString() || "");
-        localStorage.setItem("driveType", data.detail.drive_type || "");
+        localStorage.setItem("selectedMotorGucu", data.detail.engine_power?.toString() || "");
+        localStorage.setItem("selectedMotorHacmi", data.detail.engine_volume?.toString() || "");
+        localStorage.setItem("selectedKm", data.detail.kilometers?.toString() || "");
+        localStorage.setItem("selectedTractionType", data.detail.drive_type || "");
       }
       
-      // Hasar bilgileri
+      // Hasar bilgileri - component'lerin beklediği format ile eşleştir
       if (data.detail) {
-        localStorage.setItem("heavyDamage", data.detail.heavy_damage?.toString() || "false");
-        localStorage.setItem("frontHood", data.detail.front_hood || "");
-        localStorage.setItem("frontBumper", data.detail.front_bumper || "");
-        localStorage.setItem("frontLeftDoor", data.detail.front_left_door || "");
-        localStorage.setItem("frontRightDoor", data.detail.front_right_door || "");
-        localStorage.setItem("frontLeftMudguard", data.detail.front_left_mudguard || "");
-        localStorage.setItem("rearBumper", data.detail.rear_bumper || "");
-        localStorage.setItem("rearLeftDoor", data.detail.rear_left_door || "");
-        localStorage.setItem("rearRightDoor", data.detail.rear_right_door || "");
-        localStorage.setItem("rearLeftMudguard", data.detail.rear_left_mudguard || "");
-        localStorage.setItem("roof", data.detail.roof || "");
+        const damageData = {
+          tramer: data.detail.heavy_damage ? 1 : 0,
+          chips: {
+            "Motor kaputu": data.detail.front_hood || "Orjinal",
+            "Ön Tampon": data.detail.front_bumper || "Orjinal",
+            "Sol ön kapı": data.detail.front_left_door || "Orjinal",
+            "Sağ ön kapı": data.detail.front_right_door || "Orjinal",
+            "Sol ön çamurluk": data.detail.front_left_mudguard || "Orjinal",
+            "Arka Tampon": data.detail.rear_bumper || "Orjinal",
+            "Sol arka kapı": data.detail.rear_left_door || "Orjinal",
+            "Sağ arka kapı": data.detail.rear_right_door || "Orjinal",
+            "Sol arka çamurluk": data.detail.rear_left_mudguard || "Orjinal",
+            "Tavan": data.detail.roof || "Orjinal"
+          }
+        };
+        localStorage.setItem("selectedDamage", JSON.stringify(damageData));
       }
       
-      // Fiyat ve başlık
-      localStorage.setItem("price", data.price?.toString() || "");
-      localStorage.setItem("title", data.title || "");
-      localStorage.setItem("currency", data.currency || "TRY");
+      // Fiyat ve başlık - component'lerin beklediği key'lerle eşleştir
+      localStorage.setItem("selectedPrice", data.price?.toString() || "");
+      localStorage.setItem("selectedTitle", data.title || "");
       
-      // Açıklama
-      localStorage.setItem("description", data.description || "");
+      // Açıklama - component'lerin beklediği key ile eşleştir
+      localStorage.setItem("selectedDescription", data.description || "");
       
-      // Konum bilgileri
-      localStorage.setItem("city", data.city || "");
-      localStorage.setItem("district", data.district || "");
-      localStorage.setItem("neighborhood", data.neighborhood || "");
+      // Konum bilgileri - component'lerin beklediği key'lerle eşleştir
+      localStorage.setItem("selectedCity", data.city || "");
+      localStorage.setItem("selectedDistrict", data.district || "");
+      localStorage.setItem("selectedNeighborhood", data.neighborhood || "");
       
       // Fotoğraflar
       if (data.images && data.images.length > 0) {
