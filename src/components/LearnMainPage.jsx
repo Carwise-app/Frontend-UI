@@ -275,6 +275,7 @@ export default function LearnMainPage() {
         stepLabel={currentStep.label}
         allSteps={allSteps}
         btnText="Aracının Fiyatını Öğren"
+        mode="prediction"
       />
     );
   }

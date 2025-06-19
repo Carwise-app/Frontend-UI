@@ -319,6 +319,7 @@ export default function CreateAdverts() {
         stepLabel={currentStep.label}
         allSteps={allSteps}
         btnText="Devam Et"
+        mode="create"
       />
     );
   }

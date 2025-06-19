@@ -6,7 +6,7 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import api from '../api/axios';
 import { useSnackbar } from '../context/SnackbarContext';
 
-export default function LearnDamageMainPage({activeStep,onHandleBack,stepLabel,onHandleNext,title,desc,allSteps,btnText}) {
+export default function LearnDamageMainPage({activeStep,onHandleBack,stepLabel,onHandleNext,title,desc,allSteps,btnText, mode = 'create'}) {
   const [loading, setLoading] = useState(false);
   const { showSnackbar } = useSnackbar();
 
@@ -26,15 +26,13 @@ export default function LearnDamageMainPage({activeStep,onHandleBack,stepLabel,o
     console.log("selectedDamage:", localStorage.getItem("selectedDamage"));
   };
 
- 
+  // Fiyat tahmini yapma fonksiyonu
   const sendPredictionRequest = async () => {
     try {
       setLoading(true);
       console.log("=== TAHMİN İSTEĞİ BAŞLADI ===");
       
-     
       debugLocalStorage();
-      
       
       const selectedBrand = JSON.parse(localStorage.getItem("selectedBrand") || "{}");
       const selectedSeries = JSON.parse(localStorage.getItem("selectedSeries") || "{}");
@@ -64,7 +62,6 @@ export default function LearnDamageMainPage({activeStep,onHandleBack,stepLabel,o
       console.log("- Hasar:", selectedDamage);
       console.log("- Tramer:", selectedDamage.tramer);
 
-      
       const chips = selectedDamage.chips || {};
       let orjinalSayisi = 0;
       let boyaliSayisi = 0;
@@ -81,7 +78,6 @@ export default function LearnDamageMainPage({activeStep,onHandleBack,stepLabel,o
 
       console.log("Hasar sayıları:", { orjinalSayisi, boyaliSayisi, degisenSayisi });
 
-      
       const predictionData = {
         "Boyalı_sayısı": boyaliSayisi,
         "Değişen_sayısı": degisenSayisi,
@@ -117,11 +113,9 @@ export default function LearnDamageMainPage({activeStep,onHandleBack,stepLabel,o
       console.log("Status:", response.status);
       console.log("Data:", response.data);
       
-    
       localStorage.setItem("predictionResult", JSON.stringify(response.data));
       console.log("Tahmin sonucu localStorage'a kaydedildi");
       
-     
       onHandleNext();
       
     } catch (error) {
@@ -143,6 +137,46 @@ export default function LearnDamageMainPage({activeStep,onHandleBack,stepLabel,o
     }
   };
 
+  // İlan oluşturma modunda sadece bir sonraki adıma geçiş
+  const handleNextStep = async () => {
+    try {
+      setLoading(true);
+      console.log("=== BİR SONRAKİ ADIMA GEÇİŞ ===");
+      
+      debugLocalStorage();
+      console.log("İlan oluşturma modu - tahmin yapılmadan bir sonraki adıma geçiliyor...");
+      
+      onHandleNext();
+      
+    } catch (error) {
+      console.error("=== ADIM GEÇİŞ HATASI ===");
+      console.error("Error:", error);
+      showSnackbar("Bir sonraki adıma geçerken bir hata oluştu. Lütfen tekrar deneyin.", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Mode'a göre hangi fonksiyonu çağıracağımızı belirle
+  const handleButtonClick = () => {
+    if (mode === 'prediction') {
+      // Fiyat tahmini modu - tahmin yap
+      sendPredictionRequest();
+    } else {
+      // İlan oluşturma modu - sadece geçiş yap
+      handleNextStep();
+    }
+  };
+
+  // Mode'a göre loading text'ini belirle
+  const getLoadingText = () => {
+    if (mode === 'prediction') {
+      return loading ? 'Tahmin Yapılıyor...' : btnText;
+    } else {
+      return loading ? 'Geçiliyor...' : btnText;
+    }
+  };
+
   return (
    <Box className='bg-[#f7f7f7] w-[70%] pt-5 pb-15 my-5 mx-auto rounded-sm min-h-160 shadow-xs border-1 border-gray-100'>
         <Box className="bg-white w-[70%] mx-auto py-5 px-10 rounded-md flex flex-col shadow-md ">
@@ -161,10 +195,10 @@ export default function LearnDamageMainPage({activeStep,onHandleBack,stepLabel,o
                 <Box className="flex justify-center items-center h-full">
                     <button 
                       className='bg-[#dc143c] py-2 px-6 text-white rounded-2xl cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed' 
-                      onClick={sendPredictionRequest}
+                      onClick={handleButtonClick}
                       disabled={loading}
                     >
-                        <span>{loading ? 'Tahmin Yapılıyor...' : btnText}</span>
+                        <span>{getLoadingText()}</span>
                         {!loading && <NavigateNextIcon/>}
                     </button>   
                 </Box>
