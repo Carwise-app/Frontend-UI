@@ -26,6 +26,7 @@ import YayindaOlmayanlar from "./components/YayindaOlmayanlar";
 import { useSnackbar } from "./context/SnackbarContext";
 import ResetPasswordKokpit from "./pages/ResetPasswordKokpit";
 import CreateAdverts from "./pages/CreateAdverts";
+import EditAdverts from "./pages/EditAdverts";
 import ProductDetailsPage from "./pages/ProductDetailsPage";
 import DashboardKokpit from "./components/DashboardKokpit";
 import DashboardUsersKokpit from "./components/DashboardUsersKokpit";
@@ -42,7 +43,11 @@ export default function App() {
     "/kokpit",
     "/fiyat-ogren",
     "/kokpit/reset-password",
+    "/giris",
+    "/kayit",
+    "/sifre-yenile",
     "/ilan-olustur",
+    "/ilan-duzenle",
   ];
   const shouldHideFooter = hideFooterRoutes.some((path) =>
     location.pathname.startsWith(path)
@@ -170,6 +175,25 @@ export default function App() {
             <Route path="aciklama" element={<CreateAdverts />} />
             <Route path="konum-bilgisi" element={<CreateAdverts />} />
             <Route path="fotograf-yukle" element={<CreateAdverts />} />
+          </Route>
+          <Route
+            path="/ilan-duzenle/:id"
+            element={<EditAdverts isLoggedIn={isLoggedIn} />}
+          >
+            <Route index path="marka" element={<EditAdverts />} />
+            <Route path="yil" element={<EditAdverts />} />
+            <Route path="seri" element={<EditAdverts />} />
+            <Route path="model" element={<EditAdverts />} />
+            <Route path="govde-tipi" element={<EditAdverts />} />
+            <Route path="renk" element={<EditAdverts />} />
+            <Route path="yakit-tipi" element={<EditAdverts />} />
+            <Route path="vites-tipi" element={<EditAdverts />} />
+            <Route path="detaylar" element={<EditAdverts />} />
+            <Route path="hasar" element={<EditAdverts />} />
+            <Route path="fiyat-ve-baslik" element={<EditAdverts />} />
+            <Route path="aciklama" element={<EditAdverts />} />
+            <Route path="konum-bilgisi" element={<EditAdverts />} />
+            <Route path="fotograf-yukle" element={<EditAdverts />} />
           </Route>
         </Routes>
       </AnimatePresence>
