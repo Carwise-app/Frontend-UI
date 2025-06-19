@@ -1,12 +1,16 @@
-import { Box, Typography, IconButton, Tooltip, Chip } from '@mui/material';
-import React from 'react';
+import { Box, Typography, IconButton, Tooltip, Chip, CircularProgress } from '@mui/material';
+import React, { useState } from 'react';
 import {
   Edit as EditIcon,
   Delete as DeleteIcon,
   VisibilityOff as UnpublishIcon,
 } from '@mui/icons-material';
+import { useSnackbar } from '../context/SnackbarContext';
 
 export default function ActiveListingCard({ listing, onClick, onEdit, onDelete, onUnpublish }) {
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const { showSnackbar } = useSnackbar();
+
   // CSS-based placeholder component
   const PlaceholderImage = () => (
     <Box className="flex justify-center items-center w-full h-full bg-gray-200">
@@ -22,12 +26,7 @@ export default function ActiveListingCard({ listing, onClick, onEdit, onDelete, 
     : null;
 
   const formatPrice = (price) => price?.toLocaleString('tr-TR') || '0';
-  const formatKm = (km) => km?.toLocaleString('tr-TR') || '0';
-  const formatDate = (timestamp) => {
-    if (!timestamp) return '-';
-    const date = new Date(timestamp * 1000);
-    return date.toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' });
-  };
+ 
 
   const handleImageError = (e) => {
     console.warn('Resim yüklenemedi, placeholder gösteriliyor:', e.target.src);
@@ -40,9 +39,28 @@ export default function ActiveListingCard({ listing, onClick, onEdit, onDelete, 
     onEdit?.(listing);
   };
 
-  const handleDelete = (e) => {
+  const handleDelete = async (e) => {
     e.stopPropagation();
-    onDelete?.(listing);
+    setDeleteLoading(true);
+    try {
+      const accessToken = localStorage.getItem('access_token');
+      const response = await fetch(`https://carwisegw.yusuftalhaklc.com/listing/${listing.id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(accessToken ? { 'Authorization': `Bearer ${accessToken}` } : {}),
+        },
+      });
+      if (!response.ok) throw new Error('İlan silinemedi');
+      onDelete?.(listing);
+      showSnackbar('İlan başarıyla silindi', 'success');
+      window.location.reload();
+    } catch (err) {
+      showSnackbar('İlan silinirken bir hata oluştu.', 'error');
+      console.error('İlan silinemedi:', err);
+    } finally {
+      setDeleteLoading(false);
+    }
   };
 
   const handleUnpublish = (e) => {
@@ -156,13 +174,16 @@ export default function ActiveListingCard({ listing, onClick, onEdit, onDelete, 
         </Tooltip>
         
         <Tooltip title="Sil" arrow placement="top">
-          <IconButton
-            onClick={handleDelete}
-            className="text-red-600 transition-all duration-200 hover:text-red-800 hover:bg-red-50"
-            size="small"
-          >
-            <DeleteIcon fontSize="small" />
-          </IconButton>
+          <span>
+            <IconButton
+              onClick={handleDelete}
+              className="text-red-600 transition-all duration-200 hover:text-red-800 hover:bg-red-50"
+              size="small"
+              disabled={deleteLoading}
+            >
+              {deleteLoading ? <CircularProgress size={18} color="error" /> : <DeleteIcon fontSize="small" />}
+            </IconButton>
+          </span>
         </Tooltip>
       </Box>
     </Box>
