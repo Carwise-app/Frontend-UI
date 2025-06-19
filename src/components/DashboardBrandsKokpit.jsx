@@ -18,7 +18,8 @@ import {
   IconButton,
   Chip,
   TextField,
-  Fab
+  Fab,
+  Pagination
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
@@ -29,15 +30,21 @@ import { useSnackbar } from '../context/SnackbarContext';
 import { useNavigate } from 'react-router-dom';
 
 export default function DashboardBrandsKokpit() {
-  const [brands, setBrands] = useState([]);
+  const [allBrands, setAllBrands] = useState([]); // Tüm markalar
+  const [brands, setBrands] = useState([]); // Görüntülenecek markalar
   const [loading, setLoading] = useState(true);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedBrand, setSelectedBrand] = useState(null);
   const [expandedBrand, setExpandedBrand] = useState(null);
   const [addBrandDialogOpen, setAddBrandDialogOpen] = useState(false);
   const [newBrandName, setNewBrandName] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalBrands, setTotalBrands] = useState(0);
   const { showSnackbar } = useSnackbar();
   const navigate = useNavigate();
+
+  const ITEMS_PER_PAGE = 10; // Sayfa başına gösterilecek marka sayısı
 
   // Markaları getir
   const fetchBrands = useCallback(async () => {
@@ -51,26 +58,37 @@ export default function DashboardBrandsKokpit() {
       
       // API response yapısını kontrol et
       let brandsData = [];
+      
       if (Array.isArray(response.data)) {
         brandsData = response.data;
       } else if (response.data?.brands && Array.isArray(response.data.brands)) {
         brandsData = response.data.brands;
       } else if (response.data?.data && Array.isArray(response.data.data)) {
         brandsData = response.data.data;
+      } else if (response.data?.results && Array.isArray(response.data.results)) {
+        brandsData = response.data.results;
       } else {
         console.log('Unexpected response structure:', response.data);
+        brandsData = [];
       }
       
-      console.log('Processed brands data:', brandsData);
-      setBrands(brandsData);
+      console.log('All brands data:', brandsData);
+      console.log('Total brands count:', brandsData.length);
+      
+      setAllBrands(brandsData);
+      setTotalBrands(brandsData.length);
+      setTotalPages(Math.ceil(brandsData.length / ITEMS_PER_PAGE));
     } catch (error) {
       console.error('Markalar yüklenirken hata:', error);
       showSnackbar('Markalar yüklenirken bir hata oluştu.', 'error');
-      setBrands([]); // Hata durumunda boş array set et
+      setAllBrands([]);
+      setBrands([]);
+      setTotalBrands(0);
+      setTotalPages(1);
     } finally {
       setLoading(false);
     }
-  }, [showSnackbar]);
+  }, [showSnackbar, ITEMS_PER_PAGE]);
 
   // Marka sil
   const handleDeleteBrand = useCallback(async () => {
@@ -127,6 +145,13 @@ export default function DashboardBrandsKokpit() {
     setExpandedBrand(isExpanded ? brandId : null);
   }, []);
 
+  // Sayfa değiştirme
+  const handlePageChange = useCallback((event, newPage) => {
+    if (newPage >= 1 && newPage <= totalPages && newPage !== currentPage) {
+      setCurrentPage(newPage);
+    }
+  }, [totalPages, currentPage]);
+
   // Optimize edilmiş marka listesi
   const brandsList = useMemo(() => {
     return brands.map((brand) => (
@@ -143,6 +168,14 @@ export default function DashboardBrandsKokpit() {
   useEffect(() => {
     fetchBrands();
   }, [fetchBrands]);
+
+  // Client-side pagination için görüntülenecek markaları hesapla
+  useEffect(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    const currentBrands = allBrands.slice(startIndex, endIndex);
+    setBrands(currentBrands);
+  }, [allBrands, currentPage, ITEMS_PER_PAGE]);
 
   if (loading) {
     return (
@@ -178,6 +211,25 @@ export default function DashboardBrandsKokpit() {
       ) : (
         <Box className="space-y-4">
           {brandsList}
+        </Box>
+      )}
+
+      {/* Pagination */}
+      {totalBrands > 0 && totalPages > 1 && (
+        <Box className="flex items-center justify-between mt-6">
+          <Typography className="text-gray-600">
+            Toplam {totalBrands} markadan {(currentPage - 1) * ITEMS_PER_PAGE + 1} - {Math.min(currentPage * ITEMS_PER_PAGE, totalBrands)} arası gösteriliyor
+          </Typography>
+          <Pagination
+            count={totalPages}
+            page={currentPage}
+            onChange={handlePageChange}
+            color="primary"
+            size="large"
+            showFirstButton
+            showLastButton
+            disabled={loading}
+          />
         </Box>
       )}
 
