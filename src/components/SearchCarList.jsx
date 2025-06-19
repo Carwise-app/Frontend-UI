@@ -1,14 +1,16 @@
 import { Box, Stack } from '@mui/material';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
-import React from 'react';
+import React, { useState } from 'react';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import SpeedIcon from '@mui/icons-material/Speed';
 import PaletteIcon from '@mui/icons-material/Palette';
 import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
 import LocalGasStationIcon from '@mui/icons-material/LocalGasStation';
 import { SettingsOutlined, Verified } from '@mui/icons-material';
+import NoPhotographyIcon from '@mui/icons-material/NoPhotography';
 
 export default function SearchCarList({ item, onClick }) {
+  const [imgError, setImgError] = useState(false);
   const imageUrl = item.image?.path
     ? `https://carwisegw.yusuftalhaklc.com${item.image.path}`
     : '';
@@ -23,7 +25,16 @@ export default function SearchCarList({ item, onClick }) {
   return (
     <Box className="bg-white shadow-sm rounded-sm w-full h-50 flex cursor-pointer hover:shadow-[#ffb8c6] overflow-hidden" onClick={onClick}>
       <Box className="bg-gray-50 w-[30%] object-contain rounded-l-xl flex items-center justify-center">
-        <img className="object-contain border-gray-100 pointer-events-none border-r-1" src={imageUrl} alt="car photo" />
+        {(!imageUrl || imgError) ? (
+          <NoPhotographyIcon sx={{ fontSize: 120, color: '#bdbdbd' }} />
+        ) : (
+          <img
+            className="object-contain border-gray-100 pointer-events-none border-r-1"
+            src={imageUrl}
+            alt="car photo"
+            onError={() => setImgError(true)}
+          />
+        )}
       </Box>
       <Box className="w-[67%] mx-auto my-2 grid grid-rows-[1fr_6fr_1fr]">
         <Box className="flex justify-between text-xs text-gray-500">

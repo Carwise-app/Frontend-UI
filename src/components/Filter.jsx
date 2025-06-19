@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Link, Button } from '@mui/material';
+import { Box, Link, Button, Skeleton } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import api from '../api/axios';
 import AccordionRadioBox from './AccordionRadioBox';
@@ -165,7 +165,7 @@ export default function FilterBox({ onBrandSelect, onSeriesSelect, onSubmit }) {
         </Box>
       </Box>
 
-      <Box className="w-48 mt-4">
+      <Box className="mt-4 w-48">
         <AccordionCityBox
           mainTitle="Adres"
           title1="İl"
@@ -242,6 +242,31 @@ export default function FilterBox({ onBrandSelect, onSeriesSelect, onSubmit }) {
             onClick={handleReset}
             sx={{ borderColor: 'info.main', color: 'info.main' }}
           >Temizle</Button>
+        </Box>
+      </Box>
+    </Box>
+  );
+}
+
+// Tasarıma uygun skeleton componenti
+export function FilterSkeleton() {
+  return (
+    <Box className="flex flex-col">
+      <Box className="w-48 p-4 rounded bg-white max-h-[280px] overflow-hidden" sx={{ boxShadow: 1 }}>
+        <Skeleton variant="text" width={120} height={32} className="mb-3" />
+        <Box component="ul" sx={{ listStyle: 'none', p: 0, m: 0, overflowY: 'auto', maxHeight: 220 }}>
+          {[...Array(6)].map((_, i) => (
+            <Skeleton key={i} variant="text" width={100 + Math.random()*40} height={28} sx={{ mb: 1 }} />
+          ))}
+        </Box>
+      </Box>
+      <Box className="flex flex-col gap-3 mt-4 w-48">
+        {[...Array(7)].map((_, i) => (
+          <Skeleton key={i} variant="rectangular" width={192} height={38} sx={{ borderRadius: 1 }} />
+        ))}
+        <Box className="flex gap-2 mt-4">
+          <Skeleton variant="rectangular" width={80} height={36} sx={{ borderRadius: 1 }} />
+          <Skeleton variant="rectangular" width={80} height={36} sx={{ borderRadius: 1 }} />
         </Box>
       </Box>
     </Box>

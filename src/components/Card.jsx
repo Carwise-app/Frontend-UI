@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   Card,
@@ -7,8 +7,10 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
+import NoPhotographyIcon from '@mui/icons-material/NoPhotography';
 
 export default function ShowcaseCard({ listing }) {
+  const [imgError, setImgError] = useState(false);
   const imageUrl = listing.image?.path
     ? `https://carwisegw.yusuftalhaklc.com${listing.image.path}`
     : "";
@@ -25,17 +27,22 @@ export default function ShowcaseCard({ listing }) {
           alignItems: "center",
         }}
       >
-        <img
-          src={imageUrl}
-          alt={listing.title}
-          style={{
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-            borderTopLeftRadius: 12,
-            borderTopRightRadius: 12,
-          }}
-        />
+        {(!imageUrl || imgError) ? (
+          <NoPhotographyIcon sx={{ fontSize: 120, color: '#bdbdbd' }} />
+        ) : (
+          <img
+            src={imageUrl}
+            alt={listing.title}
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              borderTopLeftRadius: 12,
+              borderTopRightRadius: 12,
+            }}
+            onError={() => setImgError(true)}
+          />
+        )}
       </Box>
 
       <CardContent>
