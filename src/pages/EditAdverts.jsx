@@ -144,6 +144,7 @@ export default function EditAdverts() {
   const [loading, setLoading] = useState(false);
   const [listingData, setListingData] = useState(null);
   const [isLoadingListing, setIsLoadingListing] = useState(true);
+  const [brandsLoaded, setBrandsLoaded] = useState(false);
 
   // İlan verilerini getir
   const fetchListingData = async () => {
@@ -325,6 +326,7 @@ export default function EditAdverts() {
       }
     } finally {
       setLoading(false);
+      setBrandsLoaded(true);
     }
   };
 
@@ -341,54 +343,15 @@ export default function EditAdverts() {
     return selectedSeries?.models || [];
   };
 
-  // API endpoint'lerini test et
-  const debugApiEndpoints = async () => {
-    console.log("=== API ENDPOINT DEBUG BAŞLADI ===");
-    
-    const testEndpoints = [
-      `/listing/${id}/`,
-      `/listing/${id}`,
-      `/listings/${id}/`,
-      `/listings/${id}`,
-      `/api/listing/${id}/`,
-      `/api/listing/${id}`,
-      `/api/listings/${id}/`,
-      `/api/listings/${id}`,
-      `/v1/listing/${id}/`,
-      `/v1/listing/${id}`,
-      `/v1/listings/${id}/`,
-      `/v1/listings/${id}`
-    ];
-    
-    for (const endpoint of testEndpoints) {
-      try {
-        console.log(`Testing GET ${endpoint}...`);
-        const response = await api.get(endpoint, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-          timeout: 5000,
-        });
-        console.log(`✅ GET ${endpoint} - Status: ${response.status}`);
-      } catch (error) {
-        console.log(`❌ GET ${endpoint} - Status: ${error.response?.status} - Message: ${error.message}`);
-      }
-    }
-    
-    console.log("=== API ENDPOINT DEBUG TAMAMLANDI ===");
-  };
-
   // Sayfa yüklendiğinde ilan verilerini ve markaları getir
   useEffect(() => {
     if (id) {
       fetchListingData();
-      // Debug için endpoint'leri test et
-      debugApiEndpoints();
     }
-    if (currentStep?.path === "marka") {
+    if (!brandsLoaded) {
       fetchBrands();
     }
-  }, [id, currentStep?.path]);
+  }, [id, brandsLoaded]);
 
   // localStorage'dan mevcut verileri kontrol et ve kullan
   useEffect(() => {
