@@ -245,7 +245,7 @@ export default function CreateAdvertsPhoto({title, desc, allSteps, stepLabel, ac
       const listingData = {
         "brand_id": selectedBrand.id || "",
         "city": selectedCity,
-        "currency": "TRY",
+        "currency": "TL",
         "description": selectedDescription,
         "detail": {
           "body_type": selectedBodyType,
