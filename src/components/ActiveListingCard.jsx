@@ -13,10 +13,10 @@ export default function ActiveListingCard({ listing, onClick, onEdit, onDelete, 
 
   // CSS-based placeholder component
   const PlaceholderImage = () => (
-    <Box className="flex justify-center items-center w-full h-full bg-gray-200">
+    <Box className="flex items-center justify-center w-full h-full bg-gray-200">
       <Box className="text-center">
-        <Box className="mx-auto mb-2 w-12 h-8 bg-gray-400 rounded"></Box>
-        <Box className="mx-auto w-8 h-8 bg-gray-400 rounded-full"></Box>
+        <Box className="w-12 h-8 mx-auto mb-2 bg-gray-400 rounded"></Box>
+        <Box className="w-8 h-8 mx-auto bg-gray-400 rounded-full"></Box>
       </Box>
     </Box>
   );
@@ -95,7 +95,7 @@ export default function ActiveListingCard({ listing, onClick, onEdit, onDelete, 
               onError={handleImageError}
               loading="lazy"
             />
-            <Box className="hidden absolute inset-0" style={{ display: 'none' }}>
+            <Box className="absolute inset-0 hidden" style={{ display: 'none' }}>
               <PlaceholderImage />
             </Box>
           </>
@@ -152,7 +152,7 @@ export default function ActiveListingCard({ listing, onClick, onEdit, onDelete, 
       </Box>
       
       {/* Action Buttons */}
-      <Box className="flex gap-1 items-center ml-2">
+      <Box className="flex items-center gap-1 ml-2">
         <Tooltip title="Düzenle" arrow placement="top">
           <IconButton
             onClick={handleEdit}
@@ -162,17 +162,7 @@ export default function ActiveListingCard({ listing, onClick, onEdit, onDelete, 
             <EditIcon fontSize="small" />
           </IconButton>
         </Tooltip>
-        
-        <Tooltip title="Yayından Kaldır" arrow placement="top">
-          <IconButton
-            onClick={handleUnpublish}
-            className="text-orange-600 transition-all duration-200 hover:text-orange-800 hover:bg-orange-50"
-            size="small"
-          >
-            <UnpublishIcon fontSize="small" />
-          </IconButton>
-        </Tooltip>
-        
+
         <Tooltip title="Sil" arrow placement="top">
           <span>
             <IconButton
