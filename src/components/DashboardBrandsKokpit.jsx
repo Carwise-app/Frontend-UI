@@ -16,13 +16,17 @@ import {
   ListItemText,
   ListItemSecondaryAction,
   IconButton,
-  Chip
+  Chip,
+  TextField,
+  Fab
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add';
 import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import api from '../api/axios';
 import { useSnackbar } from '../context/SnackbarContext';
+import { useNavigate } from 'react-router-dom';
 
 export default function DashboardBrandsKokpit() {
   const [brands, setBrands] = useState([]);
@@ -30,7 +34,10 @@ export default function DashboardBrandsKokpit() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedBrand, setSelectedBrand] = useState(null);
   const [expandedBrand, setExpandedBrand] = useState(null);
+  const [addBrandDialogOpen, setAddBrandDialogOpen] = useState(false);
+  const [newBrandName, setNewBrandName] = useState('');
   const { showSnackbar } = useSnackbar();
+  const navigate = useNavigate();
 
   // Markaları getir
   const fetchBrands = useCallback(async () => {
@@ -75,11 +82,12 @@ export default function DashboardBrandsKokpit() {
       setBrands(prev => prev.filter(brand => brand.id !== selectedBrand.id));
       setDeleteDialogOpen(false);
       setSelectedBrand(null);
+      navigate(0);
     } catch (error) {
       console.error('Marka silinirken hata:', error);
       showSnackbar('Marka silinirken bir hata oluştu.', 'error');
     }
-  }, [selectedBrand, showSnackbar]);
+  }, [selectedBrand, showSnackbar, navigate]);
 
   // Silme dialog'unu aç
   const openDeleteDialog = useCallback((brand) => {
@@ -92,6 +100,27 @@ export default function DashboardBrandsKokpit() {
     setDeleteDialogOpen(false);
     setSelectedBrand(null);
   }, []);
+
+  // Marka ekle
+  const handleAddBrand = useCallback(async () => {
+    if (!newBrandName.trim()) {
+      showSnackbar('Marka adı boş olamaz.', 'error');
+      return;
+    }
+
+    try {
+      await api.post('/brand/', {
+        name: newBrandName.trim()
+      });
+      showSnackbar('Marka başarıyla eklendi.', 'success');
+      setAddBrandDialogOpen(false);
+      setNewBrandName('');
+      navigate(0);
+    } catch (error) {
+      console.error('Marka eklenirken hata:', error);
+      showSnackbar('Marka eklenirken bir hata oluştu.', 'error');
+    }
+  }, [newBrandName, showSnackbar, navigate]);
 
   // Accordion açma/kapama
   const handleAccordionChange = useCallback((brandId) => (event, isExpanded) => {
@@ -125,15 +154,25 @@ export default function DashboardBrandsKokpit() {
 
   return (
     <Box>
-      <Box className="flex items-center gap-3 mb-6">
-        <DirectionsCarIcon sx={{ fontSize: 32, color: '#dc143c' }} />
-        <Typography variant="h5" className="font-semibold">
-          Marka ve Seri Yönetimi
-        </Typography>
+      <Box className="flex items-center justify-between mb-6">
+        <Box className="flex items-center gap-3">
+          <DirectionsCarIcon sx={{ fontSize: 32, color: '#dc143c' }} />
+          <Typography variant="h5" className="font-semibold">
+            Marka ve Seri Yönetimi
+          </Typography>
+        </Box>
+        <Fab
+          color="primary"
+          size="small"
+          onClick={() => setAddBrandDialogOpen(true)}
+          className="!bg-[#dc143c] hover:bg-[#b01030]"
+        >
+          <AddIcon />
+        </Fab>
       </Box>
 
       {brands.length === 0 ? (
-        <Box className="text-center py-8 text-gray-500">
+        <Box className="py-8 text-center text-gray-500">
           Henüz marka bulunmuyor.
         </Box>
       ) : (
@@ -169,51 +208,163 @@ export default function DashboardBrandsKokpit() {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Marka Ekleme Dialog'u */}
+      <Dialog open={addBrandDialogOpen} onClose={() => setAddBrandDialogOpen(false)}>
+        <DialogTitle className="font-semibold text-gray-800">
+          Yeni Marka Ekle
+        </DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Marka Adı"
+            type="text"
+            fullWidth
+            variant="outlined"
+            value={newBrandName}
+            onChange={(e) => setNewBrandName(e.target.value)}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter') {
+                handleAddBrand();
+              }
+            }}
+          />
+        </DialogContent>
+        <DialogActions className="p-4">
+          <Button onClick={() => setAddBrandDialogOpen(false)} className="text-gray-600">
+            İptal
+          </Button>
+          <Button 
+            onClick={handleAddBrand} 
+            className="text-white bg-[#dc143c] hover:bg-[#b01030]"
+            variant="contained"
+          >
+            Ekle
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }
 
 // Optimize edilmiş marka accordion komponenti
 const BrandAccordion = React.memo(({ brand, isExpanded, onAccordionChange, onDelete }) => {
+  const [addSeriesDialogOpen, setAddSeriesDialogOpen] = useState(false);
+  const [newSeriesName, setNewSeriesName] = useState('');
+  const { showSnackbar } = useSnackbar();
+  const navigate = useNavigate();
+
+  // Seri ekle
+  const handleAddSeries = useCallback(async () => {
+    if (!newSeriesName.trim()) {
+      showSnackbar('Seri adı boş olamaz.', 'error');
+      return;
+    }
+
+    try {
+      await api.post(`/brand/${brand.id}/series`, {
+        name: newSeriesName.trim()
+      });
+      showSnackbar('Seri başarıyla eklendi.', 'success');
+      setAddSeriesDialogOpen(false);
+      setNewSeriesName('');
+      navigate(0);
+    } catch (error) {
+      console.error('Seri eklenirken hata:', error);
+      showSnackbar('Seri eklenirken bir hata oluştu.', 'error');
+    }
+  }, [newSeriesName, brand.id, showSnackbar, navigate]);
+
   return (
-    <Accordion 
-      expanded={isExpanded}
-      onChange={onAccordionChange}
-      className="shadow-md rounded-lg"
-    >
-      <AccordionSummary
-        expandIcon={<ExpandMoreIcon />}
-        className="bg-gray-50 hover:bg-gray-100 transition-colors"
+    <>
+      <Accordion 
+        expanded={isExpanded}
+        onChange={onAccordionChange}
+        className="rounded-lg shadow-md"
       >
-        <Box className="flex items-center justify-between w-full pr-4">
-          <Box className="flex items-center gap-3">
-            <DirectionsCarIcon sx={{ fontSize: 24, color: '#dc143c' }} />
-            <Typography className="font-semibold text-lg">
-              {brand.name}
-            </Typography>
-            <Chip 
-              label={`${brand.series?.length || 0} Seri`} 
-              size="small" 
-              color="primary" 
-              variant="outlined"
-            />
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          className="transition-colors bg-gray-50 hover:bg-gray-100"
+        >
+          <Box className="flex items-center justify-between w-full pr-4">
+            <Box className="flex items-center gap-3">
+              <DirectionsCarIcon sx={{ fontSize: 24, color: '#dc143c' }} />
+              <Typography className="text-lg font-semibold">
+                {brand.name}
+              </Typography>
+              <Chip 
+                label={`${brand.series?.length || 0} Seri`} 
+                size="small" 
+                color="primary" 
+                variant="outlined"
+              />
+            </Box>
+            <Box className="flex items-center gap-1">
+              <IconButton
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setAddSeriesDialogOpen(true);
+                }}
+                className="text-green-500 hover:text-green-700 hover:bg-green-50"
+                size="small"
+              >
+                <AddIcon />
+              </IconButton>
+              <IconButton
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete(brand);
+                }}
+                className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                size="small"
+              >
+                <DeleteIcon />
+              </IconButton>
+            </Box>
           </Box>
-          <IconButton
-            onClick={(e) => {
-              e.stopPropagation();
-              onDelete(brand);
+        </AccordionSummary>
+        <AccordionDetails className="bg-white">
+          <BrandSeries brandId={brand.id} brandName={brand.name} series={brand.series} />
+        </AccordionDetails>
+      </Accordion>
+
+      {/* Seri Ekleme Dialog'u */}
+      <Dialog open={addSeriesDialogOpen} onClose={() => setAddSeriesDialogOpen(false)}>
+        <DialogTitle className="font-semibold text-gray-800">
+          {brand.name} Markasına Yeni Seri Ekle
+        </DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Seri Adı"
+            type="text"
+            fullWidth
+            variant="outlined"
+            value={newSeriesName}
+            onChange={(e) => setNewSeriesName(e.target.value)}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter') {
+                handleAddSeries();
+              }
             }}
-            className="text-red-500 hover:text-red-700 hover:bg-red-50"
-            size="small"
+          />
+        </DialogContent>
+        <DialogActions className="p-4">
+          <Button onClick={() => setAddSeriesDialogOpen(false)} className="text-gray-600">
+            İptal
+          </Button>
+          <Button 
+            onClick={handleAddSeries} 
+            className="text-white bg-[#dc143c] hover:bg-[#b01030]"
+            variant="contained"
           >
-            <DeleteIcon />
-          </IconButton>
-        </Box>
-      </AccordionSummary>
-      <AccordionDetails className="bg-white">
-        <BrandSeries brandId={brand.id} brandName={brand.name} series={brand.series} />
-      </AccordionDetails>
-    </Accordion>
+            Ekle
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 });
 
@@ -223,21 +374,23 @@ const BrandSeries = React.memo(({ brandId, brandName, series }) => {
   const [selectedSeries, setSelectedSeries] = useState(null);
   const [expandedSeries, setExpandedSeries] = useState(null);
   const { showSnackbar } = useSnackbar();
+  const navigate = useNavigate();
 
   // Seri sil
   const handleDeleteSeries = useCallback(async () => {
     if (!selectedSeries) return;
 
     try {
-      await api.delete(`/series/${selectedSeries.id}`);
+      await api.delete(`/brand/${brandId}/series/${selectedSeries.id}`);
       showSnackbar('Seri başarıyla silindi.', 'success');
       setDeleteDialogOpen(false);
       setSelectedSeries(null);
+      navigate(0);
     } catch (error) {
       console.error('Seri silinirken hata:', error);
       showSnackbar('Seri silinirken bir hata oluştu.', 'error');
     }
-  }, [selectedSeries, showSnackbar]);
+  }, [selectedSeries, brandId, showSnackbar, navigate]);
 
   // Accordion açma/kapama
   const handleSeriesAccordionChange = useCallback((seriesId) => (event, isExpanded) => {
@@ -258,9 +411,10 @@ const BrandSeries = React.memo(({ brandId, brandName, series }) => {
           setSelectedSeries(serie);
           setDeleteDialogOpen(true);
         }}
+        brandId={brandId}
       />
     ));
-  }, [series, expandedSeries, handleSeriesAccordionChange]);
+  }, [series, expandedSeries, handleSeriesAccordionChange, brandId]);
 
   return (
     <Box>
@@ -269,7 +423,7 @@ const BrandSeries = React.memo(({ brandId, brandName, series }) => {
       </Typography>
       
       {!series || series.length === 0 ? (
-        <Typography className="text-gray-500 text-center py-4">
+        <Typography className="py-4 text-center text-gray-500">
           Bu markaya ait seri bulunmuyor.
         </Typography>
       ) : (
@@ -310,68 +464,151 @@ const BrandSeries = React.memo(({ brandId, brandName, series }) => {
 });
 
 // Optimize edilmiş seri accordion komponenti
-const SeriesAccordion = React.memo(({ serie, isExpanded, onAccordionChange, onDelete }) => {
+const SeriesAccordion = React.memo(({ serie, isExpanded, onAccordionChange, onDelete, brandId }) => {
+  const [addModelDialogOpen, setAddModelDialogOpen] = useState(false);
+  const [newModelName, setNewModelName] = useState('');
+  const { showSnackbar } = useSnackbar();
+  const navigate = useNavigate();
+
+  // Model ekle
+  const handleAddModel = useCallback(async () => {
+    if (!newModelName.trim()) {
+      showSnackbar('Model adı boş olamaz.', 'error');
+      return;
+    }
+
+    try {
+      await api.post(`/brand/${brandId}/series/${serie.id}/model`, {
+        name: newModelName.trim()
+      });
+      showSnackbar('Model başarıyla eklendi.', 'success');
+      setAddModelDialogOpen(false);
+      setNewModelName('');
+      navigate(0);
+    } catch (error) {
+      console.error('Model eklenirken hata:', error);
+      showSnackbar('Model eklenirken bir hata oluştu.', 'error');
+    }
+  }, [newModelName, brandId, serie.id, showSnackbar, navigate]);
+
   return (
-    <Accordion 
-      expanded={isExpanded}
-      onChange={onAccordionChange}
-      className="shadow-sm rounded-lg"
-    >
-      <AccordionSummary
-        expandIcon={<ExpandMoreIcon />}
-        className="bg-gray-100 hover:bg-gray-200 transition-colors"
+    <>
+      <Accordion 
+        expanded={isExpanded}
+        onChange={onAccordionChange}
+        className="rounded-lg shadow-sm"
       >
-        <Box className="flex items-center justify-between w-full pr-4">
-          <Box className="flex items-center gap-3">
-            <Typography className="font-medium">
-              {serie.name}
-            </Typography>
-            <Chip 
-              label={`${serie.models?.length || 0} Model`} 
-              size="small" 
-              color="secondary" 
-              variant="outlined"
-            />
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          className="transition-colors bg-gray-100 hover:bg-gray-200"
+        >
+          <Box className="flex items-center justify-between w-full pr-4">
+            <Box className="flex items-center gap-3">
+              <Typography className="font-medium">
+                {serie.name}
+              </Typography>
+              <Chip 
+                label={`${serie.models?.length || 0} Model`} 
+                size="small" 
+                color="secondary" 
+                variant="outlined"
+              />
+            </Box>
+            <Box className="flex items-center gap-1">
+              <IconButton
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setAddModelDialogOpen(true);
+                }}
+                className="text-green-500 hover:text-green-700 hover:bg-green-50"
+                size="small"
+              >
+                <AddIcon />
+              </IconButton>
+              <IconButton
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete(serie);
+                }}
+                className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                size="small"
+              >
+                <DeleteIcon />
+              </IconButton>
+            </Box>
           </Box>
-          <IconButton
-            onClick={(e) => {
-              e.stopPropagation();
-              onDelete(serie);
+        </AccordionSummary>
+        <AccordionDetails className="bg-white">
+          <SeriesModels 
+            brandId={brandId}
+            seriesId={serie.id} 
+            seriesName={serie.name} 
+            models={serie.models} 
+          />
+        </AccordionDetails>
+      </Accordion>
+
+      {/* Model Ekleme Dialog'u */}
+      <Dialog open={addModelDialogOpen} onClose={() => setAddModelDialogOpen(false)}>
+        <DialogTitle className="font-semibold text-gray-800">
+          {serie.name} Serisine Yeni Model Ekle
+        </DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Model Adı"
+            type="text"
+            fullWidth
+            variant="outlined"
+            value={newModelName}
+            onChange={(e) => setNewModelName(e.target.value)}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter') {
+                handleAddModel();
+              }
             }}
-            className="text-red-500 hover:text-red-700 hover:bg-red-50"
-            size="small"
+          />
+        </DialogContent>
+        <DialogActions className="p-4">
+          <Button onClick={() => setAddModelDialogOpen(false)} className="text-gray-600">
+            İptal
+          </Button>
+          <Button 
+            onClick={handleAddModel} 
+            className="text-white bg-[#dc143c] hover:bg-[#b01030]"
+            variant="contained"
           >
-            <DeleteIcon />
-          </IconButton>
-        </Box>
-      </AccordionSummary>
-      <AccordionDetails className="bg-white">
-        <SeriesModels seriesId={serie.id} seriesName={serie.name} models={serie.models} />
-      </AccordionDetails>
-    </Accordion>
+            Ekle
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 });
 
 // Seri modellerini gösteren komponent
-const SeriesModels = React.memo(({ seriesId, seriesName, models }) => {
+const SeriesModels = React.memo(({ brandId, seriesId, seriesName, models }) => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedModel, setSelectedModel] = useState(null);
   const { showSnackbar } = useSnackbar();
+  const navigate = useNavigate();
 
   // Model sil
   const handleDeleteModel = useCallback(async () => {
     if (!selectedModel) return;
 
     try {
-      await api.delete(`/model/${selectedModel.id}`);
+      await api.delete(`/brand/${brandId}/series/${seriesId}/model/${selectedModel.id}`);
       showSnackbar('Model başarıyla silindi.', 'success');
       setDeleteDialogOpen(false);
       setSelectedModel(null);
+      navigate(0);
     } catch (error) {
       console.error('Model silinirken hata:', error);
       showSnackbar('Model silinirken bir hata oluştu.', 'error');
     }
-  }, [selectedModel, showSnackbar]);
+  }, [selectedModel, brandId, seriesId, showSnackbar, navigate]);
 
   // Optimize edilmiş model listesi
   const modelsList = useMemo(() => {
@@ -381,7 +618,6 @@ const SeriesModels = React.memo(({ seriesId, seriesName, models }) => {
       <ListItem key={model.id} className="border-b border-gray-200 last:border-b-0">
         <ListItemText
           primary={model.name}
-          secondary={`ID: ${model.id}`}
         />
         <ListItemSecondaryAction>
           <IconButton
@@ -406,11 +642,11 @@ const SeriesModels = React.memo(({ seriesId, seriesName, models }) => {
       </Typography>
       
       {!models || models.length === 0 ? (
-        <Typography className="text-gray-500 text-center py-4">
+        <Typography className="py-4 text-center text-gray-500">
           Bu seriye ait model bulunmuyor.
         </Typography>
       ) : (
-        <List className="bg-gray-50 rounded-lg">
+        <List className="rounded-lg bg-gray-50">
           {modelsList}
         </List>
       )}
