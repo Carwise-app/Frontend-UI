@@ -92,7 +92,7 @@ export default function MyMessages() {
         title="Mesajlarım"
         description="Buradan kullancılarla olan sohbetlerinizi görebilirsiniz."
       />
-      <Box className="mt-4 px-4">
+      <Box className="px-4 mt-4 cursor-pointer">
         {loading ? (
           <Box display="flex" justifyContent="center"><CircularProgress /></Box>
         ) : chats.length === 0 ? (
@@ -103,7 +103,7 @@ export default function MyMessages() {
           <>
             <List>
               {chats.map((chat, index) => (
-                <React.Fragment key={chat.user.id}>
+                <React.Fragment key={`${chat.user.id}-${chat.listing.id}`}>
                   <ListItem
                     button
                     alignItems="flex-start"

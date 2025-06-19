@@ -5,10 +5,11 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  Pagination
+  Pagination,
+  Skeleton
 } from '@mui/material';
 import SearchCarList from '../components/SearchCarList';
-import FilterBox from '../components/Filter';
+import FilterBox, { FilterSkeleton } from '../components/Filter';
 import { useLocation, useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 
@@ -21,24 +22,26 @@ export default function SearchCar() {
   const [sorting, setSorting] = useState('');
   const [activeFilters, setActiveFilters] = useState({});
   const [loading, setLoading] = useState(false);
+  const [isPageLoaded, setIsPageLoaded] = useState(false);
 
   const location = useLocation();
   const navigate = useNavigate();
   const queryParams = new URLSearchParams(location.search);
   const searchQuery = queryParams.get('query')?.toLowerCase() || '';
 
-  // ✅ Arama değişince ilk sayfaya dön
   useEffect(() => {
+    setIsPageLoaded(false);
     setCurrentPage(1);
-    fetchFilteredData(activeFilters, 1, sorting, searchQuery);
+    fetchFilteredData(activeFilters, 1, sorting, searchQuery, true);
   }, [searchQuery]);
 
   useEffect(() => {
-    fetchFilteredData(activeFilters, currentPage, sorting, searchQuery);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (isPageLoaded) {
+      fetchFilteredData(activeFilters, currentPage, sorting, searchQuery);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }, [currentPage]);
 
-  // ✅ Sorting için yardımcı fonksiyon
   const getSortParams = (sortingValue) => {
     if (!sortingValue) return {};
     const sortMap = {
@@ -54,8 +57,7 @@ export default function SearchCar() {
     return sortMap[sortingValue] || {};
   };
 
-  // ✅ Tüm veriyi backend'den getiren fonksiyon
-  const fetchFilteredData = (filters = {}, page = 1, sortingValue = sorting, query = searchQuery) => {
+  const fetchFilteredData = (filters = {}, page = 1, sortingValue = sorting, query = searchQuery, isInitial = false) => {
     const sortParams = getSortParams(sortingValue);
 
     const params = {
@@ -66,7 +68,7 @@ export default function SearchCar() {
     };
 
     if (query) {
-      params.query = query; // ✅ query parametresi olarak gönder
+      params.query = query;
     }
 
     setLoading(true);
@@ -77,7 +79,10 @@ export default function SearchCar() {
         setActiveFilters(filters);
       })
       .catch(err => console.error("Araç verisi alınamadı:", err))
-      .finally(() => setLoading(false));
+      .finally(() => {
+        setLoading(false);
+        if (isInitial) setIsPageLoaded(true);
+      });
   };
 
   const handleBrandSelect = brandId => {
@@ -108,6 +113,35 @@ export default function SearchCar() {
 
   const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
 
+  if (!isPageLoaded) {
+    return (
+      <Box className="flex h-full w-[75%] mx-auto gap-10 mb-20 mt-5 justify-between">
+        <FilterSkeleton />
+        <Box className="flex flex-col w-[85%]">
+          <Box className="flex justify-between items-center px-5 py-2 mb-5 bg-white rounded-sm shadow-md">
+            <Skeleton variant="text" width={180} height={32} />
+            <Skeleton variant="rectangular" width={200} height={40} />
+          </Box>
+          {[...Array(5)].map((_, i) => (
+            <Box key={i} className="flex gap-4 items-center px-2 py-2 w-full bg-white rounded-none border-b border-gray-200 md:py-3 md:rounded-xl">
+              <Skeleton variant="rectangular" width={120} height={90} className="rounded" />
+              <Box className="flex flex-col flex-1 gap-2 min-w-0">
+                <Skeleton variant="text" width="40%" height={28} />
+                <Skeleton variant="text" width="70%" height={28} />
+                <Skeleton variant="text" width="30%" height={24} />
+              </Box>
+              <Skeleton variant="text" width={60} height={28} />
+              <Skeleton variant="text" width={80} height={28} />
+            </Box>
+          ))}
+          <Box className="flex justify-center mt-8">
+            <Skeleton variant="rectangular" width={300} height={40} />
+          </Box>
+        </Box>
+      </Box>
+    );
+  }
+
   return (
     <Box className="flex h-full w-[75%] mx-auto gap-10 mb-20 mt-5 justify-between">
       <FilterBox
@@ -115,9 +149,8 @@ export default function SearchCar() {
         onSeriesSelect={handleSeriesSelect}
         onSubmit={handleSubmit}
       />
-
       <Box className="flex flex-col w-[85%]">
-        <Box className="flex items-center justify-between px-5 py-2 mb-5 bg-white rounded-sm shadow-md">
+        <Box className="flex justify-between items-center px-5 py-2 mb-5 bg-white rounded-sm shadow-md">
           <span className="text-xl font-semibold">Satılık Araçlar</span>
           <FormControl sx={{ minWidth: 200 }} size="small">
             <InputLabel id="sorting-label">Sıralama Türü</InputLabel>
@@ -141,7 +174,30 @@ export default function SearchCar() {
         </Box>
 
         {loading ? (
-          <Box className="text-center py-10 text-gray-500">Yükleniyor...</Box>
+          <Box className="flex flex-col gap-y-4">
+            {/* Skeleton for filter and sorting bar */}
+            <Box className="flex justify-between items-center px-5 py-2 mb-5 bg-white rounded-sm shadow-md">
+              <Skeleton variant="text" width={180} height={32} />
+              <Skeleton variant="rectangular" width={200} height={40} />
+            </Box>
+            {/* Skeleton for car list */}
+            {[...Array(5)].map((_, i) => (
+              <Box key={i} className="flex gap-4 items-center px-2 py-2 w-full bg-white rounded-none border-b border-gray-200 md:py-3 md:rounded-xl">
+                <Skeleton variant="rectangular" width={120} height={90} className="rounded" />
+                <Box className="flex flex-col flex-1 gap-2 min-w-0">
+                  <Skeleton variant="text" width="40%" height={28} />
+                  <Skeleton variant="text" width="70%" height={28} />
+                  <Skeleton variant="text" width="30%" height={24} />
+                </Box>
+                <Skeleton variant="text" width={60} height={28} />
+                <Skeleton variant="text" width={80} height={28} />
+              </Box>
+            ))}
+            {/* Pagination skeleton */}
+            <Box className="flex justify-center mt-8">
+              <Skeleton variant="rectangular" width={300} height={40} />
+            </Box>
+          </Box>
         ) : carData.length > 0 ? (
           <>
             <Box className="flex flex-col gap-y-4">
@@ -164,7 +220,7 @@ export default function SearchCar() {
           </>
         ) : (
           <Box className="p-6 text-center text-gray-600">
-            <p className="text-lg font-semibold mb-2">Sonuç bulunamadı</p>
+            <p className="mb-2 text-lg font-semibold">Sonuç bulunamadı</p>
             <p>
                   {searchQuery
                        ? `"${searchQuery}" ile eşleşen bir ilan yok.`

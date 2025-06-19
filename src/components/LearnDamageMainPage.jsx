@@ -4,9 +4,11 @@ import CustomizedSteppers from './CustomizedSteppers'
 import DamageStep from './DamageStep'
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import api from '../api/axios';
+import { useSnackbar } from '../context/SnackbarContext';
 
 export default function LearnDamageMainPage({activeStep,onHandleBack,stepLabel,onHandleNext,title,desc,allSteps,btnText}) {
   const [loading, setLoading] = useState(false);
+  const { showSnackbar } = useSnackbar();
 
   const debugLocalStorage = () => {
     console.log("=== LOCALSTORAGE DEBUG ===");
@@ -130,11 +132,11 @@ export default function LearnDamageMainPage({activeStep,onHandleBack,stepLabel,o
       console.error("Error Status:", error.response?.status);
       
       if (error.response?.status === 401) {
-        alert("Oturum süreniz dolmuş. Lütfen tekrar giriş yapın.");
+        showSnackbar("Oturum süreniz dolmuş. Lütfen tekrar giriş yapın.", "error");
       } else if (error.response?.status === 400) {
-        alert("Gönderilen veriler hatalı. Lütfen tüm alanları doldurun.");
+        showSnackbar("Gönderilen veriler hatalı. Lütfen tüm alanları doldurun.", "error");
       } else {
-        alert("Tahmin yapılırken bir hata oluştu. Lütfen tekrar deneyin.");
+        showSnackbar("Tahmin yapılırken bir hata oluştu. Lütfen tekrar deneyin.", "error");
       }
     } finally {
       setLoading(false);

@@ -24,7 +24,7 @@ import ProfileAndSettings from "./components/ProfileAndSettings";
 import YayindaOlanlar from "./components/YayindaOlanlar";
 import YayindaOlmayanlar from "./components/YayindaOlmayanlar";
 import { useSnackbar } from "./context/SnackbarContext";
-import ResetPassword from "./pages/ResetPassword";
+import ResetPasswordKokpit from "./pages/ResetPasswordKokpit";
 import CreateAdverts from "./pages/CreateAdverts";
 import EditAdverts from "./pages/EditAdverts";
 import ProductDetailsPage from "./pages/ProductDetailsPage";
@@ -37,6 +37,9 @@ export default function App() {
   const location = useLocation();
   const { showSnackbar } = useSnackbar();
   const hideFooterRoutes = [
+    "/kokpit",
+    "/fiyat-ogren",
+    "/kokpit/reset-password",
     "/giris",
     "/kayit",
     "/sifre-yenile",
@@ -104,7 +107,7 @@ export default function App() {
       />
       <AnimatePresence mode="wait">
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={<HomePage setIsLoggedIn={setIsLoggedIn} />} />
           <Route path="/arac-satin-al" >
             <Route index element={<SearchCar />} />
             <Route path=":brand" element={<SearchCar />} />
@@ -146,7 +149,7 @@ export default function App() {
             />
           </Route>
           <Route path="/sohbet/:receiver_id" element={<ChatDetail />} />
-          <Route path="/sifre-yenile" element={<ResetPassword />} />
+          <Route path="/kokpit/reset-password" element={<ResetPasswordKokpit />} />
           <Route
             path="/ilan-olustur"
             element={<CreateAdverts isLoggedIn={isLoggedIn} />}

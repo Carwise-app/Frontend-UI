@@ -1,28 +1,43 @@
-import { Box, Button } from '@mui/material'
+import { Box } from '@mui/material'
 import React, { useState } from 'react'
 import PasswordControlLabel from '../components/PasswordControlLabel'
 import { useSnackbar } from '../context/SnackbarContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import api from '../api/axios';
 
-export default function ResetPassword() {
+export default function ResetPasswordKokpit() {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [errors, setErrors] = useState({});
     const { showSnackbar } = useSnackbar();
-    const navigate = useNavigate()
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    // Query'den token ve email al
+    const params = new URLSearchParams(location.search);
+    const token = params.get('token');
+    const email = params.get('email');
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         let tempErrors = {};
-        if (password.length < 7 || !/[A-Z]/.test(password)) {
-          tempErrors.password = "Şifre en az 7 karakter ve bir büyük harf içermelidir.";
+        if (password.length < 6 || !/[A-Z]/.test(password)) {
+          tempErrors.password = "Şifre en az 6 karakter ve bir büyük harf içermelidir.";
         }
         if (password !== confirmPassword) tempErrors.confirmPassword = "Şifreler eşleşmiyor.";
         setErrors(tempErrors);
 
         if (Object.keys(tempErrors).length === 0) {
-            showSnackbar("Şifreniz başarıyla güncellendi","success");
-            navigate("/")
+            try {
+                await api.put(`/auth/reset-password?token=${token}&email=${email}`, {
+                    password,
+                    re_password: confirmPassword
+                });
+                showSnackbar("Şifreniz başarıyla güncellendi.", "success");
+                navigate("/");
+            } catch (error) {
+                showSnackbar("Şifre güncellenemedi. Link süresi dolmuş veya geçersiz.", "error");
+            }
         }
     }
   return (

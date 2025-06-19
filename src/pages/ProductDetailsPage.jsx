@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Box, CircularProgress, Tab, Tabs, Avatar, Button, Typography, Paper, IconButton, Tooltip, TextField } from '@mui/material';
-import { ArrowBackIos, ArrowForwardIos, Phone, Chat, Map, InfoOutlined, Search, Favorite, FavoriteBorder } from '@mui/icons-material';
+import { Box, CircularProgress, Tab, Tabs, Avatar, Button, Typography, Paper, IconButton, Tooltip, TextField, Dialog, DialogContent, Fade } from '@mui/material';
+import { ArrowBackIos, ArrowForwardIos, Phone, Chat, Map, InfoOutlined, Search, Favorite, FavoriteBorder, Close, ZoomIn } from '@mui/icons-material';
 import axios from 'axios';
 import SafeShoppingDialog from '../components/SafeShoppingDialog';
 import api from '../api/axios';
+import PricePredictionDialog from '../components/PricePredictionDialog';
+import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
+import ImagePredictionDialog from '../components/ImagePredictionDialog';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ErrorIcon from '@mui/icons-material/Error';
 
 const TABS = [
   { label: 'Açıklama', value: 'description' },
@@ -28,6 +33,14 @@ export default function ProductDetailsPage({ onOpenClick }) {
   const [openSafeShopping, setOpenSafeShopping] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const [favoriteLoading, setFavoriteLoading] = useState(false);
+  const [openPrediction, setOpenPrediction] = useState(false);
+  const [predictionLoading, setPredictionLoading] = useState(false);
+  const [predictionData, setPredictionData] = useState(null);
+  const [imagePredictions, setImagePredictions] = useState({});
+  const [selectedPrediction, setSelectedPrediction] = useState(null);
+  const [predictionDialogOpen, setPredictionDialogOpen] = useState(false);
+  const [fullscreenImage, setFullscreenImage] = useState(null);
+  const [isImageLoading, setIsImageLoading] = useState(true);
 
   const handleOpenSafeShopping = () => setOpenSafeShopping(true);
   const handleCloseSafeShopping = () => setOpenSafeShopping(false);
@@ -91,6 +104,82 @@ export default function ProductDetailsPage({ onOpenClick }) {
     navigate(`/sohbet/${data.created_by.id}?listing_id=${data.id}`);
   };
 
+  const handlePredictPrice = async () => {
+    const accessToken = localStorage.getItem('access_token');
+    if (!accessToken) {
+      // Kullanıcı giriş yapmamış, login popup'ı aç
+      onOpenClick('login', 'notLogin');
+      return;
+    }
+
+    setPredictionLoading(true);
+    setOpenPrediction(true);
+    
+    try {
+      // Hasar bilgilerini hesapla
+      const damageInfo = {
+        boyali: damageParts.filter(part => part.value === 'Boyalı').length,
+        degisen: damageParts.filter(part => part.value === 'Değişen').length,
+        orjinal: damageParts.filter(part => part.value === 'Orjinal').length,
+      };
+      
+      const requestData = {
+        "Boyalı_sayısı": damageInfo.boyali || 0,
+        "Değişen_sayısı": damageInfo.degisen || 0,
+        "Kasa_Tipi": technical.body_type || "",
+        "Kilometre": technical.kilometers || 0,
+        "Marka": data.brand?.name || "",
+        "Model": data.model?.name || "",
+        "Motor_Gücü": parseInt(technical.engine_power) || 0,
+        "Motor_Hacmi": parseFloat(technical.engine_volume) || 0,
+        "Orjinal_sayısı": damageInfo.orjinal || 0,
+        "Renk": technical.color || "",
+        "Seri": data.series?.name || "",
+        "Tramer": 0, // Varsayılan değer
+        "Vites_Tipi": technical.transmission_type || "",
+        "Yakıt_Tipi": technical.fuel_type || "",
+        "Yıl": technical.year || 0
+      };
+
+      const response = await api.post('/predict/', requestData);
+      setPredictionData(response.data);
+    } catch (error) {
+      console.error('Tahmin hatası:', error);
+    } finally {
+      setPredictionLoading(false);
+    }
+  };
+
+  // Fetch predictions for all images
+  useEffect(() => {
+    if (!data || !Array.isArray(data.images)) return;
+    const fetchPredictions = async () => {
+      const results = {};
+      await Promise.all(
+        data.images.map(async (img) => {
+          try {
+            const imgId = img.id || img.path?.split('/')?.pop()?.split('.')?.[0];
+            if (!imgId) return;
+            console.log('Fetching prediction for image ID:', imgId);
+            const res = await api.get(`/upload/${imgId}/predict`);
+            console.log('Prediction response for', imgId, ':', res.data);
+            results[imgId] = res.data;
+          } catch (e) {
+            console.error('Prediction fetch error for image:', e);
+            // If error, mark as not detected
+            const imgId = img.id || img.path?.split('/')?.pop()?.split('.')?.[0];
+            if (imgId) {
+              results[imgId] = { prediction: false, confidence: 0, image: { id: imgId } };
+            }
+          }
+        })
+      );
+      console.log('All prediction results:', results);
+      setImagePredictions(results);
+    };
+    fetchPredictions();
+  }, [data]);
+
   useEffect(() => {
     setLoading(true);
     const accessToken = localStorage.getItem('access_token');
@@ -112,6 +201,24 @@ export default function ProductDetailsPage({ onOpenClick }) {
         setLoading(false);
       });
   }, [id]);
+
+  // Keyboard navigation for fullscreen
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (fullscreenImage !== null) {
+        if (e.key === 'Escape') {
+          handleCloseFullscreen();
+        } else if (e.key === 'ArrowLeft') {
+          handleFullscreenPrev(e);
+        } else if (e.key === 'ArrowRight') {
+          handleFullscreenNext(e);
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [fullscreenImage]);
 
   if (loading) return <Box className="flex justify-center items-center h-[60vh]"><CircularProgress color="error" /></Box>;
   if (error) return <Box className="mt-10 text-center text-red-600">{error}</Box>;
@@ -154,6 +261,14 @@ export default function ProductDetailsPage({ onOpenClick }) {
 
   // Info
   const info = [
+    { label: 'Fiyat', value: (
+      <Typography component="span" className="text-xl font-bold text-[#dc143c]">
+        {price} {currency}
+      </Typography>
+    ) },
+    { label: 'Marka', value: brand },
+    { label: 'Seri', value: series },
+    { label: 'Model', value: model },
     { label: 'Kilometre', value: data.detail?.kilometers?.toLocaleString('tr-TR') + ' km' || '-' },
     { label: 'Vites Tipi', value: data.detail?.transmission_type || '-' },
     { label: 'Yakıt Tipi', value: data.detail?.fuel_type || '-' },
@@ -203,6 +318,30 @@ export default function ProductDetailsPage({ onOpenClick }) {
     }
   };
 
+  // Full-screen handlers
+  const handleOpenFullscreen = (index) => {
+    setFullscreenImage(index);
+  };
+
+  const handleCloseFullscreen = () => {
+    setFullscreenImage(null);
+  };
+
+  const handleFullscreenNext = (e) => {
+    e.stopPropagation();
+    setFullscreenImage((prev) => (prev === gallery.length - 1 ? 0 : prev + 1));
+  };
+
+  const handleFullscreenPrev = (e) => {
+    e.stopPropagation();
+    setFullscreenImage((prev) => (prev === 0 ? gallery.length - 1 : prev - 1));
+  };
+
+  // Image loading handler
+  const handleImageLoad = () => {
+    setIsImageLoading(false);
+  };
+
   return (
     <Box className="bg-[#f7f7f7] min-h-screen flex flex-col items-center py-6 px-2 md:px-0">
       
@@ -222,18 +361,120 @@ export default function ProductDetailsPage({ onOpenClick }) {
 
           {/* Galeri */}
           <Box className="flex flex-col items-center gap-2 p-4 bg-white shadow rounded-2xl">
-            <Box className="relative flex items-center justify-center w-full">
-              <IconButton onClick={handlePrev} className="!absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white" size="small"><ArrowBackIos fontSize="small" /></IconButton>
-              <img src={gallery[mainImgIdx]} alt="Araba" className="object-contain w-full max-h-[340px] rounded-xl" style={{maxWidth: 480}} />
-              <IconButton onClick={handleNext} className="!absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white" size="small"><ArrowForwardIos fontSize="small" /></IconButton>
-              <Box className="absolute bottom-2 right-2 bg-black/60 text-white text-xs rounded px-2 py-0.5">{gallery.length ? `${mainImgIdx+1}/${gallery.length}` : ''}</Box>
-            </Box>
-            <Box className="flex justify-center w-full gap-1 mt-2 overflow-x-auto">
-              {gallery.map((img, i) => (
-                <Box key={i} onClick={() => handleThumbClick(i)} className={`border-2 ${mainImgIdx===i ? 'border-[#dc143c]' : 'border-transparent'} rounded cursor-pointer transition-all`} style={{minWidth: 56, minHeight: 40, maxWidth: 56, maxHeight: 40, overflow: 'hidden'}}>
-                  <img src={img} alt="thumb" className="object-cover w-full h-full" />
-                </Box>
-              ))}
+            {/* Main Image Section */}
+            <Box className="flex flex-col items-center gap-2 p-4 bg-white shadow rounded-2xl">
+              <div 
+                className="relative w-full aspect-[4/3] bg-gray-100 mb-4 overflow-hidden rounded-lg group cursor-zoom-in"
+                onClick={() => handleOpenFullscreen(mainImgIdx)}
+              >
+                {isImageLoading && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <CircularProgress color="error" />
+                  </div>
+                )}
+                <img
+                  src={`${gallery[mainImgIdx]}?quality=80&w=800`}
+                  srcSet={`${gallery[mainImgIdx]}?quality=80&w=800 1x, ${gallery[mainImgIdx]}?quality=80&w=1200 2x`}
+                  alt={`${brand} ${series} ${model}`}
+                  className="w-full h-full object-contain transition-opacity duration-300"
+                  style={{ opacity: isImageLoading ? 0 : 1 }}
+                  onLoad={handleImageLoad}
+                  loading="lazy"
+                />
+                
+                {/* Navigation buttons - Main Image */}
+                <div className="absolute inset-0 flex items-center justify-between px-4 pointer-events-none">
+                  <IconButton
+                    className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-black/50 hover:bg-black/70 text-white pointer-events-auto"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handlePrev();
+                    }}
+                    size="large"
+                  >
+                    <ArrowBackIos />
+                  </IconButton>
+                  <IconButton
+                    className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-black/50 hover:bg-black/70 text-white pointer-events-auto"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleNext();
+                    }}
+                    size="large"
+                  >
+                    <ArrowForwardIos />
+                  </IconButton>
+                </div>
+
+                {/* Image counter */}
+                <div className="absolute bottom-4 right-4 bg-black/50 text-white px-3 py-1 rounded-full text-sm">
+                  {mainImgIdx + 1} / {gallery.length}
+                </div>
+
+                {/* AI Detection Status */}
+                {(() => {
+                  const currentImg = data.images[mainImgIdx];
+                  const imgId = currentImg?.id || currentImg?.path?.split('/')?.pop()?.split('.')?.[0];
+                  const predictionResponse = imagePredictions[imgId];
+                  
+                  if (!predictionResponse) return null;
+                  
+                  // Get the actual prediction data from the nested structure
+                  const prediction = predictionResponse.prediction || predictionResponse;
+                  const isPredictionSuccess = prediction.prediction === true;
+                  
+                  return (
+                    <div className="absolute bottom-4 left-4 bg-white/90 p-2 rounded-lg shadow-md pointer-events-auto">
+                      {isPredictionSuccess ? (
+                        <Tooltip title="Araç tespit edildi">
+                          <CheckCircleIcon
+                            className="text-green-500 cursor-pointer"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedPrediction(predictionResponse);
+                              setPredictionDialogOpen(true);
+                            }}
+                          />
+                        </Tooltip>
+                      ) : (
+                        <Tooltip title="Araç tespit edilemedi">
+                          <ErrorIcon 
+                            className="text-red-500 cursor-pointer"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedPrediction(predictionResponse);
+                              setPredictionDialogOpen(true);
+                            }}
+                          />
+                        </Tooltip>
+                      )}
+                    </div>
+                  );
+                })()}
+              </div>
+
+              {/* Thumbnail Gallery */}
+              <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 mt-4">
+                {gallery.map((img, idx) => (
+                  <div
+                    key={idx}
+                    className={`relative aspect-[4/3] rounded-lg overflow-hidden cursor-pointer transform transition-transform duration-200 hover:scale-105 ${
+                      idx === mainImgIdx ? 'ring-2 ring-red-600' : ''
+                    }`}
+                    onClick={() => {
+                      setMainImgIdx(idx);
+                      setIsImageLoading(true);
+                    }}
+                  >
+                    <img
+                      src={`${img}?quality=60&w=150`}
+                      alt={`${brand} ${series} ${model} - ${idx + 1}`}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                  </div>
+                ))}
+              </div>
             </Box>
           </Box>
 
@@ -288,30 +529,21 @@ export default function ProductDetailsPage({ onOpenClick }) {
         {/* Sağ panel */}
         <Box className="w-full md:w-[340px] flex flex-col gap-4">
           {/* Satıcı Kartı */}
-          <Box className="flex flex-col items-center gap-2 p-4 bg-white border border-gray-100 shadow rounded-2xl">
-            <Avatar sx={{ width: 56, height: 56 }}>{seller.first_name ? seller.first_name[0] : 'S'}</Avatar>
-            <Typography className="mt-1 text-base font-semibold">{sellerName}</Typography>  
-            <Button variant="outlined" color="error" size="small" fullWidth startIcon={<Phone />} onClick={handlePhoneClick}>{sellerPhone}</Button>
-            <Button variant="contained" color="error" size="small" fullWidth startIcon={<Chat />} onClick={handleMessageClick}>Mesaj Gönder</Button>
-          </Box>
 
-          {/* Fiyat kutusu */}
-          <Box className="flex items-center justify-between p-6 bg-white border border-gray-200 shadow-lg rounded-2xl">
-            <Typography className="text-gray-600 text-lg font-medium">
-              Fiyat
-            </Typography>
-            <Box className="flex items-baseline">
-              <Typography className="text-[#dc143c] !font-black text-5xl md:text-6xl lg:text-7xl tracking-tight">
-                {price}
-              </Typography>
-              <Typography className="text-[#dc143c] !font-bold text-2xl md:text-3xl ml-3">
-                {currency}
-              </Typography>
-            </Box>
-          </Box>
 
           {/* Favori Butonu */}
           <Box className="flex flex-col gap-2 p-4 bg-white border border-gray-100 shadow rounded-2xl">
+            <Button
+              onClick={handlePredictPrice}
+              startIcon={<span className="text-xl">✨</span>}
+              variant="outlined"
+              color="error"
+              fullWidth
+              sx={{ borderRadius: '8px', marginBottom: 1 }}
+            >
+              AI Fiyat Tahmini
+            </Button>
+
             <Button
               variant={isFavorite ? "contained" : "outlined"}
               color="error"
@@ -333,13 +565,19 @@ export default function ProductDetailsPage({ onOpenClick }) {
           </Box>
 
           {/* Bilgi kutusu */}
-          <Box className="bg-white rounded-2xl shadow p-4 flex flex-col gap-1 border border-gray-100 max-h-[340px] overflow-y-auto">
+          <Box className="bg-white rounded-2xl shadow p-4 flex flex-col gap-1 border border-gray-100">
             {info.map((item, i) => (
               <Box key={i} className="flex items-center justify-between py-1 text-sm border-b border-gray-100 last:border-b-0">
                 <span className="font-medium text-gray-600">{item.label}</span>
                 <span className="font-semibold text-gray-900">{item.value}</span>
               </Box>
             ))}
+          </Box>
+          <Box className="flex flex-col items-center gap-2 p-4 bg-white border border-gray-100 shadow rounded-2xl">
+            <Avatar sx={{ width: 56, height: 56 }}>{seller.first_name ? seller.first_name[0] : 'S'}</Avatar>
+            <Typography className="mt-1 text-base font-semibold">{sellerName}</Typography>  
+            <Button variant="outlined" color="error" size="small" fullWidth startIcon={<Phone />} onClick={handlePhoneClick}>{sellerPhone}</Button>
+            <Button variant="contained" color="error" size="small" fullWidth startIcon={<Chat />} onClick={handleMessageClick}>Mesaj Gönder</Button>
           </Box>
 
           {/* Güvenlik kutusu */}
@@ -355,7 +593,112 @@ export default function ProductDetailsPage({ onOpenClick }) {
                 open={openSafeShopping}
                 onClose={handleCloseSafeShopping}
             />
+        <PricePredictionDialog
+          open={openPrediction}
+          onClose={() => setOpenPrediction(false)}
+          loading={predictionLoading}
+          predictionData={predictionData}
+        />
+        <ImagePredictionDialog open={predictionDialogOpen} onClose={() => setPredictionDialogOpen(false)} prediction={selectedPrediction} />
       </Box>
+
+      {/* Fullscreen Dialog */}
+      <Dialog
+        fullScreen
+        open={fullscreenImage !== null}
+        onClose={handleCloseFullscreen}
+        TransitionComponent={Fade}
+        PaperProps={{
+          style: { backgroundColor: 'rgba(0, 0, 0, 0.95)' }
+        }}
+      >
+        <DialogContent className="relative p-0 flex items-center justify-center">
+          <div className="absolute inset-0 flex items-center justify-center">
+            {fullscreenImage !== null && (
+              <div className="relative w-full h-full flex items-center justify-center">
+                {/* Close button */}
+                <IconButton
+                  className="!absolute !right-6 !top-6 !z-50"
+                  onClick={handleCloseFullscreen}
+                  sx={{
+                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                    border: '2px solid rgba(255, 255, 255, 0.5)',
+                    width: '48px',
+                    height: '48px',
+                    '&:hover': {
+                      backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                      border: '2px solid rgba(255, 255, 255, 0.8)',
+                    },
+                    '& .MuiSvgIcon-root': {
+                      color: 'white',
+                      fontSize: '32px'
+                    }
+                  }}
+                >
+                  <Close />
+                </IconButton>
+                
+                {/* Previous button */}
+                <IconButton
+                  className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-black/50 hover:bg-black/70 text-white"
+                  onClick={handleFullscreenPrev}
+                  size="large"
+                >
+                  <ArrowBackIos />
+                </IconButton>
+
+                {/* Main Image Container */}
+                <div className="w-[1200px] h-[800px] flex items-center justify-center">
+                  <img
+                    src={`${gallery[fullscreenImage]}?quality=100&w=1920`}
+                    alt={`${brand} ${series} ${model} - Full Screen`}
+                    className="w-full h-full object-contain transition-opacity duration-300"
+                    loading="lazy"
+                  />
+                </div>
+
+                {/* Next button */}
+                <IconButton
+                  className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-black/50 hover:bg-black/70 text-white"
+                  onClick={handleFullscreenNext}
+                  size="large"
+                >
+                  <ArrowForwardIos />
+                </IconButton>
+
+                {/* Image counter */}
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/50 text-white px-4 py-2 rounded-full">
+                  {fullscreenImage + 1} / {gallery.length}
+                </div>
+
+                {/* Thumbnail strip */}
+                <div className="absolute bottom-16 left-0 right-0 flex justify-center">
+                  <div className="flex gap-2 px-4 py-2 bg-black/50 rounded-lg overflow-x-auto max-w-[90vw]">
+                    {gallery.map((img, idx) => (
+                      <div
+                        key={idx}
+                        className={`relative w-16 h-16 flex-shrink-0 rounded cursor-pointer transition-all duration-200 ${
+                          idx === fullscreenImage 
+                            ? 'ring-2 ring-white scale-110' 
+                            : 'opacity-50 hover:opacity-100'
+                        }`}
+                        onClick={() => setFullscreenImage(idx)}
+                      >
+                        <img
+                          src={`${img}?quality=60&w=100`}
+                          alt={`Thumbnail ${idx + 1}`}
+                          className="w-full h-full object-cover rounded"
+                          loading="lazy"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </Box>
   );
 }

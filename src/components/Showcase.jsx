@@ -1,6 +1,6 @@
 import { Box, Link, Typography, CircularProgress, Button } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import ShowcaseCard from "./Card";
+import ShowcaseCard, { ShowcaseCardSkeleton } from "./Card";
 import api from "../api/axios";
 import { useNavigate } from "react-router-dom";
 
@@ -43,36 +43,36 @@ export default function ShowcaseArea() {
 
       {/* Kartlar */}
       <Box className="grid grid-cols-1 gap-6 sm:gap-8 px-4 sm:px-6 md:px-8 gap-y-8 sm:gap-y-10 mx-auto max-w-[1400px] sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-        {loading ? (
-          <Box className="flex col-span-full justify-center py-12">
-            <CircularProgress color="error" />
-          </Box>
-        ) : (
-          listings.map((listing, index) => (
-            <Box 
-              key={listing.id || index} 
-              onClick={() => navigate(`/arac-detay/${listing.slug}`)}
-              className="transition-all duration-300 transform cursor-pointer group hover:scale-105"
-            >
-              <ShowcaseCard listing={listing} />
-            </Box>
-          ))
-        )}
+        {loading
+          ? Array.from({ length: 8 }).map((_, i) => (
+              <ShowcaseCardSkeleton key={i} />
+            ))
+          : listings.map((listing, index) => (
+              <Box
+                key={listing.id || index}
+                onClick={() => navigate(`/arac-detay/${listing.slug}`)}
+                className="transition-all duration-300 transform cursor-pointer group hover:scale-105"
+              >
+                <ShowcaseCard listing={listing} />
+              </Box>
+            ))}
       </Box>
 
       {/* Tüm İlanlar Butonu */}
       {!loading && listings.length > 0 && (
         <Box className="py-8 text-center md:py-12">
           <Button
-            variant="contained"
+            variant="outlined"
             onClick={() => navigate('/arac-satin-al')}
-            className="bg-[#dc143c] hover:bg-[#b01030] text-white px-8 py-3 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+            className="bg-[#dc143c] hover:bg-[#b01030] text-white px-8 py-3 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 "
             sx={{
-              background: 'linear-gradient(135deg, #dc143c 0%, #b01030 100%)',
               '&:hover': {
-                background: 'linear-gradient(135deg, #b01030 0%, #8a0d25 100%)',
+                background: '#dc143c',
+                color: 'white',
+                transition: 'all 0.3s ease-in-out ',
               }
             }}
+            color="error"
           >
             Tüm İlanlar
           </Button>

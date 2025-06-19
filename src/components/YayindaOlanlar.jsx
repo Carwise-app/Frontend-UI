@@ -4,6 +4,7 @@ import NoAds from './NoAds';
 import api from '../api/axios';
 import { useNavigate } from 'react-router-dom';
 import ActiveListingCard from './ActiveListingCard';
+import { useSnackbar } from '../context/SnackbarContext';
 
 // JWT token'ı decode etmek için güvenli fonksiyon
 const parseJwt = (token) => {
@@ -32,6 +33,7 @@ export default function YayindaOlanlar() {
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const navigate = useNavigate();
+  const { showSnackbar } = useSnackbar();
 
   const fetchUserListings = (pageNum = 1) => {
     setLoading(true);
@@ -104,7 +106,7 @@ export default function YayindaOlanlar() {
       })
       .catch(err => {
         console.error('İlan yayından kaldırılamadı:', err);
-        alert('İlan yayından kaldırılırken bir hata oluştu.');
+        showSnackbar('İlan yayından kaldırılırken bir hata oluştu.', 'error');
       });
     }
   };
@@ -124,10 +126,6 @@ export default function YayindaOlanlar() {
         // Listeyi yenile
         fetchUserListings(page);
       })
-      .catch(err => {
-        console.error('İlan silinemedi:', err);
-        alert('İlan silinirken bir hata oluştu.');
-      });
     }
   };
 
