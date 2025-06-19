@@ -103,7 +103,7 @@ export default function MyMessages() {
           <>
             <List>
               {chats.map((chat, index) => (
-                <React.Fragment key={chat.user.id}>
+                <React.Fragment key={`${chat.user.id}-${chat.listing.id}`}>
                   <ListItem
                     button
                     alignItems="flex-start"
