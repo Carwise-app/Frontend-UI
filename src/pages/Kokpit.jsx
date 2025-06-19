@@ -65,9 +65,11 @@ export default function Kokpit({onLogout}) {
               <NavLink to="/kokpit/profil-ve-ayarlar" className={({isActive}) => `flex items-center gap-x-1 hover:text-[#dc143c] cursor-pointer ${isActive ? `text-[#dc143c]` : `text-white`}`}>
                 <SettingsIcon />Profil & Ayarlar
               </NavLink>
-              <NavLink to="/kokpit/dashboard" className={({isActive}) => `flex items-center gap-x-1 hover:text-[#dc143c] cursor-pointer ${isActive ? `text-[#dc143c]` : `text-white`}`}>
-                <SpaceDashboardIcon />Dashboard
-              </NavLink>
+              {user?.role === 2 && (
+                <NavLink to="/kokpit/dashboard" className={({isActive}) => `flex items-center gap-x-1 hover:text-[#dc143c] cursor-pointer ${isActive ? `text-[#dc143c]` : `text-white`}`}>
+                  <SpaceDashboardIcon />Dashboard
+                </NavLink>
+              )}
             </Box>
           </Box>
           <Box className="sticky bottom-0 z-10 px-6 py-4 bg-neutral-600">
