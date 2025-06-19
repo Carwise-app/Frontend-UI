@@ -82,8 +82,7 @@ export default function YayindaOlanlar() {
   const handleEdit = (listing) => {
     // İlan düzenleme sayfasına yönlendir
     console.log('Edit listing:', listing);
-    // TODO: İlan düzenleme sayfasına yönlendirme
-    // navigate(`/ilan-duzenle/${listing.id}`);
+    navigate(`/ilan-duzenle/${listing.id}/marka`);
   };
 
   const handleUnpublish = (listing) => {
@@ -138,7 +137,7 @@ export default function YayindaOlanlar() {
 
   if (loading) {
     return (
-      <Box className="flex justify-center items-center py-12">
+      <Box className="flex items-center justify-center py-12">
         <CircularProgress color="error" />
       </Box>
     );
@@ -158,7 +157,7 @@ export default function YayindaOlanlar() {
   return (
     <>
       <Box className="mb-6">
-        <Typography variant="h6" className="text-gray-700 font-semibold">
+        <Typography variant="h6" className="font-semibold text-gray-700">
           Toplam {totalCount} aktif ilanınız bulunmaktadır
         </Typography>
       </Box>

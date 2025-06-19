@@ -1,5 +1,5 @@
 import { Box, Button, IconButton, Toolbar, Tooltip  } from '@mui/material'
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import CustomizedSteppers from './CustomizedSteppers'
 import { ReactSortable } from 'react-sortablejs';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -8,13 +8,64 @@ import SnackbarAlert from './SnackbarAlert';
 import { useSnackbar } from '../context/SnackbarContext';
 import api from '../api/axios';
 
-export default function CreateAdvertsPhoto({title, desc, allSteps, stepLabel, activeStep, onHandleNext, onHandleBack}) {
+export default function CreateAdvertsPhoto({title, desc, allSteps, stepLabel, activeStep, onHandleNext, onHandleBack, onFinalSubmit, isEditMode = false}) {
 
   const navigate = useNavigate()
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(false);
   const fileInputRef = useRef();
   const { showSnackbar } = useSnackbar()
+
+  // Edit modunda mevcut fotoğrafları yükle
+  useEffect(() => {
+    if (isEditMode) {
+      const existingImages = localStorage.getItem("uploadedImages");
+      if (existingImages) {
+        try {
+          const images = JSON.parse(existingImages);
+          console.log("Mevcut fotoğraflar yükleniyor:", images);
+          
+          const existingFiles = images.map((imageItem, index) => {
+            // API'den gelen image objesi mi yoksa string mi kontrol et
+            let imageUrl, imageId;
+            
+            if (typeof imageItem === 'object' && imageItem.path) {
+              // Image objesi formatı: {id: "...", path: "./uploads/..."}
+              imageId = imageItem.id;
+              // Relative path'i tam URL'e çevir
+              const relativePath = imageItem.path;
+              if (relativePath.startsWith('./uploads/')) {
+                imageUrl = `https://carwisegw.yusuftalhaklc.com${relativePath.substring(1)}`;
+              } else {
+                imageUrl = relativePath;
+              }
+            } else {
+              // String formatı (eski format)
+              imageUrl = imageItem;
+              imageId = imageItem;
+            }
+            
+            return {
+              file: null, // Dosya objesi yok, sadece URL var
+              preview: imageUrl,
+              id: crypto.randomUUID(),
+              isExisting: true, // Mevcut fotoğraf olduğunu belirt
+              originalUrl: imageUrl,
+              imageId: imageId // API'den gelen image ID'si
+            };
+          });
+          
+          setFiles(existingFiles);
+          console.log("Mevcut fotoğraflar başarıyla yüklendi:", existingFiles.length, "fotoğraf");
+          console.log("Dönüştürülen URL'ler:", existingFiles.map(f => f.originalUrl));
+        } catch (error) {
+          console.error("Mevcut fotoğraflar yüklenirken hata:", error);
+        }
+      } else {
+        console.log("localStorage'da mevcut fotoğraf bulunamadı");
+      }
+    }
+  }, [isEditMode]);
 
   const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files);
@@ -23,22 +74,50 @@ export default function CreateAdvertsPhoto({title, desc, allSteps, stepLabel, ac
         file,
         preview: URL.createObjectURL(file),
         id: crypto.randomUUID(),
+        isExisting: false
     }));
 
     setFiles((prev) => [...prev, ...newFiles]);
   };
 
   const handleDelete = (index) => {
+    const fileToDelete = files[index];
+    console.log("Silinecek fotoğraf:", fileToDelete);
+    
     const updated = [...files];
     updated.splice(index, 1);
     setFiles(updated);
+    
+    // localStorage'ı güncelle (eğer mevcut fotoğraf silindiyse)
+    if (fileToDelete.isExisting) {
+      const existingImages = localStorage.getItem("uploadedImages");
+      if (existingImages) {
+        try {
+          const images = JSON.parse(existingImages);
+          // Image objesi mi string mi kontrol et
+          const updatedImages = images.filter(img => {
+            if (typeof img === 'object' && img.id) {
+              // Image objesi formatı
+              return img.id !== fileToDelete.imageId;
+            } else {
+              // String formatı
+              return img !== fileToDelete.originalUrl;
+            }
+          });
+          localStorage.setItem("uploadedImages", JSON.stringify(updatedImages));
+          console.log("localStorage'dan fotoğraf silindi:", fileToDelete.imageId || fileToDelete.originalUrl);
+        } catch (error) {
+          console.error("localStorage güncellenirken hata:", error);
+        }
+      }
+    }
   };
 
-  // İlan oluşturma API çağrısı
+  // İlan oluşturma/güncelleme API çağrısı
   const createAdvertisement = async () => {
     try {
       setLoading(true);
-      console.log("=== İLAN OLUŞTURMA İSTEĞİ BAŞLADI ===");
+      console.log("=== İLAN " + (isEditMode ? "GÜNCELLEME" : "OLUŞTURMA") + " İSTEĞİ BAŞLADI ===");
       
       // localStorage'dan tüm seçimleri al
       const selectedBrand = JSON.parse(localStorage.getItem("selectedBrand") || "{}");
@@ -84,71 +163,82 @@ export default function CreateAdvertsPhoto({title, desc, allSteps, stepLabel, ac
       // Hasar verilerini işle
       const chips = selectedDamage.chips || {};
       
-      // Fotoğrafları /upload endpoint'ine gönder
-      console.log("=== FOTOĞRAF YÜKLEME BAŞLADI ===");
+      // Fotoğrafları işle
+      console.log("=== FOTOĞRAF İŞLEME BAŞLADI ===");
       let uploadedImageUrls = [];
       
-      try {
-        const uploadPromises = files.map(async (fileObj, index) => {
-          try {
-            const formData = new FormData();
-            formData.append('file', fileObj.file);
-            
-            const token = localStorage.getItem("access_token");
-            console.log(`Fotoğraf ${index + 1} yükleniyor...`);
-            console.log("Token:", token ? "Mevcut" : "Yok");
-            
-            const uploadResponse = await api.post("/upload", formData, {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "multipart/form-data",
-              },
-              timeout: 30000, // 30 saniye timeout
-            });
-            
-            console.log(`Fotoğraf ${index + 1} yüklendi:`, uploadResponse.data);
-            // API'den gelen image.id alanını kullan (UUID formatı için)
-            return uploadResponse.data.image?.id || uploadResponse.data.image || uploadResponse.data;
-          } catch (error) {
-            console.error(`Fotoğraf ${index + 1} yüklenirken hata:`, error);
-            console.error("Error details:", {
-              message: error.message,
-              status: error.response?.status,
-              statusText: error.response?.statusText,
-              data: error.response?.data,
-              headers: error.response?.headers
-            });
-            
-            // CORS hatası için özel mesaj
-            if (error.message.includes('CORS') || error.code === 'ERR_NETWORK') {
-              throw new Error(`Fotoğraf ${index + 1} yüklenirken CORS hatası oluştu. Lütfen tekrar deneyin.`);
+      // Mevcut fotoğrafları ve yeni yüklenen fotoğrafları ayır
+      const existingImages = files.filter(f => f.isExisting).map(f => {
+        // Mevcut fotoğraflar için imageId'yi kullan (API'ye gönderirken)
+        return f.imageId;
+      });
+      const newFiles = files.filter(f => !f.isExisting);
+      
+      console.log("Mevcut fotoğraflar (ID'ler):", existingImages.length, existingImages);
+      console.log("Yeni fotoğraflar:", newFiles.length);
+      
+      // Mevcut fotoğrafları hemen ekle
+      uploadedImageUrls = [...existingImages];
+      
+      if (newFiles.length > 0) {
+        try {
+          const uploadPromises = newFiles.map(async (fileObj, index) => {
+            try {
+              const formData = new FormData();
+              formData.append('file', fileObj.file);
+              
+              const token = localStorage.getItem("access_token");
+              console.log(`Yeni fotoğraf ${index + 1} yükleniyor...`);
+              console.log("Token:", token ? "Mevcut" : "Yok");
+              
+              const uploadResponse = await api.post("/upload", formData, {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                  "Content-Type": "multipart/form-data",
+                },
+                timeout: 30000, // 30 saniye timeout
+              });
+              
+              console.log(`Yeni fotoğraf ${index + 1} yüklendi:`, uploadResponse.data);
+              return uploadResponse.data.image?.id || uploadResponse.data.image || uploadResponse.data;
+            } catch (error) {
+              console.error(`Yeni fotoğraf ${index + 1} yüklenirken hata:`, error);
+              throw error;
             }
-            
-            throw error;
-          }
-        });
-        
-        uploadedImageUrls = await Promise.all(uploadPromises);
-        console.log("=== FOTOĞRAF YÜKLEME TAMAMLANDI ===");
-        console.log("Yüklenen fotoğraf ID'leri:", uploadedImageUrls);
-        
-      } catch (uploadError) {
-        console.warn("Upload endpoint başarısız, base64 yöntemine geçiliyor:", uploadError);
-        
-        // Fallback: Base64 yöntemi
-        console.log("=== BASE64 YÖNTEMİNE GEÇİLİYOR ===");
-        const imagePromises = files.map(fileObj => {
-          return new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onload = () => {
-              resolve(reader.result);
-            };
-            reader.readAsDataURL(fileObj.file);
           });
-        });
-        
-        uploadedImageUrls = await Promise.all(imagePromises);
-        console.log("Base64 fotoğraflar hazırlandı");
+          
+          const newUploadedImages = await Promise.all(uploadPromises);
+          uploadedImageUrls = [...uploadedImageUrls, ...newUploadedImages];
+          console.log("=== FOTOĞRAF YÜKLEME TAMAMLANDI ===");
+          console.log("Tüm fotoğraf URL'leri:", uploadedImageUrls);
+          
+        } catch (uploadError) {
+          console.warn("Upload endpoint başarısız, base64 yöntemine geçiliyor:", uploadError);
+          
+          // Fallback: Base64 yöntemi
+          console.log("=== BASE64 YÖNTEMİNE GEÇİLİYOR ===");
+          const imagePromises = newFiles.map(fileObj => {
+            return new Promise((resolve) => {
+              const reader = new FileReader();
+              reader.onload = () => {
+                resolve(reader.result);
+              };
+              reader.readAsDataURL(fileObj.file);
+            });
+          });
+          
+          const newBase64Images = await Promise.all(imagePromises);
+          uploadedImageUrls = [...uploadedImageUrls, ...newBase64Images];
+          console.log("Base64 fotoğraflar hazırlandı");
+        }
+      } else {
+        // Sadece mevcut fotoğraflar var
+        console.log("Sadece mevcut fotoğraflar kullanılıyor:", uploadedImageUrls);
+      }
+      
+      // Fotoğraf sayısını kontrol et
+      if (uploadedImageUrls.length === 0) {
+        console.warn("Hiç fotoğraf yok! En az bir fotoğraf gerekli olabilir.");
       }
 
       // API'ye gönderilecek veri objesi
@@ -180,7 +270,7 @@ export default function CreateAdvertsPhoto({title, desc, allSteps, stepLabel, ac
           "year": parseInt(selectedYear) || 0
         },
         "district": selectedDistrict,
-        "images": uploadedImageUrls, // Base64 yerine URL'leri kullan
+        "images": uploadedImageUrls,
         "model_id": selectedModel.id || "",
         "neighborhood": selectedNeighborhood,
         "price": parseInt(selectedPrice) || 0,
@@ -194,26 +284,54 @@ export default function CreateAdvertsPhoto({title, desc, allSteps, stepLabel, ac
       const token = localStorage.getItem("access_token");
       console.log("Token:", token ? "Mevcut" : "Yok");
 
-      const response = await api.post("/listing/", listingData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      let response;
+      if (isEditMode && onFinalSubmit) {
+        // Edit modunda onFinalSubmit fonksiyonunu çağır
+        try {
+          response = await onFinalSubmit(listingData);
+          console.log("onFinalSubmit response:", response);
+        } catch (submitError) {
+          console.error("onFinalSubmit hatası:", submitError);
+          throw submitError; // Hatayı yukarı fırlat
+        }
+      } else {
+        // Create modunda normal POST isteği
+        response = await api.post("/listing/", listingData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+      }
 
       console.log("=== API YANITI ===");
-      console.log("Status:", response.status);
-      console.log("Data:", response.data);
+      if (response) {
+        console.log("Status:", response.status);
+        console.log("Data:", response.data);
+      } else {
+        console.log("Response undefined - onFinalSubmit fonksiyonu response döndürmedi");
+        // Response yoksa başarılı kabul et (onFinalSubmit zaten yönlendirme yapmış olabilir)
+        if (isEditMode) {
+          return; // Edit modunda response yoksa çık
+        }
+      }
       
       // İlan başarıyla oluşturulduktan sonra localStorage'ı temizle
-      clearListingDataFromLocalStorage();
+      if (!isEditMode) {
+        clearListingDataFromLocalStorage();
+      }
       
-      // Başarılı olduğunda ana sayfaya yönlendir
-      showSnackbar("İlanınız başarıyla oluşturuldu.", "success");
-      navigate("/");
+      // Başarılı olduğunda yönlendir
+      if (isEditMode) {
+        showSnackbar("İlanınız başarıyla güncellendi.", "success");
+        // Edit modunda onFinalSubmit zaten yönlendirme yapacak
+      } else {
+        showSnackbar("İlanınız başarıyla oluşturuldu.", "success");
+        navigate("/");
+      }
       
     } catch (error) {
-      console.error("=== İLAN OLUŞTURMA HATASI ===");
+      console.error("=== İLAN " + (isEditMode ? "GÜNCELLEME" : "OLUŞTURMA") + " HATASI ===");
       console.error("Error:", error);
       console.error("Error Message:", error.message);
       console.error("Error Response:", error.response?.data);
@@ -228,7 +346,7 @@ export default function CreateAdvertsPhoto({title, desc, allSteps, stepLabel, ac
       } else if (error.message.includes('timeout')) {
         showSnackbar("Fotoğraf yükleme zaman aşımına uğradı. Lütfen tekrar deneyin.", "error");
       } else {
-        showSnackbar("İlan oluşturulurken bir hata oluştu. Lütfen tekrar deneyin.", "error");
+        showSnackbar("İlan " + (isEditMode ? "güncellenirken" : "oluşturulurken") + " bir hata oluştu. Lütfen tekrar deneyin.", "error");
       }
     } finally {
       setLoading(false);
@@ -296,7 +414,17 @@ export default function CreateAdvertsPhoto({title, desc, allSteps, stepLabel, ac
                         onClick={() => fileInputRef.current.click()}
                         className="p-4 text-center rounded-lg border border-gray-400 border-dashed cursor-pointer hover:bg-gray-100"
                     >
-                        <p className="text-sm text-gray-600">Fotoğraflarınızı yüklemek için tıklayın veya sürükleyin</p>
+                        <p className="text-sm text-gray-600">
+                          {isEditMode && files.length > 0 
+                            ? "Yeni fotoğraflar eklemek için tıklayın veya sürükleyin" 
+                            : "Fotoğraflarınızı yüklemek için tıklayın veya sürükleyin"
+                          }
+                        </p>
+                        {isEditMode && files.length > 0 && (
+                          <p className="text-xs text-gray-500 mt-1">
+                            Mevcut {files.length} fotoğraf görüntüleniyor. Yeni fotoğraflar ekleyebilir veya mevcut fotoğrafları silebilirsiniz.
+                          </p>
+                        )}
                         <input
                         type="file"
                         ref={fileInputRef}
@@ -349,7 +477,7 @@ export default function CreateAdvertsPhoto({title, desc, allSteps, stepLabel, ac
                       onClick={handleSucces}
                       disabled={loading}
                     >
-                        {loading ? 'İlan Oluşturuluyor...' : 'İlan Oluştur'}
+                        {loading ? (isEditMode ? 'İlan Güncelleniyor...' : 'İlan Oluşturuluyor...') : (isEditMode ? 'İlanı Güncelle' : 'İlan Oluştur')}
                     </Button>
               </Box>
             </Box>
