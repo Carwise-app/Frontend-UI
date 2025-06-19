@@ -80,18 +80,56 @@ export default function YayindaOlanlar() {
   };
 
   const handleEdit = (listing) => {
-    // TODO: Implement edit functionality
+    // İlan düzenleme sayfasına yönlendir
     console.log('Edit listing:', listing);
+    // TODO: İlan düzenleme sayfasına yönlendirme
+    // navigate(`/ilan-duzenle/${listing.id}`);
   };
 
-  const handleToggleStatus = (listing) => {
-    // TODO: Implement status toggle functionality
-    console.log('Toggle status for listing:', listing);
+  const handleUnpublish = (listing) => {
+    // İlanı yayından kaldır
+    console.log('Unpublish listing:', listing);
+    
+    if (window.confirm('Bu ilanı yayından kaldırmak istediğinizden emin misiniz?')) {
+      api.patch(`/listing/${listing.id}/`, {
+        status: 0 // Yayından kaldır
+      }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+        }
+      })
+      .then(res => {
+        console.log('İlan yayından kaldırıldı:', res.data);
+        // Listeyi yenile
+        fetchUserListings(page);
+      })
+      .catch(err => {
+        console.error('İlan yayından kaldırılamadı:', err);
+        alert('İlan yayından kaldırılırken bir hata oluştu.');
+      });
+    }
   };
 
   const handleDelete = (listing) => {
-    // TODO: Implement delete functionality
+    // İlanı sil
     console.log('Delete listing:', listing);
+    
+    if (window.confirm('Bu ilanı kalıcı olarak silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.')) {
+      api.delete(`/listing/${listing.id}/`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+        }
+      })
+      .then(res => {
+        console.log('İlan silindi:', res.data);
+        // Listeyi yenile
+        fetchUserListings(page);
+      })
+      .catch(err => {
+        console.error('İlan silinemedi:', err);
+        alert('İlan silinirken bir hata oluştu.');
+      });
+    }
   };
 
   useEffect(() => {
@@ -131,7 +169,7 @@ export default function YayindaOlanlar() {
             key={listing.id || index}
             listing={listing}
             onEdit={handleEdit}
-            onToggleStatus={handleToggleStatus}
+            onUnpublish={handleUnpublish}
             onDelete={handleDelete}
           />
         ))}

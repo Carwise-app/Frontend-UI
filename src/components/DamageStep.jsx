@@ -23,7 +23,7 @@ export default function DamageStep({stepLabel, onClick}) {
         
         const init = {};
         categories.forEach(cat => {
-            init[cat] = "Orjinal";
+            init[cat] = "Orijinal";
         });
         return init;
     });
