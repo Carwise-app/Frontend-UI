@@ -62,15 +62,35 @@ export default function App() {
     }
   };
 
+  const fetchUserProfile = async () => {
+    const token = localStorage.getItem("access_token");
+    if (token) {
+      try {
+        const response = await api.get("/profile/", {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        setUser(response.data);
+      } catch (error) {
+        console.error("Profil verisi alınamadı:", error.response?.data || error.message);
+      }
+    }
+  };
+
   useEffect(() => {
     const token = localStorage.getItem("access_token");
     setIsLoggedIn(!!token);
+    if (token) {
+      fetchUserProfile();
+    }
   }, []);
 
   const handleLoginSuccess = () => {
     setIsLoggedIn(true);
     setAuthOpen(false);
     showSnackbar("Giriş başarılı!", "success");
+    fetchUserProfile();
   };
 
   const handleLogout = () => {
@@ -79,6 +99,10 @@ export default function App() {
     localStorage.removeItem("access_token");
     showSnackbar("Çıkış yapıldı.", "info");
     navigate("/");
+  };
+
+  const handleProfileUpdate = () => {
+    fetchUserProfile();
   };
 
   // useEffect(() => {
@@ -152,7 +176,7 @@ export default function App() {
             <Route path="bildirimlerim" element={<Notifications />} />
             <Route
               path="profil-ve-ayarlar"
-              element={<ProfileAndSettings onOpenClick={handleOpenClick} />}
+              element={<ProfileAndSettings onOpenClick={handleOpenClick} onProfileUpdate={handleProfileUpdate} />}
             />
           </Route>
           <Route path="/sohbet/:receiver_id" element={<ChatDetail />} />
@@ -204,6 +228,7 @@ export default function App() {
         view={authView}
         setView={setAuthView}
         onLoginSuccess={handleLoginSuccess}
+        user={user}
       />
 
       {!shouldHideFooter && <Footer />}

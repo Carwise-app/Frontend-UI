@@ -9,7 +9,7 @@ import { Box, Button, IconButton, Tooltip } from '@mui/material';
 import api from '../api/axios';
 import { useSnackbar } from '../context/SnackbarContext';
 
-export default function ProfileAndSettings({ onOpenClick }) {
+export default function ProfileAndSettings({ onOpenClick, onProfileUpdate }) {
   const [user, setUser] = useState(null);
   const token = localStorage.getItem("access_token");
   const { showSnackbar } = useSnackbar();
@@ -18,7 +18,6 @@ export default function ProfileAndSettings({ onOpenClick }) {
   const date = new Date(timestamp * 1000);
   return date.toLocaleDateString('tr-TR');
 };
-
 
   const goToNewTab = (path) => {
     window.open(path, "_blank");
@@ -53,6 +52,17 @@ export default function ProfileAndSettings({ onOpenClick }) {
     }
   };
 
+  const handleDialogClose = () => {
+    if (onProfileUpdate) {
+      onProfileUpdate();
+    }
+  };
+
+  const handleProfileUpdate = () => {
+    // Sayfayı yenile
+    window.location.reload();
+  };
+
   return (
     <Box className="flex flex-col gap-y-4">
       <ControlPanelHeader
@@ -68,7 +78,7 @@ export default function ProfileAndSettings({ onOpenClick }) {
             <span>{user?.last_name?.[0] || 'B'}</span>
           </Box>
         </Box>
-        <Box className="flex items-center text-2xl font-medium tracking-wide">
+        <Box className="flex items-center text-2xl font-medium tracking-wide px-4">
           <span>{user ? `${user.first_name} ${user.last_name}` : "Yükleniyor..."}</span>
         </Box>
       </Box>
@@ -81,7 +91,15 @@ export default function ProfileAndSettings({ onOpenClick }) {
                 {user ? formatDate(user.created_at) : "Yükleniyor..."}
              </span>
           </Box>
-          <Box>
+          <Box className="flex gap-x-2">
+            <Button 
+              variant='outlined' 
+              color='primary' 
+              sx={{ textTransform: 'none', fontSize: 15 }}
+              onClick={() => onOpenClick("editProfile", "notLogin")}
+            >
+              Güncelle
+            </Button>
             <Button variant='outlined' color='error' sx={{ textTransform: 'none', fontSize: 15 }}>
               Hesabımı Sil
             </Button>
@@ -101,21 +119,14 @@ export default function ProfileAndSettings({ onOpenClick }) {
                 *İletişim bilgileriniz kullanıcıların size ulaşması için yayınladığını ilanlarda gözükmektedir.
               </span>
             </Box>
-            <Box className="grid grid-cols-[1fr_15fr_2fr] rounded-md w-[85%] h-10">
+            <Box className="grid grid-cols-[1fr_15fr] rounded-md w-[85%] h-10">
               <Box className="flex items-center justify-center bg-gray-700 rounded-l-md">
                 <PhoneIcon sx={{ fontWeight: 25, color: 'white', fontSize: 25 }} />
               </Box>
-              <Box className="flex items-center bg-gray-200">
+              <Box className="flex items-center bg-gray-200 rounded-r-md">
                 <span className='px-4 text-lg font-medium tracking-wide'>
                   {user ? `(${user.phone_number.slice(0,3)}) ${user.phone_number.slice(3,6)} ${user.phone_number.slice(6)}` : "Yükleniyor..."}
                 </span>
-              </Box>
-              <Box className="flex items-center justify-center bg-gray-200 rounded-r-md">
-                <Tooltip arrow title="Telefon numaranı değiştir" placement="right">
-                  <IconButton onClick={() => onOpenClick("changePhoneNumber", "notLogin")}>
-                    <EditIcon sx={{ fontWeight: 25, color: 'gray', fontSize: 25 }} />
-                  </IconButton>
-                </Tooltip>
               </Box>
             </Box>
           </Box>
@@ -123,21 +134,14 @@ export default function ProfileAndSettings({ onOpenClick }) {
           {/* E-Mail */}
           <Box className="flex flex-col gap-y-4">
             <span className='text-lg'>E-Mail</span>
-            <Box className="grid grid-cols-[1fr_15fr_2fr] rounded-md w-[85%] h-10">
+            <Box className="grid grid-cols-[1fr_15fr] rounded-md w-[85%] h-10">
               <Box className="flex items-center justify-center bg-gray-700 rounded-l-md">
                 <MailOutlineIcon sx={{ fontWeight: 25, color: 'white', fontSize: 25 }} />
               </Box>
-              <Box className="flex items-center bg-gray-200">
+              <Box className="flex items-center bg-gray-200 rounded-r-md">
                 <span className='px-4 text-lg tracking-wide text-gray-500 lowercase'>
                   {user ? user.email : "Yükleniyor..."}
                 </span>
-              </Box>
-              <Box className="flex items-center justify-center bg-gray-200 rounded-r-md">
-                <Tooltip arrow title="Mail adresini değiştir" placement="right">
-                  <IconButton onClick={() => onOpenClick("changeMail", "notLogin")}>
-                    <EditIcon sx={{ fontWeight: 25, color: 'gray', fontSize: 25 }} />
-                  </IconButton>
-                </Tooltip>
               </Box>
             </Box>
           </Box>
