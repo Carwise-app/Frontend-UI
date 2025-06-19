@@ -1,10 +1,25 @@
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, IconButton, Tooltip, Chip } from '@mui/material';
 import React from 'react';
+import {
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+  VisibilityOff as UnpublishIcon,
+} from '@mui/icons-material';
 
-export default function ActiveListingCard({ listing, onClick }) {
+export default function ActiveListingCard({ listing, onClick, onEdit, onDelete, onUnpublish }) {
+  // CSS-based placeholder component
+  const PlaceholderImage = () => (
+    <Box className="flex items-center justify-center w-full h-full bg-gray-200">
+      <Box className="text-center">
+        <Box className="w-12 h-8 mx-auto mb-2 bg-gray-400 rounded"></Box>
+        <Box className="w-8 h-8 mx-auto bg-gray-400 rounded-full"></Box>
+      </Box>
+    </Box>
+  );
+
   const imageUrl = listing.image?.path
     ? `https://carwisegw.yusuftalhaklc.com${listing.image.path}`
-    : 'https://via.placeholder.com/120x90?text=Araç';
+    : null;
 
   const formatPrice = (price) => price?.toLocaleString('tr-TR') || '0';
   const formatKm = (km) => km?.toLocaleString('tr-TR') || '0';
@@ -14,60 +29,139 @@ export default function ActiveListingCard({ listing, onClick }) {
     return date.toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' });
   };
 
+  const handleImageError = (e) => {
+    console.warn('Resim yüklenemedi, placeholder gösteriliyor:', e.target.src);
+    e.target.style.display = 'none';
+    e.target.nextSibling.style.display = 'flex';
+  };
+
+  const handleEdit = (e) => {
+    e.stopPropagation();
+    onEdit?.(listing);
+  };
+
+  const handleDelete = (e) => {
+    e.stopPropagation();
+    onDelete?.(listing);
+  };
+
+  const handleUnpublish = (e) => {
+    e.stopPropagation();
+    onUnpublish?.(listing);
+  };
+
+  // İlan durumunu kontrol et
+  const isActive = listing.status === 1 || listing.status === true;
+  const statusText = isActive ? 'Aktif' : 'Aktif Değil';
+  const statusColor = isActive ? 'success' : 'default';
+
   return (
     <Box
       onClick={() => onClick?.(listing)}
-      className="w-full flex items-center bg-white hover:bg-gray-50 transition cursor-pointer border-b border-gray-200 px-2 py-2 md:py-3 rounded-none md:rounded-xl group"
+      className={`flex items-center w-full px-2 py-2 transition border-b border-gray-200 rounded-none cursor-pointer hover:bg-gray-50 md:py-3 md:rounded-xl group ${
+        isActive ? 'bg-gray-50' : 'bg-white'
+      }`}
       sx={{ minHeight: 80 }}
     >
       {/* Image */}
-      <Box className="flex-shrink-0 w-[80px] h-[60px] md:w-[120px] md:h-[90px] rounded overflow-hidden border border-gray-200 bg-white flex items-center justify-center mr-2 md:mr-4">
-        <img
-          src={imageUrl}
-          alt={listing.title}
-          className="object-cover w-full h-full"
-          onError={e => { e.target.src = 'https://via.placeholder.com/120x90?text=Araç'; }}
-        />
+      <Box className="flex-shrink-0 w-[80px] h-[60px] md:w-[120px] md:h-[90px] rounded overflow-hidden border border-gray-200 bg-white flex items-center justify-center mr-2 md:mr-4 relative">
+        {imageUrl ? (
+          <>
+            <img
+              src={imageUrl}
+              alt={listing.title || 'Araç resmi'}
+              className="object-cover w-full h-full"
+              onError={handleImageError}
+              loading="lazy"
+            />
+            <Box className="absolute inset-0 hidden" style={{ display: 'none' }}>
+              <PlaceholderImage />
+            </Box>
+          </>
+        ) : (
+          <PlaceholderImage />
+        )}
       </Box>
+      
       {/* Model */}
-      <Box className="w-[110px] md:w-[140px] text-sm md:text-base font-medium text-gray-700 truncate mr-2 md:mr-4">
+      <Box className="mr-2 text-sm font-medium text-gray-700 truncate w-[100px] md:text-base md:mr-4">
         {listing.model?.name || '-'}
       </Box>
+      
       {/* Title */}
       <Box className="flex-1 min-w-0">
         <Typography
           component="a"
           href={`/arac-detay/${listing.slug}`}
           onClick={e => { e.stopPropagation(); }}
-          className="text-blue-700 font-semibold underline underline-offset-2 hover:text-blue-900 truncate block text-sm md:text-base"
+          className="block text-sm font-semibold text-blue-700 truncate hover:text-blue-900 md:text-base"
           sx={{ cursor: 'pointer' }}
         >
           {listing.title}
         </Typography>
       </Box>
-      {/* Year */}
+      
+      {/* Year - Sola kaydırıldı */}
       <Box className="w-[50px] text-center text-xs md:text-base text-gray-600 mx-1">
         {listing.year || '-'}
       </Box>
-      {/* KM */}
-      <Box className="w-[70px] text-center text-xs md:text-base text-gray-600 mx-1">
-        {formatKm(listing.kilometers)}
-      </Box>
-      {/* Color */}
-      <Box className="w-[60px] text-center text-xs md:text-base text-gray-600 mx-1">
-        {listing.color || '-'}
-      </Box>
-      {/* Price */}
-      <Box className="w-[90px] flex items-center justify-end font-bold text-[#dc143c] text-sm md:text-lg mx-1 truncate whitespace-nowrap overflow-hidden">
+      
+      {/* Price - Sola kaydırıldı */}
+      <Box className="w-[130px] flex items-center justify-end font-bold text-[#dc143c] text-sm md:text-lg mx-1 truncate whitespace-nowrap overflow-hidden">
         {formatPrice(listing.price)} TL
       </Box>
-      {/* Date */}
-      <Box className="w-[110px] text-center text-xs md:text-base text-gray-600 mx-1">
-        {formatDate(listing.created_at)}
+      
+      {/* Status Badge */}
+      <Box className="mx-2">
+        <Chip
+          label={statusText}
+          color={statusColor}
+          size="small"
+          className={`text-xs font-medium ${
+            isActive 
+              ? '!bg-gray-500 text-green-800 border border-green-200' 
+              : 'bg-gray-100 text-gray-600 border border-gray-200'
+          }`}
+          sx={{
+            '& .MuiChip-label': {
+              fontSize: '0.75rem',
+              fontWeight: '500',
+            }
+          }}
+        />
       </Box>
-      {/* City/District */}
-      <Box className="w-[120px] text-center text-xs md:text-base text-gray-700 mx-1 truncate">
-        {listing.city} <span className="text-gray-400">/</span> {listing.district}
+      
+      {/* Action Buttons */}
+      <Box className="flex items-center gap-1 ml-2">
+        <Tooltip title="Düzenle" arrow placement="top">
+          <IconButton
+            onClick={handleEdit}
+            className="text-blue-600 transition-all duration-200 hover:text-blue-800 hover:bg-blue-50"
+            size="small"
+          >
+            <EditIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
+        
+        <Tooltip title="Yayından Kaldır" arrow placement="top">
+          <IconButton
+            onClick={handleUnpublish}
+            className="text-orange-600 transition-all duration-200 hover:text-orange-800 hover:bg-orange-50"
+            size="small"
+          >
+            <UnpublishIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
+        
+        <Tooltip title="Sil" arrow placement="top">
+          <IconButton
+            onClick={handleDelete}
+            className="text-red-600 transition-all duration-200 hover:text-red-800 hover:bg-red-50"
+            size="small"
+          >
+            <DeleteIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
       </Box>
     </Box>
   );

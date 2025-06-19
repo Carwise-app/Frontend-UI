@@ -4,7 +4,7 @@ import DamageStepCard from './DamageStepCard';
 
 export default function DamageStep({stepLabel, onClick}) {
     const [tramer, setTramer] = useState('');
-    const options = ["Orjinal", "Boyalı", "Lokal Boyalı", "Değişen" ];
+    const options = ["Orijinal", "Boyalı", "Lokal Boyalı", "Değişen" ];
     const categories = [
         "Ön Tampon","Arka Tampon",
         "Sol ön çamurluk","Motor kaputu","Sağ ön çamurluk",
@@ -23,7 +23,7 @@ export default function DamageStep({stepLabel, onClick}) {
         
         const init = {};
         categories.forEach(cat => {
-            init[cat] = "Orjinal";
+            init[cat] = "Orijinal";
         });
         return init;
     });
