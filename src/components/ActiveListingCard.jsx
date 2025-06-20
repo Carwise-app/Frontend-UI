@@ -11,7 +11,6 @@ export default function ActiveListingCard({ listing, onClick, onEdit, onDelete, 
   const [deleteLoading, setDeleteLoading] = useState(false);
   const { showSnackbar } = useSnackbar();
 
-  // CSS-based placeholder component
   const PlaceholderImage = () => (
     <Box className="flex items-center justify-center w-full h-full bg-gray-200">
       <Box className="text-center">
@@ -68,7 +67,6 @@ export default function ActiveListingCard({ listing, onClick, onEdit, onDelete, 
     onUnpublish?.(listing);
   };
 
-  // İlan durumunu kontrol et
   const isActive = listing.status === 1 || listing.status === true;
   const statusText = isActive ? 'Aktif' : 'Aktif Değil';
   const statusColor = isActive ? 'success' : 'default';
@@ -84,7 +82,6 @@ export default function ActiveListingCard({ listing, onClick, onEdit, onDelete, 
       }`}
       sx={{ minHeight: 80 }}
     >
-      {/* Image */}
       <Box className="flex-shrink-0 w-[80px] h-[60px] md:w-[120px] md:h-[90px] rounded overflow-hidden border border-gray-200 bg-white flex items-center justify-center mr-2 md:mr-4 relative">
         {imageUrl ? (
           <>
@@ -104,14 +101,12 @@ export default function ActiveListingCard({ listing, onClick, onEdit, onDelete, 
         )}
       </Box>
       
-      {/* Model */}
       <Tooltip title={listing.model?.name || '-'}>
         <Box className="mr-2 text-sm font-medium text-gray-700 truncate w-[100px] md:text-base md:mr-4">
           {listing.model?.name || '-'}
         </Box>
       </Tooltip>
       
-      {/* Title */}
       <Box className="flex-1 min-w-0">
         <Typography
           component="span"
@@ -123,17 +118,14 @@ export default function ActiveListingCard({ listing, onClick, onEdit, onDelete, 
         </Typography>
       </Box>
       
-      {/* Year - Sola kaydırıldı */}
       <Box className="w-[50px] text-center text-xs md:text-base text-gray-600 mx-1">
         {listing.year || '-'}
       </Box>
       
-      {/* Price - Sola kaydırıldı */}
       <Box className="w-[130px] flex items-center justify-end font-bold text-[#dc143c] text-sm md:text-lg mx-1 truncate whitespace-nowrap overflow-hidden">
         {formatPrice(listing.price)} TL
       </Box>
       
-      {/* Status Badge */}
       <Box className="mx-2">
         <Chip
           label={statusText}
@@ -151,7 +143,6 @@ export default function ActiveListingCard({ listing, onClick, onEdit, onDelete, 
         />
       </Box>
       
-      {/* Action Buttons */}
       <Box className="flex items-center gap-1 ml-2">
         <Tooltip title="Düzenle" arrow placement="top">
           <IconButton

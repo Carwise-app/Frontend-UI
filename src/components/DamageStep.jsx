@@ -52,7 +52,6 @@ export default function DamageStep({stepLabel, onClick}) {
             tramer: tramer
         };
         localStorage.setItem('selectedDamage', JSON.stringify(damageData));
-        console.log("Hasar bilgileri kaydedildi:", damageData);
     };
 
     const handleTramerChange = (value) => {
@@ -64,7 +63,6 @@ export default function DamageStep({stepLabel, onClick}) {
             tramer: value
         };
         localStorage.setItem('selectedDamage', JSON.stringify(damageData));
-        console.log("Tramer kaydedildi:", value);
     };
     
   return (

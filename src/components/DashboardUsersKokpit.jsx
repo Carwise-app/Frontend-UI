@@ -42,9 +42,7 @@ export default function DashboardUsersKokpit() {
     try {
       setLoading(true);
       const response = await api.get(`/admin/users?page=${page}&limit=${ITEMS_PER_PAGE}`);
-      console.log('API Response:', response.data); // Debug için
       
-      // API response yapısına göre users array'ini al
       const usersData = response.data?.users || [];
       setUsers(Array.isArray(usersData) ? usersData : []);
       setTotalUsers(response.data?.total || 0);
@@ -52,7 +50,7 @@ export default function DashboardUsersKokpit() {
     } catch (error) {
       console.error('Kullanıcılar yüklenirken hata:', error);
       showSnackbar('Kullanıcılar yüklenirken bir hata oluştu.', 'error');
-      setUsers([]); // Hata durumunda boş array set et
+      setUsers([]);
     } finally {
       setLoading(false);
     }

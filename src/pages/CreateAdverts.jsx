@@ -161,7 +161,6 @@ export default function CreateAdverts() {
           })),
         })) || [];
       setBrands(brandData);
-      console.log("Marka verisi:", data);
     } catch (error) {
       console.error("Markalar yüklenirken hata:", error);
     } finally {
@@ -201,18 +200,15 @@ export default function CreateAdverts() {
   // Mevcut adıma göre options'ları belirle
   const getCurrentOptions = () => {
     if (currentStep.path === "marka") {
-      console.log("Marka seçenekleri yükleniyor:", brands.length, "marka");
       return brands;
     } else if (currentStep.path === "seri") {
       const selectedBrand = JSON.parse(localStorage.getItem("selectedBrand") || "{}");
       const seriesData = getSeriesForBrand(selectedBrand.id);
-      console.log("Seri seçenekleri yükleniyor:", seriesData.length, "seri, Marka:", selectedBrand.name);
       return seriesData;
     } else if (currentStep.path === "model") {
       const selectedBrand = JSON.parse(localStorage.getItem("selectedBrand") || "{}");
       const selectedSeries = JSON.parse(localStorage.getItem("selectedSeries") || "{}");
       const modelsData = getModelsForSeries(selectedBrand.id, selectedSeries.id);
-      console.log("Model seçenekleri yükleniyor:", modelsData.length, "model, Seri:", selectedSeries.name);
       return modelsData;
     } else {
       return currentStep.options || [];
@@ -232,67 +228,47 @@ export default function CreateAdverts() {
       : [];
 
   const handleOptionClick = (value) => {
-    console.log(`Seçilen ${currentStep.path}:`, value);
-
-    // Marka seçildiğinde brand bilgisini kaydet ve sonraki seçimleri temizle
     if (currentStep.path === "marka") {
       localStorage.setItem("selectedBrand", JSON.stringify(value));
       localStorage.removeItem("selectedSeries");
       localStorage.removeItem("selectedModel");
       setSeries([]);
       setModels([]);
-      console.log("✅ Marka seçildi:", value.name, "- Seri ve model seçimleri temizlendi");
     }
 
-    // Seri seçildiğinde seri bilgisini kaydet ve sonraki seçimleri temizle
     if (currentStep.path === "seri") {
       localStorage.setItem("selectedSeries", JSON.stringify(value));
       localStorage.removeItem("selectedModel");
       setModels([]);
-      console.log("✅ Seri seçildi:", value.name, "- Model seçimi temizlendi");
     }
 
-    // Model seçildiğinde model bilgisini kaydet
     if (currentStep.path === "model") {
       localStorage.setItem("selectedModel", JSON.stringify(value));
-      console.log("✅ Model seçildi:", value.name);
     }
 
-    // Yıl seçildiğinde yıl bilgisini kaydet
     if (currentStep.path === "yil") {
       localStorage.setItem("selectedYear", value);
-      console.log("✅ Yıl seçildi:", value);
     }
 
-    // Gövde tipi seçildiğinde gövde tipi bilgisini kaydet
     if (currentStep.path === "govde-tipi") {
       localStorage.setItem("selectedBodyType", value);
-      console.log("✅ Gövde tipi seçildi:", value);
     }
 
-    // Yakıt tipi seçildiğinde yakıt tipi bilgisini kaydet
     if (currentStep.path === "yakit-tipi") {
       localStorage.setItem("selectedFuelType", value);
-      console.log("✅ Yakıt tipi seçildi:", value);
     }
 
-    // Vites tipi seçildiğinde vites tipi bilgisini kaydet
     if (currentStep.path === "vites-tipi") {
       localStorage.setItem("selectedTransmission", value);
-      console.log("✅ Vites tipi seçildi:", value);
     }
 
-    // Renk seçildiğinde renk bilgisini kaydet
     if (currentStep.path === "renk") {
       localStorage.setItem("selectedColor", value);
-      console.log("✅ Renk seçildi:", value);
     }
 
     if (currentStep.next) {
       navigate(`/ilan-olustur/${currentStep.next}`);
       setSearchValue("");
-    } else {
-      console.log("Tüm adımlar tamamlandı.");
     }
   };
 
@@ -319,6 +295,7 @@ export default function CreateAdverts() {
         stepLabel={currentStep.label}
         allSteps={allSteps}
         btnText="Devam Et"
+        mode="create"
       />
     );
   }

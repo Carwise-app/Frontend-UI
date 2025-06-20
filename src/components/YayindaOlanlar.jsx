@@ -82,26 +82,19 @@ export default function YayindaOlanlar() {
   };
 
   const handleEdit = (listing) => {
-    // İlan düzenleme sayfasına yönlendir
-    console.log('Edit listing:', listing);
     navigate(`/ilan-duzenle/${listing.id}/marka`);
   };
 
   const handleUnpublish = (listing) => {
-    // İlanı yayından kaldır
-    console.log('Unpublish listing:', listing);
-    
     if (window.confirm('Bu ilanı yayından kaldırmak istediğinizden emin misiniz?')) {
       api.patch(`/listing/${listing.id}/`, {
-        status: 0 // Yayından kaldır
+        status: 0
       }, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('access_token')}`,
         }
       })
       .then(res => {
-        console.log('İlan yayından kaldırıldı:', res.data);
-        // Listeyi yenile
         fetchUserListings(page);
       })
       .catch(err => {
@@ -112,9 +105,6 @@ export default function YayindaOlanlar() {
   };
 
   const handleDelete = (listing) => {
-    // İlanı sil
-    console.log('Delete listing:', listing);
-    
     if (window.confirm('Bu ilanı kalıcı olarak silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.')) {
       api.delete(`/listing/${listing.id}/`, {
         headers: {
@@ -122,8 +112,6 @@ export default function YayindaOlanlar() {
         }
       })
       .then(res => {
-        console.log('İlan silindi:', res.data);
-        // Listeyi yenile
         fetchUserListings(page);
       })
     }

@@ -67,12 +67,6 @@ export default function ProfileAndSettings({ onOpenClick, onProfileUpdate }) {
     setLoading(true);
     
     try {
-      console.log("PATCH request gönderiliyor:", {
-        device_token: notificationSettings.device_token,
-        email_notify: newEmailNotify,
-        push_notify: notificationSettings.push_notify
-      });
-
       const response = await api.put("/profile/notify", {
         device_token: notificationSettings.device_token,
         email_notify: newEmailNotify,
@@ -83,8 +77,6 @@ export default function ProfileAndSettings({ onOpenClick, onProfileUpdate }) {
           'Content-Type': 'application/json'
         }
       });
-      
-      console.log("PATCH response:", response.data);
       
       setNotificationSettings(prev => ({
         ...prev,
@@ -104,9 +96,7 @@ export default function ProfileAndSettings({ onOpenClick, onProfileUpdate }) {
         config: error.config
       });
       
-      // Fallback: PUT request dene
       try {
-        console.log("PATCH başarısız, PUT denenecek...");
         const putResponse = await api.put("/profile/notify", {
           device_token: notificationSettings.device_token,
           email_notify: newEmailNotify,
@@ -117,8 +107,6 @@ export default function ProfileAndSettings({ onOpenClick, onProfileUpdate }) {
             'Content-Type': 'application/json'
           }
         });
-        
-        console.log("PUT response:", putResponse.data);
         
         setNotificationSettings(prev => ({
           ...prev,

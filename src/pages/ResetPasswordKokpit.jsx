@@ -13,7 +13,6 @@ export default function ResetPasswordKokpit() {
     const navigate = useNavigate();
     const location = useLocation();
 
-    // Query'den token ve email al
     const params = new URLSearchParams(location.search);
     const token = params.get('token');
     const email = params.get('email');

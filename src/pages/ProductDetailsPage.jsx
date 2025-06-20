@@ -160,13 +160,10 @@ export default function ProductDetailsPage({ onOpenClick }) {
           try {
             const imgId = img.id || img.path?.split('/')?.pop()?.split('.')?.[0];
             if (!imgId) return;
-            console.log('Fetching prediction for image ID:', imgId);
             const res = await api.get(`/upload/${imgId}/predict`);
-            console.log('Prediction response for', imgId, ':', res.data);
             results[imgId] = res.data;
           } catch (e) {
             console.error('Prediction fetch error for image:', e);
-            // If error, mark as not detected
             const imgId = img.id || img.path?.split('/')?.pop()?.split('.')?.[0];
             if (imgId) {
               results[imgId] = { prediction: false, confidence: 0, image: { id: imgId } };
@@ -174,7 +171,6 @@ export default function ProductDetailsPage({ onOpenClick }) {
           }
         })
       );
-      console.log('All prediction results:', results);
       setImagePredictions(results);
     };
     fetchPredictions();

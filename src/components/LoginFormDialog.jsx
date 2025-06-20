@@ -18,8 +18,6 @@ export default function LoginFormDialog({ onSwitch, onForgotPassword, onLoginSuc
     try {
       const response = await api.post("/auth/login", { email, password });
       localStorage.setItem("access_token", response.data.access_token);
-      console.log(response);
-      // Call onLoginSuccess after successful login
       onLoginSuccess();
     } catch (error) {
       const errMsg = (error.response?.data?.error?.[0] || "").toLowerCase();

@@ -105,25 +105,6 @@ export default function App() {
     fetchUserProfile();
   };
 
-  // useEffect(() => {
-  //   const token = localStorage.getItem("access_token");
-  //   if (token) {
-  //     api
-  //       .get("/profile", {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       })
-  //       .then(() => {
-  //         setIsLoggedIn(true);
-  //       })
-  //       .catch(() => {
-  //         setIsLoggedIn(false);
-  //         // localStorage.removeItem("access_token");
-  //       });
-  //   }
-  // }, []);
-
   return (
     <>
       <AppBar

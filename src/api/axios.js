@@ -65,15 +65,6 @@ api.interceptors.request.use((config) => {
     config.timeout = 15000;
     config.maxRedirects = 3;
   }
-
-  console.log(`API Request: ${config.method?.toUpperCase()} ${config.url}`);
-  console.log('Request Config:', {
-    method: config.method,
-    url: config.url,
-    maxRedirects: config.maxRedirects,
-    timeout: config.timeout,
-    headers: config.headers
-  });
   
   return config;
 });
@@ -81,20 +72,9 @@ api.interceptors.request.use((config) => {
 // Response interceptor ekle
 api.interceptors.response.use(
   (response) => {
-    console.log(`API Response: ${response.status} ${response.config.url}`);
-    console.log('Response Headers:', response.headers);
     return response;
   },
   (error) => {
-    console.error(`API Error: ${error.response?.status} ${error.config?.url}`, error);
-    console.error('Error Details:', {
-      message: error.message,
-      code: error.code,
-      status: error.response?.status,
-      statusText: error.response?.statusText,
-      headers: error.response?.headers,
-      data: error.response?.data
-    });
     return Promise.reject(error);
   }
 );
