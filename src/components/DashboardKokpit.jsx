@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import SpaceDashboardIcon from '@mui/icons-material/SpaceDashboard';
 import { Box, Card, CardContent, Typography } from '@mui/material';
 import { NavLink, Outlet } from 'react-router-dom';
@@ -9,8 +9,37 @@ import MessageIcon from '@mui/icons-material/Message';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import BarChartIcon from '@mui/icons-material/BarChart';
+import api from '../api/axios';
 
 export default function DashboardKokpit() {
+  const [counts, setCounts] = useState({
+    user_count: 0,
+    listing_count: 0,
+    message_count: 0,
+    favorite_count: 0,
+    notification_count: 0,
+    predict_count: 0,
+    image_count: 0,
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchCounts = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await api.get('/admin/count');
+        setCounts(response.data);
+      } catch (err) {
+        setError('Veriler alınamadı.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCounts();
+  }, []);
+
   return (
     <>
       <ControlPanelHeader
@@ -33,7 +62,7 @@ export default function DashboardKokpit() {
                   Toplam Kullanıcı
                 </Typography>
                 <Typography className="text-3xl font-bold text-white">
-                  21
+                  {loading ? '-' : counts.user_count}
                 </Typography>
               </Box>
               <Box className="p-3 bg-white/10 rounded-xl group-hover:bg-white/20 transition-colors">
@@ -53,7 +82,7 @@ export default function DashboardKokpit() {
                   Toplam İlan
                 </Typography>
                 <Typography className="text-3xl font-bold text-white">
-                  92
+                  {loading ? '-' : counts.listing_count}
                 </Typography>
               </Box>
               <Box className="p-3 bg-white/10 rounded-xl group-hover:bg-white/20 transition-colors">
@@ -73,7 +102,7 @@ export default function DashboardKokpit() {
                   Toplam Mesaj
                 </Typography>
                 <Typography className="text-3xl font-bold text-white">
-                  118
+                  {loading ? '-' : counts.message_count}
                 </Typography>
               </Box>
               <Box className="p-3 bg-white/10 rounded-xl group-hover:bg-white/20 transition-colors">
@@ -93,7 +122,7 @@ export default function DashboardKokpit() {
                   Toplam Favori
                 </Typography>
                 <Typography className="text-3xl font-bold text-white">
-                  3
+                  {loading ? '-' : counts.favorite_count}
                 </Typography>
               </Box>
               <Box className="p-3 bg-white/10 rounded-xl group-hover:bg-white/20 transition-colors">
@@ -113,7 +142,7 @@ export default function DashboardKokpit() {
                   Toplam Bildirim
                 </Typography>
                 <Typography className="text-3xl font-bold text-white">
-                  170
+                  {loading ? '-' : counts.notification_count}
                 </Typography>
               </Box>
               <Box className="p-3 bg-white/10 rounded-xl group-hover:bg-white/20 transition-colors">
@@ -133,7 +162,7 @@ export default function DashboardKokpit() {
                   Toplam Tahmin
                 </Typography>
                 <Typography className="text-3xl font-bold text-white">
-                  222
+                  {loading ? '-' : counts.predict_count}
                 </Typography>
               </Box>
               <Box className="p-3 bg-white/10 rounded-xl group-hover:bg-white/20 transition-colors">
@@ -145,6 +174,9 @@ export default function DashboardKokpit() {
       </Box>
 
       <Box className="grid grid-cols-2 mt-5 text-lg rounded-2xl shadow-md bg-neutral-50">
+        {error && (
+          <div className="col-span-2 text-center text-red-600 py-2">{error}</div>
+        )}
         <NavLink
           to="/kokpit/dashboard"
           end
